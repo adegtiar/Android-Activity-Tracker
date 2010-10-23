@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, ActivityTracker!</string>
-    <string name="app_name">Activity Tracker</string>
+    <string name="hello">Hello World, ActivityEdit!</string>
+    <string name="app_name">EventTracker</string>
+<string name="Event">Event</string>
+<string name="confirm">Confirm</string>
+<string name="Location">Location</string>
+<string name="startTime">Start Time:</string>
+<string name="endTime">End Time:</string>
+<string name="timeText">Time:</string>
+<string name="dateText">Date:</string>
+<string name="Set">Set</string>
 </resources>

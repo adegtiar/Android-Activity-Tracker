@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" android:layout_width="fill_parent">
+
+
+
+
+
+
+<TextView android:layout_height="wrap_content" android:id="@+id/row_event_title" android:layout_gravity="center" android:layout_weight="2" android:layout_width="35dip" android:text="Event Title"></TextView>
+<TextView android:layout_height="wrap_content" android:id="@+id/row_event_start_time" android:layout_gravity="center" android:gravity="center" android:layout_weight="1" android:layout_width="35dip" android:text="Start Time:"></TextView>
+<TextView android:id="@+id/row_event_end_button" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="35dip" android:gravity="center" android:text="End Time:"></TextView>
+
+
+
+</LinearLayout>

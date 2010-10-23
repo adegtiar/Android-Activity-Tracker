@@ -1,4 +1,4 @@
-package com.securityresearch.activitytracker;
+package com.securityresearch.eventtracker;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.TextView;
 
-public class SettingsActivity extends Activity {
+public class Settings extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,13 +19,12 @@ public class SettingsActivity extends Activity {
         ViewStub v =(ViewStub) findViewById(R.id.content_view);
         v.setLayoutResource(R.layout.settings);
         v.inflate();
-        v.
         
         findViewById(R.id.toolbar_right_option).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				Intent settingsIntent = new Intent(SettingsActivity.this, SettingsActivity.class);
+				Intent settingsIntent = new Intent(Settings.this, Settings.class);
 				startActivity(settingsIntent);
 			}
 		});
@@ -34,7 +33,7 @@ public class SettingsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent settingsIntent = new Intent(SettingsActivity.this, ActivityEdit.class);
+				Intent settingsIntent = new Intent(Settings.this, EditEvent.class);
 				startActivity(settingsIntent);
 			}
 		});
