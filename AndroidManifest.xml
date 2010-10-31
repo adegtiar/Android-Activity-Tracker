@@ -14,7 +14,7 @@
 
     <activity android:launchMode="singleTask" android:name=".ListEvents"></activity>
 <activity android:name=".Settings" android:launchMode="singleTask"></activity>
-  <activity android:name=".TimeDatePicker"></activity>
+  
 </application>
 
 
