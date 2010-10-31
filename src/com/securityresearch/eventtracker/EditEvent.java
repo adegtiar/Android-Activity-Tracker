@@ -183,6 +183,7 @@ public class EditEvent extends Activity {
 	 */
 	private void updateUI() {
 		updateTrackingUI();
+		editTextEventName.requestFocus();
 		fillViewWithEventInfo();
 	}
 	
