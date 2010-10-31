@@ -8,8 +8,9 @@
 
 
 <TextView android:layout_height="wrap_content" android:id="@+id/row_event_title" android:layout_gravity="center" android:text="homework" android:layout_weight="2" android:layout_width="35dip"></TextView>
-<TextView android:layout_height="wrap_content" android:id="@+id/row_event_start_time" android:layout_gravity="center" android:gravity="center" android:text="10/22/2010 4:15am" android:layout_weight="1" android:layout_width="35dip"></TextView>
-<Button android:text="End" android:id="@+id/row_event_end_button" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="35dip"></Button>
+<TextView android:layout_height="wrap_content" android:id="@+id/row_event_start_time" android:layout_gravity="center" android:gravity="center" android:text="10/22/2010 4:15am" android:layout_weight="1" android:layout_width="35dip"></TextView><TextView android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center" android:text="10/22/2010 4:15am" android:layout_weight="1" android:layout_width="35dip" android:id="@+id/row_event_end_time"></TextView>
+
+
 
 
 </LinearLayout>

@@ -1,8 +1,5 @@
 package com.securityresearch.eventtracker;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +8,7 @@ import android.view.ViewStub;
 import android.widget.TextView;
 
 public class Settings extends Activity {
+	private boolean isTracking;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +23,7 @@ public class Settings extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent settingsIntent = new Intent(Settings.this, Settings.class);
+				settingsIntent.putExtra(getString(R.string.isTracking), isTracking);
 				startActivity(settingsIntent);
 			}
 		});
@@ -33,12 +32,28 @@ public class Settings extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent settingsIntent = new Intent(Settings.this, EditEvent.class);
-				startActivity(settingsIntent);
+				Intent editIntent = new Intent(Settings.this, EditEvent.class);
+				editIntent.putExtra(getString(R.string.isTracking), isTracking);
+				startActivity(editIntent);
 			}
 		});
-        DateFormat dateFormat  = android.text.format.DateFormat.getDateFormat(this);
-        ((TextView) findViewById(R.id.toolbar_date)).setText(dateFormat.format(new Date()));
+        
+        isTracking = this.getIntent().getBooleanExtra("isTracking", false);
+        ((TextView) findViewById(R.id.toolbar_center)).setText(
+        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
 	}
 
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		isTracking = savedInstanceState.getBoolean(getString(R.string.isTracking));
+        ((TextView) findViewById(R.id.toolbar_center)).setText(
+        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean(getString(R.string.isTracking), isTracking);
+	}
 }

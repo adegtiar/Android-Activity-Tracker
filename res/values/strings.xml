@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, ActivityEdit!</string>
+    
     <string name="app_name">EventTracker</string>
 <string name="Event">Event</string>
 <string name="confirm">Confirm</string>
@@ -10,4 +10,13 @@
 <string name="timeText">Time:</string>
 <string name="dateText">Date:</string>
 <string name="Set">Set</string>
+<string name="nextActivity">Next Activity</string>
+<string name="stopTracking">Stop Tracking</string>
+<string name="defaultStartTime">&lt; N/A &gt;</string>
+<string name="previousActivityText">Previous Activity: </string>
+<string name="toolbarNotTracking">Not Currently Tracking</string>
+<string name="toolbarTracking">Now Tracking</string>
+<string name="previousActivityDefault">None</string>
+<string name="isTracking">isTracking</string>
+<string name="activityListHeader">All Activities</string>
 </resources>

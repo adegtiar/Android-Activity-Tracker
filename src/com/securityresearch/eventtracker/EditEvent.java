@@ -1,15 +1,19 @@
 package com.securityresearch.eventtracker;
 
-import java.text.DateFormat;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -17,24 +21,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EditEvent extends Activity {
-	static ArrayList<String> autoCompleteActivities=new ArrayList<String>();
-	static ArrayList<String> autoCompleteLocations=new ArrayList<String>();
-	static final int TIME_START_DIALOG_ID = 0;
-	static final int TIME_END_DIALOG_ID = 1;
-
+	private static final int trackingStringID = R.string.toolbarTracking;
+	private static final int notTrackingStringID = R.string.toolbarNotTracking;
+	private static final int previousEventTextID = R.string.previousActivityText;
+	private static final int previousEventDefaultID = R.string.previousActivityDefault;
+	
 	private EventDbAdapter mDbHelper;
+	private EventEntry currentEvent;
+	private EventEntry previousEvent;
+	
+	private ArrayList<String> autoCompleteActivities=new ArrayList<String>();
+	private ArrayList<String> autoCompleteLocations=new ArrayList<String>();
+
 	private ArrayAdapter<String> adapterActivities;
 	private ArrayAdapter<String> adapterLocations;
-	private AutoCompleteTextView textViewEvent;
-	private AutoCompleteTextView textViewLocation;
-
-	private static final int TIME_START=0;
-	private static final int TIME_END=1;
-	private long startTime=0;
-	private long endTime=Long.MAX_VALUE;
-
-	private Button mPickStartTime;
-	private Button mPickEndTime;
+	private AutoCompleteTextView editTextEventName;
+	private AutoCompleteTextView editTextEventLocation;
+	private Button previousActivityBar;
+	private Button nextActivityButton;
+	private Button stopTrackingButton;
+	private TextView textViewStartTime;
+	private TextView textViewIsTracking;
 
 
 	/** Called when the activity is first created. */
@@ -42,9 +49,105 @@ public class EditEvent extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
 		ViewStub v =(ViewStub) findViewById(R.id.content_view);
-		v.setLayoutResource(R.layout.editevent);
+		v.setLayoutResource(R.layout.edit_event);
 		v.inflate();
+
+		mDbHelper = new EventDbAdapter(this);
+		mDbHelper.open();
+		
+		initializeToolbar();
+		initializeEditTexts();
+		initializeAutoComplete();
+		
+		textViewStartTime = (TextView) findViewById(R.id.startTime);
+		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
+		initializeActivityButtons();
+	}
+	
+	/**
+	 * Initializes the NextActivity and StopTracking buttons.
+	 */
+	private void initializeActivityButtons() {
+		nextActivityButton=(Button)findViewById(R.id.NextActivityButton);
+		stopTrackingButton=(Button)findViewById(R.id.StopTrackingButton);
+		
+		nextActivityButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finishCurrentActivity(true);
+			}
+		});
+		
+		stopTrackingButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finishCurrentActivity(false);
+			}
+		});
+	}
+	
+	private void finishCurrentActivity(boolean createNewActivity) {
+		currentEvent.mEndTime = System.currentTimeMillis();
+		updateAutoComplete();
+		if (!updateDatabase(currentEvent))
+			throw new RuntimeException("Ahh it didn't update!"); // TODO remove
+		previousEvent = currentEvent;
+		currentEvent = createNewActivity ? new EventEntry() : null;
+		updateUI();
+	}
+	
+	/**
+	 * Initializes the AutoCompleteTextViews and intializes references to related views.
+	 */
+	private void initializeEditTexts() {
+		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
+		editTextEventName.setInputType(0);
+		editTextEventLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
+		editTextEventLocation.setInputType(0);
+		
+		adapterActivities = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
+		adapterLocations = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line, autoCompleteLocations);
+
+		editTextEventName.setAdapter(adapterActivities);
+		editTextEventLocation.setAdapter(adapterLocations);
+		
+		editTextEventName.setOnKeyListener(new OnKeyListener() {
+			
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (currentEvent == null) {
+					currentEvent = new EventEntry();
+					updateUI();
+				}
+				currentEvent.mName = editTextEventName.getText().toString();
+				return false;
+			}
+		});
+		editTextEventLocation.setOnKeyListener(new OnKeyListener() {
+			
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (currentEvent == null) {
+					currentEvent = new EventEntry();
+					updateUI();
+				}
+				currentEvent.mLocation = editTextEventLocation.getText().toString();
+				return false;
+			}
+		});
+	}
+	
+	/**
+	 * Initializes the toolbar onClickListeners and intializes references to toolbar views.
+	 */
+	private void initializeToolbar() {		
+		textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
 		((ImageView) findViewById(R.id.toolbar_left_option)).setImageResource(R.drawable.list);
 
 		findViewById(R.id.toolbar_right_option).setOnClickListener(new View.OnClickListener() {
@@ -52,6 +155,7 @@ public class EditEvent extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent settingsIntent = new Intent(EditEvent.this, Settings.class);
+				settingsIntent.putExtra(getString(R.string.isTracking), isTracking());
 				startActivity(settingsIntent);
 			}
 		});
@@ -60,86 +164,169 @@ public class EditEvent extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent settingsIntent = new Intent(EditEvent.this, ListEvents.class);
-				startActivity(settingsIntent);
+				Intent listIntent = new Intent(EditEvent.this, ListEvents.class);
+				listIntent.putExtra(getString(R.string.isTracking), isTracking());
+				startActivity(listIntent);
 			}
-		});
-
-
-		DateFormat dateFormat  = android.text.format.DateFormat.getDateFormat(this);
-		((TextView) findViewById(R.id.toolbar_date)).setText(dateFormat.format(new Date()));
-
-		initializeButtonTimes();
-		setButtonTimes();
-		mDbHelper = new EventDbAdapter(this);
-		mDbHelper.open();
-
-		textViewEvent = (AutoCompleteTextView) findViewById(R.id.editEvent);
-		textViewEvent.setInputType(0);
-		textViewLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-		textViewLocation.setInputType(0);
-		adapterActivities = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
-		adapterLocations = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoCompleteLocations);
-
-		textViewEvent.setAdapter(adapterActivities);
-		textViewLocation.setAdapter(adapterLocations);
-
-
-		initializeAutoComplete();
-		Button confirmButton = (Button) findViewById(R.id.confirm);
-		confirmButton.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View view) {
-
-				updateAutoComplete();
-				updateDatabase();
-				textViewEvent.setText("");
-				textViewLocation.setText("");
-
-				mDbHelper.fetchCurrentlyRunningEvents();
-			}
-
 		});
 	}
 
-	/*
+	/**
+	 * Updates the UI using the currentEvent and previousEvent.
+	 */
+	private void updateUI() {
+		updateTrackingUI();
+		fillViewWithEventInfo();
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initializeButtonTimes();
+		List<EventEntry> events = getLatestEvents(2);
+		if (events.size() != 0) {
+			EventEntry event = events.remove(0);
+			if (event.mEndTime != 0) {
+				// We aren't tracking
+				previousEvent = event;
+			} else {
+				// We are tracking
+				currentEvent = event;
+				previousEvent = events.size() != 0 ? events.remove(0) : null;
+			}
+		}
+		initializeAutoComplete();
+		updateUI();
 	}
-	*/
-
-	private void updateDatabase(){
-
-		textViewEvent = (AutoCompleteTextView) findViewById(R.id.editEvent);
-		textViewLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-		String activity=textViewEvent.getText().toString();
-		String location=textViewLocation.getText().toString();
-		mDbHelper.createEvent(activity, location, startTime, endTime);
-		reinitializeTimes();
-		initializeButtonTimes();
-		
-		
-
+	
+	/**
+	 * Fills the text entries and views with the correct info based on the
+	 * current/previous events.
+	 */
+	private void fillViewWithEventInfo() {
+		if (currentEvent != null) {
+			editTextEventName.setText(currentEvent.mName != null ? currentEvent.mName : "");
+			editTextEventLocation.setText(currentEvent.mLocation != null ? currentEvent.mLocation : "");
+			// TODO make this not in ListEvents
+			textViewStartTime.setText(ListEvents.getDateString(currentEvent.mStartTime));
+		} else {
+			editTextEventName.setText("");
+			editTextEventLocation.setText("");
+			textViewStartTime.setText("");
+		}
+		previousActivityBar.setText(getPreviousEventString());
 	}
 
+	/**
+	 * @return The text that the previous event bar should have, based on the previousEvent.
+	 */
+	private String getPreviousEventString() {
+		String previousActivityLabel = getString(previousEventTextID);
+		String previousEventString = previousEvent != null ? previousEvent.mName : getString(previousEventDefaultID); 
+		return previousActivityLabel + " " + previousEventString;
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		updateAutoComplete();
+		if (!updateDatabase(currentEvent))
+			throw new RuntimeException("Ahh it didn't update!"); // TODO remove
+	}
+	
+	/**
+	 * Changes the appearance of this activity to reflect the fact that this activity is now tracking
+	 */
+	private void updateTrackingUI(){
+		boolean isTracking = isTracking();
+		textViewIsTracking.setText(isTracking ? trackingStringID : notTrackingStringID);
+		nextActivityButton.setEnabled(isTracking);
+		stopTrackingButton.setEnabled(isTracking);	
+	}
+	
+	
+
+	/**
+	 * Creates a database entry for the EventEntry that is in progress
+	 * Updates the EventEntry with its corresponding rowID for the database
+	 * @param entry- the entry of the activity thats in progress
+	 * @return false if an error occurred, otherwise true. 
+	 */
+	private boolean updateDatabase(EventEntry event) {
+		if (event == null)
+			return true;
+		else if(event.mDbRowID==-1) {
+			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mLocation, event.mStartTime, event.mEndTime);
+			return event.mDbRowID != -1;
+		} else {
+			return mDbHelper.updateEvent(event.mDbRowID, event.mName, 
+					event.mLocation, event.mStartTime,event.mEndTime);
+		}
+	}
+	
+	/**
+	 * Queries the database for the events in sorted order.
+	 * @param numEvents The number of events to return.
+	 * @return  A list of EventEntry objects.
+	 */
+	private List<EventEntry> getLatestEvents(int numEvents){
+		List<EventEntry> eventList=new LinkedList<EventEntry>();
+		Cursor sortedEvents=mDbHelper.fetchSortedEvents();
+		if (sortedEvents.getCount() > 0) {
+		     while (sortedEvents.moveToNext() && numEvents > 0) {
+		    	 long dbRowID =		getLong(sortedEvents, EventDbAdapter.KEY_ROWID);
+		 		 String name =		getString(sortedEvents, EventDbAdapter.KEY_NAME);
+		 		 String location =	getString(sortedEvents, EventDbAdapter.KEY_LOCATION);
+		 		 long startTime =	getLong(sortedEvents, EventDbAdapter.KEY_START_TIME);
+		 		 long endTime =		getLong(sortedEvents, EventDbAdapter.KEY_END_TIME);
+		 		 eventList.add(new EventEntry(dbRowID, name, location, startTime, endTime));
+		    	 numEvents--;
+		     }
+	        }
+		return eventList;
+	}
+	
+	/**
+	 * @param cursor A cursor at a particular row.
+	 * @param columnName The name of the column in the DB.
+	 * @return The Long at the column with the given name, or null
+	 * 		   it doesn't exist.
+	 */
+	private long getLong(Cursor cursor, String columnName) {
+		return cursor.getLong(cursor.getColumnIndex(columnName));
+	}
+	
+	/**
+	 * 
+	 * @param cursor A cursor at a particular row.
+	 * @param columnName The name of the column in the DB.
+	 * @return The String at the colum with the given name.
+	 */
+	private String getString(Cursor cursor, String columnName) {
+		return cursor.getString(cursor.getColumnIndex(columnName));
+	}
+	
 	private void updateAutoComplete(){
-		AutoCompleteTextView textViewActivity = (AutoCompleteTextView) findViewById(R.id.editEvent);
-		AutoCompleteTextView textViewLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-		String activity=textViewActivity.getText().toString();
-		String location=textViewLocation.getText().toString();
+		String activity=editTextEventName.getText().toString();
+		String location=editTextEventLocation.getText().toString();
 		if(!mDbHelper.getEvents().contains(activity))
 			adapterActivities.add(activity);
 		if(!mDbHelper.getLocations().contains(location))
 			adapterLocations.add(location);
 	}
+	
+	/**
+	 * @return Whether or not an activity is currently being tracked.
+	 */
+	private boolean isTracking() {
+		return currentEvent != null;
+	}
 
 	private void initializeAutoComplete(){
 
+		adapterActivities.clear();
+		adapterLocations.clear();
 		for(String event: mDbHelper.getEvents()){
+			
 			adapterActivities.add(event);
 		}
 		for(String location: mDbHelper.getLocations()){
@@ -147,73 +334,31 @@ public class EditEvent extends Activity {
 		}
 
 	}
-
-	private void reinitializeTimes(){
-		startTime=0;
-		endTime=Long.MAX_VALUE;
-	}
-	private void initializeButtonTimes(){
+	
+	/**
+	 * A local, in-memory version of a Event database entry. This is pushed and pulled
+	 * from the database when necessary.  
+	 * 
+	 * @author AlexD
+	 *
+	 */
+	private class EventEntry {
+		long mDbRowID=-1;
+		String mName="";
+		String mLocation="";
+		long mStartTime;
+		long mEndTime;
 		
+		public EventEntry() {
+			mStartTime = System.currentTimeMillis();
+		}
 		
-		Button startTimeButton=(Button) findViewById(R.id.startTimeButton);
-		Button endTimeButton=(Button) findViewById(R.id.endTimeButton);
-		Calendar c=Calendar.getInstance();
-		if(startTime ==0){
-		startTime=c.getTimeInMillis();
-		startTimeButton.setText(getTime(startTime));
-		}
-		if(endTime==Long.MAX_VALUE){
-			endTimeButton.setText("Unspecified");
-			
-		}
-	}
-
-	private String getTime(long time){
-		Calendar c=Calendar.getInstance();
-		c.setTimeInMillis(time);
-		Date myDate=c.getTime();
-
-		return DateFormat.getDateTimeInstance().format(myDate);
-
-	}
-
-	private void setButtonTimes(){
-
-		mPickStartTime = (Button) findViewById(R.id.startTimeButton);
-		mPickEndTime = (Button) findViewById(R.id.endTimeButton);
-		// add a click listener to the button
-		mPickStartTime.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent i = new Intent(EditEvent.this, TimeDatePicker.class);
-				i.putExtra("Time",startTime);
-				startActivityForResult(i, TIME_START);
-
-
-			}
-		});
-		mPickEndTime.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent i = new Intent(EditEvent.this, TimeDatePicker.class);
-				i.putExtra("Time", endTime);
-				startActivityForResult(i, TIME_END);
-			}
-		});
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, 
-			Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-		Bundle extras = intent.getExtras();
-		long time=extras.getLong("Time");
-		switch(requestCode) {
-		case TIME_START:
-			startTime=time;
-			mPickStartTime.setText(getTime(startTime));
-			break;
-		case TIME_END:
-			endTime=time;
-			mPickEndTime.setText(getTime(endTime));
+		public EventEntry(long dbRowID, String name, String location, long startTime, long endTime){
+			 this.mDbRowID = dbRowID;
+			 this.mName=name;
+			 this.mLocation=location;
+			 this.mStartTime=startTime;
+			 this.mEndTime=endTime;
 		}
 	}
 }

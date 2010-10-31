@@ -2,7 +2,7 @@
 
 <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/main_layout">
 
-<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:background="@color/toolbar_background" android:id="@+id/upper_toolbar"><ImageView android:layout_width="wrap_content" android:src="@drawable/plan_48" android:layout_height="match_parent" android:adjustViewBounds="true" android:scaleType="center" android:layout_weight="1" android:id="@+id/toolbar_left_option"></ImageView><TextView android:layout_weight="2" android:layout_gravity="center" android:gravity="center" android:layout_height="match_parent" android:layout_width="wrap_content" android:textSize="9pt" android:id="@+id/toolbar_date" android:text="mm/dd/yyyy" android:textColor="@color/date_color"></TextView>
+<LinearLayout android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:background="@color/toolbar_background" android:id="@+id/upper_toolbar"><ImageView android:layout_width="wrap_content" android:src="@drawable/plan_48" android:layout_height="match_parent" android:adjustViewBounds="true" android:scaleType="center" android:layout_weight="1" android:id="@+id/toolbar_left_option"></ImageView><TextView android:layout_weight="2" android:layout_gravity="center" android:gravity="center" android:layout_height="match_parent" android:layout_width="wrap_content" android:textSize="9pt" android:textColor="@color/date_color" android:id="@+id/toolbar_center" android:text="@string/toolbarNotTracking"></TextView>
 
 
 
