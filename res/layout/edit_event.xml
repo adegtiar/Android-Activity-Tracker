@@ -34,7 +34,7 @@
 	
 	android:layout_height="wrap_content" 
 	android:layout_alignParentBottom ="true" 
-	android:layout_width="fill_parent" android:clickable="false" android:gravity="left|center_vertical" android:id="@+id/previous_activity_bar" android:text="@string/previousActivityText"/>
+	android:layout_width="fill_parent" android:clickable="false" android:gravity="left|center_vertical" android:id="@+id/previous_activity_bar" android:text="@string/previousActivityText" android:focusable="true"/>
 
 
 

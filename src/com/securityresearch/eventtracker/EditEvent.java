@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Selection;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
@@ -17,6 +19,7 @@ import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,6 +45,7 @@ public class EditEvent extends Activity {
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
 	private TextView textViewIsTracking;
+	private int autoCompleteThreshold;
 
 
 	/** Called when the activity is first created. */
@@ -126,6 +130,7 @@ public class EditEvent extends Activity {
 					updateUI();
 				}
 				currentEvent.mName = editTextEventName.getText().toString();
+				editTextEventName.setThreshold(autoCompleteThreshold);
 				return false;
 			}
 		});
@@ -138,9 +143,11 @@ public class EditEvent extends Activity {
 					updateUI();
 				}
 				currentEvent.mLocation = editTextEventLocation.getText().toString();
+				editTextEventLocation.setThreshold(autoCompleteThreshold);
 				return false;
 			}
 		});
+		autoCompleteThreshold = editTextEventName.getThreshold();
 	}
 	
 	/**
@@ -196,6 +203,17 @@ public class EditEvent extends Activity {
 		}
 		initializeAutoComplete();
 		updateUI();
+		// TODO unhack this
+		editTextEventLocation.setThreshold(Integer.MAX_VALUE);
+		editTextEventName.setThreshold(Integer.MAX_VALUE);
+		restoreCaratPosition();
+	}
+	
+	private void restoreCaratPosition() {
+		EditText eTextView = editTextEventName.hasFocus() ? editTextEventName : editTextEventLocation;
+		Editable text = eTextView.getText();
+		int position = eTextView.getText().length();
+		Selection.setSelection(text, position);
 	}
 	
 	/**
