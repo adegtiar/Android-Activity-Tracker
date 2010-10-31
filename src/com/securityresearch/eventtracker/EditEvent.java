@@ -254,7 +254,9 @@ public class EditEvent extends Activity {
 	private boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
-		else if(event.mDbRowID==-1) {
+		event.mName = editTextEventName.getText().toString();
+		event.mLocation = editTextEventLocation.getText().toString();
+		if(event.mDbRowID==-1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mLocation, event.mStartTime, event.mEndTime);
 			return event.mDbRowID != -1;
 		} else {
