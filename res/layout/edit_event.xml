@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-
-
+	
 	<LinearLayout android:layout_height="fill_parent"
 		android:layout_width="fill_parent" android:layout_alignParentTop="true"
 		android:orientation="vertical" android:id="@+id/edit_event_contents"
+			
 		android:layout_above="@+id/previous_activity_bar">
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -41,6 +44,7 @@
 			<Button android:text="@string/nextActivity" android:id="@+id/NextActivityButton"
 				android:layout_margin="10dip" android:layout_height="100dip"
 				android:layout_weight="4" android:layout_width="70dip"
+					android:focusable="true"
 				android:textSize="8pt"></Button>
 			<Button android:text="@string/stopTracking" android:id="@+id/StopTrackingButton"
 				android:layout_margin="10dip" android:layout_height="100dip"
@@ -55,6 +59,15 @@
 		android:clickable="false" android:gravity="left|center_vertical"
 		android:id="@+id/previous_activity_bar" android:text="@string/previousActivityText"
 		android:focusable="true" />
+
+	<LinearLayout 
+		android:id="@+id/dummyLayout"
+      android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:focusable="true"
+    	android:focusableInTouchMode="true">
+    
+</LinearLayout>
 
 
 
