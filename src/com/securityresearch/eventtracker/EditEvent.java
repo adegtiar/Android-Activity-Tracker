@@ -69,6 +69,7 @@ public class EditEvent extends Activity {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
 		initializeActivityButtons();
+		textViewStartTime.requestFocus();
 		
 	}
 	

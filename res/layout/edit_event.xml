@@ -11,7 +11,9 @@
 		android:layout_above="@+id/previous_activity_bar">
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/Event" />
+			android:text="@string/Event" 
+			
+			/>
 		<AutoCompleteTextView android:layout_below="@+id/EventText"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:id="@+id/editEventName" android:imeOptions="actionNext">
@@ -24,9 +26,11 @@
 		<AutoCompleteTextView android:id="@+id/editLocation"
 			android:layout_width="fill_parent" android:imeOptions="actionDone"
 			android:layout_height="wrap_content" />
+			
 		<TextView android:textStyle="bold" android:layout_below="@id/editLocation"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/startTime" android:id="@+id/startTimeLabel" />
+			android:text="@string/startTime" android:id="@+id/startTimeLabel" 
+			android:focusable="true"/>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/startTime"
 			android:text="@string/defaultStartTime"></TextView>
