@@ -22,4 +22,6 @@
 <string name="settingsDefaultText">No settings yet. Come back soon!</string>
 <string name="deleteButtonHeader">Del</string>
 <string name="Event">Activity Name</string>
+<string name="eventLocationHint">Where are you now?</string>
+<string name="eventNameHint">What are you doing now?&quot;</string>
 </resources>

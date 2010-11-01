@@ -47,6 +47,7 @@ public class EditEvent extends Activity {
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
 	private TextView textViewIsTracking;
+	
 //	private int autoCompleteThreshold;
 
 
@@ -71,8 +72,8 @@ public class EditEvent extends Activity {
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
 		
 		initializeActivityButtons();
-		editTextEventName.setHint("What are you doing now?");
-		editTextEventLocation.setHint("Where are you now?");
+		editTextEventName.setHint(getString(R.string.eventNameHint));
+		editTextEventLocation.setHint(getString(R.string.eventLocationHint));
 	}
 	
 	/**
