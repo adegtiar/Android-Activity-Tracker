@@ -22,6 +22,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class EditEvent extends Activity {
@@ -58,7 +59,7 @@ public class EditEvent extends Activity {
 		ViewStub v =(ViewStub) findViewById(R.id.content_view);
 		v.setLayoutResource(R.layout.edit_event);
 		v.inflate();
-
+		
 		mDbHelper = new EventDbAdapter(this);
 		mDbHelper.open();
 		
@@ -68,8 +69,9 @@ public class EditEvent extends Activity {
 		
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
-		initializeActivityButtons();
 		
+		initializeActivityButtons();
+
 	}
 	
 	/**
@@ -92,6 +94,10 @@ public class EditEvent extends Activity {
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(false);
+				LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
+				editTextEventName.clearFocus();
+				dummy.requestFocus();
+
 			}
 		});
 	}
@@ -207,6 +213,8 @@ public class EditEvent extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+	
+		
 		List<EventEntry> events = getLatestEvents(2);
 		if (events.size() != 0) {
 			EventEntry event = events.remove(0);
@@ -225,6 +233,9 @@ public class EditEvent extends Activity {
 		editTextEventLocation.setThreshold(Integer.MAX_VALUE);
 		editTextEventName.setThreshold(Integer.MAX_VALUE);
 		restoreCaratPosition();
+		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
+		editTextEventName.clearFocus();
+		dummy.requestFocus();
 	}
 	
 	private void restoreCaratPosition() {
@@ -277,6 +288,7 @@ public class EditEvent extends Activity {
 		textViewIsTracking.setText(isTracking ? trackingStringID : notTrackingStringID);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);	
+		
 	}
 	
 	
