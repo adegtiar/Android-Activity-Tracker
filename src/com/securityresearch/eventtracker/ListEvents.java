@@ -47,6 +47,17 @@ public class ListEvents extends Activity {
 		mDbHelper.open();
 		fillData();
 
+		initializeToolbars();
+		
+		isTracking = this.getIntent().getBooleanExtra(getString(R.string.isTracking), false);
+        ((TextView) findViewById(R.id.toolbar_center)).setText(
+        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
+	}
+	
+	/**
+	 * Sets the onClickListeners for the toolbar content.
+	 */
+	private void initializeToolbars() {
 		findViewById(R.id.toolbar_right_option).setOnClickListener(
 				new View.OnClickListener() {
 
@@ -70,9 +81,6 @@ public class ListEvents extends Activity {
 						startActivity(editIntent);
 					}
 				});
-		isTracking = this.getIntent().getBooleanExtra(getString(R.string.isTracking), false);
-        ((TextView) findViewById(R.id.toolbar_center)).setText(
-        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
 	}
 
 	/**
@@ -118,6 +126,10 @@ public class ListEvents extends Activity {
 		});
 	}
 	
+	/**
+	 * Initializes the headers for the given list.
+	 * @param list The list to add headers to.
+	 */
 	private void initializeHeaders(ListView list) {
 		TextView textTitle = new TextView(this);
 		textTitle.setText(R.string.activityListHeader);
