@@ -4,13 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -21,19 +19,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class ListEvents extends Activity {
-	EventDbAdapter mDbHelper;
-	private static final int KEY_START_TIME_INDEX = 3;
-	private static final int KEY_END_TIME_INDEX = 4;
+	private EventDbAdapter mDbHelper;
 	private boolean isTracking;
 	// Create an array to specify the fields we want to display in the list
 	// (only TITLE)
 	private String[] from = new String[] { EventDbAdapter.KEY_NAME,
-			EventDbAdapter.KEY_START_TIME, EventDbAdapter.KEY_END_TIME };
+			EventDbAdapter.KEY_START_TIME, EventDbAdapter.KEY_END_TIME , EventDbAdapter.KEY_ROWID};
 
-	// and an array of the fields we want to bind those fields to (in this
-	// case just text1)
 	private int[] to = new int[] { R.id.row_event_title,
-			R.id.row_event_start_time, R.id.row_event_end_time };
+			R.id.row_event_start_time, R.id.row_event_end_time, R.id.row_event_delete_button };
+	private Cursor mEventsCursor;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,38 +83,26 @@ public class ListEvents extends Activity {
 	 */
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
-		Cursor mEventsCursor = mDbHelper.fetchSortedEvents();
+		mEventsCursor = mDbHelper.fetchSortedEvents();
 		startManagingCursor(mEventsCursor);
 		
-		ListView list = (ListView) findViewById(R.id.events_list_view);
+		ListView eventList = (ListView) findViewById(R.id.events_list_view);
 		
 		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
-				R.layout.events_row, mEventsCursor, from, to) {
-			public View newView(Context context, Cursor cursor, ViewGroup parent) {
-				final View newView = super.newView(context, cursor, parent);
-				newView.findViewById(R.id.delete_button).setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						TextView t = (TextView) newView.findViewById(R.id.row_event_title);
-						t.setText(t.getText()+"-");
-					}
-				});
-				return newView;
-			}
-		};
+				R.layout.events_row, mEventsCursor, from, to);
 		eventsCursor.setViewBinder(new EventRowViewBinder());
 		
-		initializeHeaders(list);
+		initializeHeaders(eventList);
 		
-		list.setEmptyView(findViewById(R.id.empty_list_view));
-		list.setAdapter(eventsCursor);
+		eventList.setEmptyView(findViewById(R.id.empty_list_view));
+		eventList.setAdapter(eventsCursor);
 		
-		list.setOnItemClickListener(new OnItemClickListener() {
-
+		// onClick, edit the event
+		eventList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
+				if (position < 2) return;
 				TextView t = (TextView) view.findViewById(R.id.row_event_title);
 				t.setText(t.getText() + "+");
 			}
@@ -143,9 +126,33 @@ public class ListEvents extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-//		fillData();
+		mEventsCursor.requery();
 	}
 
+	/**
+	 * The listener associated with a delete button. Deletes the event
+	 * corresponding to the row the button is in.
+	 * @author AlexD
+	 *
+	 */
+	private class DeleteRowListener implements OnClickListener {
+		private long rowId;
+		private boolean canDelete; 
+		
+		private DeleteRowListener(long rowId, boolean canDelete) {
+			this.rowId = rowId;
+			this.canDelete = canDelete;
+		}
+		@Override
+		public void onClick(View v) {
+			if (canDelete) {
+				mDbHelper.deleteEvent(rowId);
+				mEventsCursor.requery();
+			}
+		}
+		
+	}
+	
 	/**
 	 * Helps interface the Cursor with the view, updating the views of a row
 	 * with values in the DB.
@@ -153,15 +160,22 @@ public class ListEvents extends Activity {
 	 * @author AlexD
 	 *
 	 */
-	class EventRowViewBinder implements ViewBinder {
+	private class EventRowViewBinder implements ViewBinder {
 
 		@Override
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			if (columnIndex == KEY_START_TIME_INDEX
-					|| columnIndex == KEY_END_TIME_INDEX) {
+		public boolean setViewValue(View view, final Cursor cursor, int columnIndex) {
+			if (columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_ROWID)) {
+				long rowId = cursor.getLong(columnIndex);
+				boolean canDelete = cursor.getLong(cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) != 0;
+				view.setOnClickListener(new DeleteRowListener(rowId, canDelete));
+				return true;
+			}
+				
+			if (columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_START_TIME)
+					|| columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) {
 				long dateLong = cursor.getLong(columnIndex);
 				String dateString;
-				if (dateLong == 0 && columnIndex == KEY_END_TIME_INDEX)
+				if (dateLong == 0 && columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_START_TIME))
 					dateString = "In Progress";
 				else
 					dateString = getDateString(dateLong);
@@ -171,6 +185,7 @@ public class ListEvents extends Activity {
 			return false;
 		}
 	}
+	
 
 	/**
 	 * Converts the given date long into the default date String.
