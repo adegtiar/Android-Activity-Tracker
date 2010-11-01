@@ -17,13 +17,12 @@
 			android:id="@+id/editEventName" android:imeOptions="actionNext">
 
 		</AutoCompleteTextView>
-		
+
 		<TextView android:id="@+id/locationText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Location" />
 		<AutoCompleteTextView android:id="@+id/editLocation"
-			android:layout_width="fill_parent" 
-			android:imeOptions="actionDone"
+			android:layout_width="fill_parent" android:imeOptions="actionDone"
 			android:layout_height="wrap_content" />
 		<TextView android:textStyle="bold" android:layout_below="@id/editLocation"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -45,25 +44,6 @@
 				android:textSize="8pt"></Button>
 		</LinearLayout>
 	</LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	<Button android:layout_height="wrap_content"
