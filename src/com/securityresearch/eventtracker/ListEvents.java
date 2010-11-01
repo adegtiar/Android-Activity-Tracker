@@ -175,7 +175,7 @@ public class ListEvents extends Activity {
 					|| columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) {
 				long dateLong = cursor.getLong(columnIndex);
 				String dateString;
-				if (dateLong == 0 && columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_START_TIME))
+				if (dateLong == 0 && columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME))
 					dateString = "In Progress";
 				else
 					dateString = getDateString(dateLong);
