@@ -4,15 +4,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class ListEvents extends Activity {
@@ -56,7 +61,7 @@ public class ListEvents extends Activity {
 
 		findViewById(R.id.toolbar_left_option).setOnClickListener(
 				new View.OnClickListener() {
-
+					
 					@Override
 					public void onClick(View v) {
 						Intent editIntent = new Intent(ListEvents.this,
@@ -77,15 +82,43 @@ public class ListEvents extends Activity {
 		// Get all of the rows from the database and create the item list
 		Cursor mEventsCursor = mDbHelper.fetchSortedEvents();
 		startManagingCursor(mEventsCursor);
-
 		
-
-		// Now create a simple cursor adapter and set it to display
-		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
-				R.layout.events_row, mEventsCursor, from, to);
-		eventsCursor.setViewBinder(new EventRowViewBinder());
 		ListView list = (ListView) findViewById(R.id.events_list_view);
 		
+		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
+				R.layout.events_row, mEventsCursor, from, to) {
+			public View newView(Context context, Cursor cursor, ViewGroup parent) {
+				final View newView = super.newView(context, cursor, parent);
+				newView.findViewById(R.id.delete_button).setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						TextView t = (TextView) newView.findViewById(R.id.row_event_title);
+						t.setText(t.getText()+"-");
+					}
+				});
+				return newView;
+			}
+		};
+		eventsCursor.setViewBinder(new EventRowViewBinder());
+		
+		initializeHeaders(list);
+		
+		list.setEmptyView(findViewById(R.id.empty_list_view));
+		list.setAdapter(eventsCursor);
+		
+		list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				TextView t = (TextView) view.findViewById(R.id.row_event_title);
+				t.setText(t.getText() + "+");
+			}
+		});
+	}
+	
+	private void initializeHeaders(ListView list) {
 		TextView textTitle = new TextView(this);
 		textTitle.setText(R.string.activityListHeader);
 		textTitle.setTextSize(20);
@@ -93,8 +126,6 @@ public class ListEvents extends Activity {
 		list.addHeaderView(textTitle);
 		View listHeader = View.inflate(this, R.layout.event_row_header, null);
 		list.addHeaderView(listHeader);
-		list.setAdapter(eventsCursor);
-		list.setEmptyView(findViewById(R.id.empty_list_view));
 	}
 
 	@Override

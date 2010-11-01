@@ -13,5 +13,5 @@
 		android:id="@+id/row_event_end_time"></TextView>
 	<ImageView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/delete_button"
-		android:src="@drawable/delete_icon" android:layout_gravity="center"></ImageView>
+		android:src="@drawable/delete_icon" android:layout_gravity="center" android:clickable="true"></ImageView>
 </LinearLayout>

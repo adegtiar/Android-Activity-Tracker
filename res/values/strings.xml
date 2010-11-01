@@ -21,4 +21,5 @@
 <string name="activityListHeader">All Activities</string>
 <string name="settingsDefaultText">No settings yet. Come back soon!</string>
 <string name="deleteButtonHeader">Del</string>
+<string name="Event">Activity Name</string>
 </resources>
