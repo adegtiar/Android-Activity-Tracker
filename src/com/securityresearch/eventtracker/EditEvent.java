@@ -227,12 +227,16 @@ public class EditEvent extends Activity {
 			EventEntry event = events.remove(0);
 			if (event.mEndTime != 0) {
 				// We aren't tracking
+				currentEvent = null;
 				previousEvent = event;
 			} else {
 				// We are tracking
 				currentEvent = event;
 				previousEvent = events.size() != 0 ? events.remove(0) : null;
 			}
+		} else {
+			currentEvent = null;
+			previousEvent = null;
 		}
 		initializeAutoComplete();
 		updateUI();
