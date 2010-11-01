@@ -173,7 +173,7 @@ public class EditEvent extends Activity {
 	 */
 	private void initializeToolbar() {		
 		textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
-		((ImageView) findViewById(R.id.toolbar_left_option)).setImageResource(R.drawable.list);
+		((ImageView) findViewById(R.id.toolbar_left_option)).setImageResource(R.drawable.list_icon);
 
 		findViewById(R.id.toolbar_right_option).setOnClickListener(new View.OnClickListener() {
 
