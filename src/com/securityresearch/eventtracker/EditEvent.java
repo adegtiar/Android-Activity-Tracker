@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
@@ -68,6 +69,7 @@ public class EditEvent extends Activity {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
 		initializeActivityButtons();
+		
 	}
 	
 	/**
@@ -109,9 +111,9 @@ public class EditEvent extends Activity {
 	 */
 	private void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
-		editTextEventName.setInputType(0);
+//		editTextEventName.setInputType(0);
 		editTextEventLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-		editTextEventLocation.setInputType(0);
+	
 		
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
@@ -121,31 +123,46 @@ public class EditEvent extends Activity {
 		editTextEventName.setAdapter(adapterActivities);
 		editTextEventLocation.setAdapter(adapterLocations);
 		
-		editTextEventName.setOnKeyListener(new OnKeyListener() {
-			
+	
+		editTextEventName.addTextChangedListener(new TextWatcher() {
 			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
+			public void afterTextChanged(Editable s) {
+				if (s.length() == 0) return;
 				if (currentEvent == null) {
 					currentEvent = new EventEntry();
 					updateUI();
 				}
-				currentEvent.mName = editTextEventName.getText().toString();
+				currentEvent.mName = s.toString();
 				editTextEventName.setThreshold(autoCompleteThreshold);
-				return false;
 			}
-		});
-		editTextEventLocation.setOnKeyListener(new OnKeyListener() {
-			
+
 			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+		});
+		editTextEventLocation.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.length() == 0) return;
 				if (currentEvent == null) {
 					currentEvent = new EventEntry();
 					updateUI();
 				}
-				currentEvent.mLocation = editTextEventLocation.getText().toString();
+				currentEvent.mLocation = s.toString();
 				editTextEventLocation.setThreshold(autoCompleteThreshold);
-				return false;
 			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
 		});
 		autoCompleteThreshold = editTextEventName.getThreshold();
 	}
