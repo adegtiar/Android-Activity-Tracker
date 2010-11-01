@@ -47,7 +47,7 @@ public class EditEvent extends Activity {
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
 	private TextView textViewIsTracking;
-	private int autoCompleteThreshold;
+//	private int autoCompleteThreshold;
 
 
 	/** Called when the activity is first created. */
@@ -71,7 +71,8 @@ public class EditEvent extends Activity {
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
 		
 		initializeActivityButtons();
-
+		editTextEventName.setHint("What are you doing now?");
+		editTextEventLocation.setHint("Where are you now?");
 	}
 	
 	/**
@@ -133,13 +134,15 @@ public class EditEvent extends Activity {
 		editTextEventName.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
-				if (s.length() == 0) return;
+				if (s.length() == 0){
+					return;
+				}
 				if (currentEvent == null) {
 					currentEvent = new EventEntry();
 					updateUI();
 				}
 				currentEvent.mName = s.toString();
-				editTextEventName.setThreshold(autoCompleteThreshold);
+//				editTextEventName.setThreshold(autoCompleteThreshold);
 			}
 
 			@Override
@@ -159,7 +162,7 @@ public class EditEvent extends Activity {
 					updateUI();
 				}
 				currentEvent.mLocation = s.toString();
-				editTextEventLocation.setThreshold(autoCompleteThreshold);
+//				editTextEventLocation.setThreshold(autoCompleteThreshold);
 			}
 
 			@Override
@@ -170,7 +173,7 @@ public class EditEvent extends Activity {
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {}
 		});
-		autoCompleteThreshold = editTextEventName.getThreshold();
+//		autoCompleteThreshold = editTextEventName.getThreshold();
 	}
 	
 	/**
@@ -206,7 +209,6 @@ public class EditEvent extends Activity {
 	 */
 	private void updateUI() {
 		updateTrackingUI();
-		editTextEventName.requestFocus();
 		fillViewWithEventInfo();
 	}
 	
@@ -230,12 +232,16 @@ public class EditEvent extends Activity {
 		initializeAutoComplete();
 		updateUI();
 		// TODO unhack this
-		editTextEventLocation.setThreshold(Integer.MAX_VALUE);
-		editTextEventName.setThreshold(Integer.MAX_VALUE);
-		restoreCaratPosition();
+//		editTextEventLocation.setThreshold(Integer.MAX_VALUE);
+//		editTextEventName.setThreshold(Integer.MAX_VALUE);
+//		restoreCaratPosition();
+		
+		
 		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
 		dummy.requestFocus();
+		
+		
 	}
 	
 	private void restoreCaratPosition() {
