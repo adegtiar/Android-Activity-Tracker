@@ -10,17 +10,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Selection;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -70,6 +66,13 @@ public class EditEvent extends Activity {
 		
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
+		previousActivityBar.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startListEventsActivity();
+			}
+		});
 		
 		initializeActivityButtons();
 		editTextEventName.setHint(getString(R.string.eventNameHint));
@@ -188,9 +191,7 @@ public class EditEvent extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent settingsIntent = new Intent(EditEvent.this, Settings.class);
-				settingsIntent.putExtra(getString(R.string.isTracking), isTracking());
-				startActivity(settingsIntent);
+				startSettingsActivity();
 			}
 		});
 
@@ -198,11 +199,27 @@ public class EditEvent extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent listIntent = new Intent(EditEvent.this, ListEvents.class);
-				listIntent.putExtra(getString(R.string.isTracking), isTracking());
-				startActivity(listIntent);
+				startListEventsActivity();
 			}
 		});
+	}
+	
+	/**
+	 * Launches the Settings activity.
+	 */
+	private void startSettingsActivity() {
+		Intent settingsIntent = new Intent(EditEvent.this, Settings.class);
+		settingsIntent.putExtra(getString(R.string.isTracking), isTracking());
+		startActivity(settingsIntent);
+	}
+	
+	/**
+	 * Launches the ListEvents activity.
+	 */
+	private void startListEventsActivity() {
+		Intent listIntent = new Intent(EditEvent.this, ListEvents.class);
+		listIntent.putExtra(getString(R.string.isTracking), isTracking());
+		startActivity(listIntent);
 	}
 
 	/**
@@ -245,12 +262,12 @@ public class EditEvent extends Activity {
 		
 	}
 	
-	private void restoreCaratPosition() {
-		EditText eTextView = editTextEventName.hasFocus() ? editTextEventName : editTextEventLocation;
-		Editable text = eTextView.getText();
-		int position = eTextView.getText().length();
-		Selection.setSelection(text, position);
-	}
+//	private void restoreCaratPosition() {
+//		EditText eTextView = editTextEventName.hasFocus() ? editTextEventName : editTextEventLocation;
+//		Editable text = eTextView.getText();
+//		int position = eTextView.getText().length();
+//		Selection.setSelection(text, position);
+//	}
 	
 	/**
 	 * Fills the text entries and views with the correct info based on the
