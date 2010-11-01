@@ -26,11 +26,11 @@ public class EditEvent extends Activity {
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private static final int previousEventTextID = R.string.previousActivityText;
 	private static final int previousEventDefaultID = R.string.previousActivityDefault;
-	
+
 	private EventDbAdapter mDbHelper;
 	private EventEntry currentEvent;
 	private EventEntry previousEvent;
-	
+
 	private ArrayList<String> autoCompleteActivities=new ArrayList<String>();
 	private ArrayList<String> autoCompleteLocations=new ArrayList<String>();
 
@@ -43,8 +43,6 @@ public class EditEvent extends Activity {
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
 	private TextView textViewIsTracking;
-	
-//	private int autoCompleteThreshold;
 
 
 	/** Called when the activity is first created. */
@@ -52,50 +50,50 @@ public class EditEvent extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		ViewStub v =(ViewStub) findViewById(R.id.content_view);
 		v.setLayoutResource(R.layout.edit_event);
 		v.inflate();
-		
+
 		mDbHelper = new EventDbAdapter(this);
 		mDbHelper.open();
-		
+
 		initializeToolbar();
 		initializeEditTexts();
 		initializeAutoComplete();
-		
+
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
 		previousActivityBar.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				startListEventsActivity();
 			}
 		});
-		
+
 		initializeActivityButtons();
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventLocation.setHint(getString(R.string.eventLocationHint));
 	}
-	
+
 	/**
 	 * Initializes the NextActivity and StopTracking buttons.
 	 */
 	private void initializeActivityButtons() {
 		nextActivityButton=(Button)findViewById(R.id.NextActivityButton);
 		stopTrackingButton=(Button)findViewById(R.id.StopTrackingButton);
-		
+
 		nextActivityButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(true);
 			}
 		});
-		
+
 		stopTrackingButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(false);
@@ -106,26 +104,31 @@ public class EditEvent extends Activity {
 			}
 		});
 	}
-	
+
+	/**
+	 * Finishes the currently running activity and start tracking
+	 * a new activity, if specified.
+	 * @param createNewActivity Whether or not to start tracking a new activity.
+	 */
 	private void finishCurrentActivity(boolean createNewActivity) {
 		currentEvent.mEndTime = System.currentTimeMillis();
 		updateAutoComplete();
-		if (!updateDatabase(currentEvent))
-			throw new RuntimeException("Ahh it didn't update!"); // TODO remove
+		updateDatabase(currentEvent);
 		previousEvent = currentEvent;
 		currentEvent = createNewActivity ? new EventEntry() : null;
 		updateUI();
 	}
-	
+
 	/**
 	 * Initializes the AutoCompleteTextViews and intializes references to related views.
 	 */
 	private void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
-//		editTextEventName.setInputType(0);
 		editTextEventLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-	
-		
+//		TODO uncomment these to disable soft keyboard
+//		editTextEventName.setInputType(0); 
+//		editTextEventLocation.setInputType(0);
+
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
 		adapterLocations = new ArrayAdapter<String>(this,
@@ -133,53 +136,37 @@ public class EditEvent extends Activity {
 
 		editTextEventName.setAdapter(adapterActivities);
 		editTextEventLocation.setAdapter(adapterLocations);
-		
-	
-		editTextEventName.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (s.length() == 0){
-					return;
-				}
-				if (currentEvent == null) {
-					currentEvent = new EventEntry();
-					updateUI();
-				}
-				currentEvent.mName = s.toString();
-//				editTextEventName.setThreshold(autoCompleteThreshold);
-			}
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {}
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {}
-		});
-		editTextEventLocation.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (s.length() == 0) return;
-				if (currentEvent == null) {
-					currentEvent = new EventEntry();
-					updateUI();
-				}
-				currentEvent.mLocation = s.toString();
-//				editTextEventLocation.setThreshold(autoCompleteThreshold);
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {}
-		});
-//		autoCompleteThreshold = editTextEventName.getThreshold();
+		editTextEventName.addTextChangedListener(new StartTrackingListener());
+		editTextEventLocation.addTextChangedListener(new StartTrackingListener());
 	}
-	
+
+	/**
+	 * Listens for a text change and creates a new event if one doesn't exist.
+	 * @author AlexD
+	 *
+	 */
+	private class StartTrackingListener implements TextWatcher {
+
+		@Override
+		public void afterTextChanged(Editable s) { 
+			if (s.length() != 0 && currentEvent == null) {
+				currentEvent = new EventEntry();
+				updateStartTime();
+				updateTrackingUI();
+			}
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {}
+	}
+
 	/**
 	 * Initializes the toolbar onClickListeners and intializes references to toolbar views.
 	 */
@@ -203,7 +190,7 @@ public class EditEvent extends Activity {
 			}
 		});
 	}
-	
+
 	/**
 	 * Launches the Settings activity.
 	 */
@@ -212,7 +199,7 @@ public class EditEvent extends Activity {
 		settingsIntent.putExtra(getString(R.string.isTracking), isTracking());
 		startActivity(settingsIntent);
 	}
-	
+
 	/**
 	 * Launches the ListEvents activity.
 	 */
@@ -229,12 +216,12 @@ public class EditEvent extends Activity {
 		updateTrackingUI();
 		fillViewWithEventInfo();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-	
-		
+
+
 		List<EventEntry> events = getLatestEvents(2);
 		if (events.size() != 0) {
 			EventEntry event = events.remove(0);
@@ -249,26 +236,13 @@ public class EditEvent extends Activity {
 		}
 		initializeAutoComplete();
 		updateUI();
-		// TODO unhack this
-//		editTextEventLocation.setThreshold(Integer.MAX_VALUE);
-//		editTextEventName.setThreshold(Integer.MAX_VALUE);
-//		restoreCaratPosition();
-		
-		
+
 		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
 		dummy.requestFocus();
-		
-		
+
 	}
-	
-//	private void restoreCaratPosition() {
-//		EditText eTextView = editTextEventName.hasFocus() ? editTextEventName : editTextEventLocation;
-//		Editable text = eTextView.getText();
-//		int position = eTextView.getText().length();
-//		Selection.setSelection(text, position);
-//	}
-	
+
 	/**
 	 * Fills the text entries and views with the correct info based on the
 	 * current/previous events.
@@ -287,6 +261,13 @@ public class EditEvent extends Activity {
 		previousActivityBar.setText(getPreviousEventString());
 	}
 
+	private void updateStartTime() {
+		if (currentEvent != null)
+			textViewStartTime.setText(ListEvents.getDateString(currentEvent.mStartTime));
+		else
+			textViewStartTime.setText("");
+	}
+
 	/**
 	 * @return The text that the previous event bar should have, based on the previousEvent.
 	 */
@@ -295,15 +276,14 @@ public class EditEvent extends Activity {
 		String previousEventString = previousEvent != null ? previousEvent.mName : getString(previousEventDefaultID); 
 		return previousActivityLabel + " " + previousEventString;
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		updateAutoComplete();
-		if (!updateDatabase(currentEvent))
-			throw new RuntimeException("Ahh it didn't update!"); // TODO remove
+		updateDatabase(currentEvent);
 	}
-	
+
 	/**
 	 * Changes the appearance of this activity to reflect the fact that this activity is now tracking
 	 */
@@ -312,10 +292,8 @@ public class EditEvent extends Activity {
 		textViewIsTracking.setText(isTracking ? trackingStringID : notTrackingStringID);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);	
-		
+
 	}
-	
-	
 
 	/**
 	 * Creates a database entry for the EventEntry that is in progress
@@ -336,7 +314,7 @@ public class EditEvent extends Activity {
 					event.mLocation, event.mStartTime,event.mEndTime);
 		}
 	}
-	
+
 	/**
 	 * Queries the database for the events in sorted order.
 	 * @param numEvents The number of events to return.
@@ -346,19 +324,19 @@ public class EditEvent extends Activity {
 		List<EventEntry> eventList=new LinkedList<EventEntry>();
 		Cursor sortedEvents=mDbHelper.fetchSortedEvents();
 		if (sortedEvents.getCount() > 0) {
-		     while (sortedEvents.moveToNext() && numEvents > 0) {
-		    	 long dbRowID =		getLong(sortedEvents, EventDbAdapter.KEY_ROWID);
-		 		 String name =		getString(sortedEvents, EventDbAdapter.KEY_NAME);
-		 		 String location =	getString(sortedEvents, EventDbAdapter.KEY_LOCATION);
-		 		 long startTime =	getLong(sortedEvents, EventDbAdapter.KEY_START_TIME);
-		 		 long endTime =		getLong(sortedEvents, EventDbAdapter.KEY_END_TIME);
-		 		 eventList.add(new EventEntry(dbRowID, name, location, startTime, endTime));
-		    	 numEvents--;
-		     }
-	        }
+			while (sortedEvents.moveToNext() && numEvents > 0) {
+				long dbRowID =		getLong(sortedEvents, EventDbAdapter.KEY_ROWID);
+				String name =		getString(sortedEvents, EventDbAdapter.KEY_NAME);
+				String location =	getString(sortedEvents, EventDbAdapter.KEY_LOCATION);
+				long startTime =	getLong(sortedEvents, EventDbAdapter.KEY_START_TIME);
+				long endTime =		getLong(sortedEvents, EventDbAdapter.KEY_END_TIME);
+				eventList.add(new EventEntry(dbRowID, name, location, startTime, endTime));
+				numEvents--;
+			}
+		}
 		return eventList;
 	}
-	
+
 	/**
 	 * @param cursor A cursor at a particular row.
 	 * @param columnName The name of the column in the DB.
@@ -368,7 +346,7 @@ public class EditEvent extends Activity {
 	private long getLong(Cursor cursor, String columnName) {
 		return cursor.getLong(cursor.getColumnIndex(columnName));
 	}
-	
+
 	/**
 	 * 
 	 * @param cursor A cursor at a particular row.
@@ -378,7 +356,7 @@ public class EditEvent extends Activity {
 	private String getString(Cursor cursor, String columnName) {
 		return cursor.getString(cursor.getColumnIndex(columnName));
 	}
-	
+
 	private void updateAutoComplete(){
 		String activity=editTextEventName.getText().toString();
 		String location=editTextEventLocation.getText().toString();
@@ -387,7 +365,7 @@ public class EditEvent extends Activity {
 		if(!mDbHelper.getLocations().contains(location))
 			adapterLocations.add(location);
 	}
-	
+
 	/**
 	 * @return Whether or not an activity is currently being tracked.
 	 */
@@ -400,7 +378,7 @@ public class EditEvent extends Activity {
 		adapterActivities.clear();
 		adapterLocations.clear();
 		for(String event: mDbHelper.getEvents()){
-			
+
 			adapterActivities.add(event);
 		}
 		for(String location: mDbHelper.getLocations()){
@@ -408,7 +386,7 @@ public class EditEvent extends Activity {
 		}
 
 	}
-	
+
 	/**
 	 * A local, in-memory version of a Event database entry. This is pushed and pulled
 	 * from the database when necessary.  
@@ -422,17 +400,17 @@ public class EditEvent extends Activity {
 		String mLocation="";
 		long mStartTime;
 		long mEndTime;
-		
+
 		public EventEntry() {
 			mStartTime = System.currentTimeMillis();
 		}
-		
+
 		public EventEntry(long dbRowID, String name, String location, long startTime, long endTime){
-			 this.mDbRowID = dbRowID;
-			 this.mName=name;
-			 this.mLocation=location;
-			 this.mStartTime=startTime;
-			 this.mEndTime=endTime;
+			this.mDbRowID = dbRowID;
+			this.mName=name;
+			this.mLocation=location;
+			this.mStartTime=startTime;
+			this.mEndTime=endTime;
 		}
 	}
 }
