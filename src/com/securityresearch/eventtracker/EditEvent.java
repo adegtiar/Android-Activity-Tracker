@@ -89,6 +89,7 @@ public class EditEvent extends Activity {
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(true);
+				focusOnNothing();
 			}
 		});
 
@@ -97,9 +98,7 @@ public class EditEvent extends Activity {
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(false);
-				LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
-				editTextEventName.clearFocus();
-				dummy.requestFocus();
+				focusOnNothing();
 
 			}
 		});
@@ -241,9 +240,7 @@ public class EditEvent extends Activity {
 		initializeAutoComplete();
 		updateUI();
 
-		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
-		editTextEventName.clearFocus();
-		dummy.requestFocus();
+		focusOnNothing();
 
 	}
 
@@ -390,7 +387,12 @@ public class EditEvent extends Activity {
 		}
 
 	}
-
+	private void focusOnNothing(){
+	LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
+	editTextEventName.clearFocus();
+	editTextEventLocation.clearFocus();
+	dummy.requestFocus();
+	}
 	/**
 	 * A local, in-memory version of a Event database entry. This is pushed and pulled
 	 * from the database when necessary.  
