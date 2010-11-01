@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">EventTracker</string>
-<string name="Event">Event</string>
+<string name="eventName">Activity Name</string>
 <string name="confirm">Confirm</string>
 <string name="Location">Location</string>
 <string name="startTime">Start Time:</string>
@@ -20,4 +20,5 @@
 <string name="isTracking">isTracking</string>
 <string name="activityListHeader">All Activities</string>
 <string name="settingsDefaultText">No settings yet. Come back soon!</string>
+<string name="deleteButtonHeader">Del</string>
 </resources>

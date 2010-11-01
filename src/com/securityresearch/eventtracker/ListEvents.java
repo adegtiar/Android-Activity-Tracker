@@ -22,12 +22,12 @@ public class ListEvents extends Activity {
 	private boolean isTracking;
 	// Create an array to specify the fields we want to display in the list
 	// (only TITLE)
-	private String[] from = new String[] { EventDbAdapter.KEY_NAME, EventDbAdapter.KEY_LOCATION,
+	private String[] from = new String[] { EventDbAdapter.KEY_NAME,
 			EventDbAdapter.KEY_START_TIME, EventDbAdapter.KEY_END_TIME };
 
 	// and an array of the fields we want to bind those fields to (in this
 	// case just text1)
-	private int[] to = new int[] { R.id.row_event_title, R.id.row_event_location,
+	private int[] to = new int[] { R.id.row_event_title,
 			R.id.row_event_start_time, R.id.row_event_end_time };
 
 	@Override
