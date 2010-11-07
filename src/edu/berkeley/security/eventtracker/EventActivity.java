@@ -2,11 +2,25 @@ package edu.berkeley.security.eventtracker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewStub;
 
 abstract public class EventActivity extends Activity{
+	static final int trackingStringID = R.string.toolbarTracking;
+	static final int notTrackingStringID = R.string.toolbarNotTracking;
+	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+        ViewStub v =(ViewStub) findViewById(R.id.content_view);
+        v.setLayoutResource(getLayoutResource());
+        v.inflate();
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -46,4 +60,6 @@ abstract public class EventActivity extends Activity{
 	}
 	
 	abstract protected boolean isTracking();
+	
+	abstract protected int getLayoutResource();
 }

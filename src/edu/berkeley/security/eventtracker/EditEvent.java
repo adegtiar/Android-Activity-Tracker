@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,8 +19,6 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
 public class EditEvent extends EventActivity {
-	static final int trackingStringID = R.string.toolbarTracking;
-	static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private static final int previousEventTextID = R.string.previousActivityText;
 	private static final int previousEventDefaultID = R.string.previousActivityDefault;
 
@@ -49,11 +46,6 @@ public class EditEvent extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-
-		ViewStub v =(ViewStub) findViewById(R.id.content_view);
-		v.setLayoutResource(R.layout.edit_event);
-		v.inflate();
 
 		mEventManager = new EventManager(this).open();
 
@@ -330,5 +322,10 @@ public class EditEvent extends EventActivity {
 		editTextEventName.clearFocus();
 		editTextEventNotes.clearFocus();
 		dummy.requestFocus();
+	}
+
+	@Override
+	protected int getLayoutResource() {
+		return R.layout.edit_event;
 	}
 }

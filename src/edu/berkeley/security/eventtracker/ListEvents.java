@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -30,10 +29,6 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-		ViewStub v = (ViewStub) findViewById(R.id.content_view);
-		v.setLayoutResource(R.layout.events_list);
-		v.inflate();
 
 		mEventsManager = new EventManager(this).open();
 		fillData();
@@ -201,5 +196,10 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected boolean isTracking() {
 		return isTracking;
+	}
+
+	@Override
+	protected int getLayoutResource() {
+		return R.layout.events_list;
 	}
 }

@@ -1,22 +1,16 @@
 package edu.berkeley.security.eventtracker;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.TextView;
 
-public class Settings extends Activity {
+public class Settings extends EventActivity {
 	private boolean isTracking;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        ViewStub v =(ViewStub) findViewById(R.id.content_view);
-        v.setLayoutResource(R.layout.settings);
-        v.inflate();
         
         findViewById(R.id.toolbar_right_option).setOnClickListener(new View.OnClickListener() {
 			
@@ -55,5 +49,15 @@ public class Settings extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean(getString(R.string.isTracking), isTracking);
+	}
+
+	@Override
+	protected boolean isTracking() {
+		return isTracking;
+	}
+
+	@Override
+	protected int getLayoutResource() {
+		return R.layout.settings;
 	}
 }
