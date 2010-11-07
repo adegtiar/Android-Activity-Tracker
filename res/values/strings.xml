@@ -24,4 +24,5 @@
 <string name="Event">Activity Name</string>
 <string name="eventNotesHint">Additional notes...</string>
 <string name="eventNameHint">What are you doing now?&quot;</string>
+<string name="settingsMenuText">Settings</string>
 </resources>

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
-public class EditEvent extends Activity {
+public class EditEvent extends EventActivity {
 	static final int trackingStringID = R.string.toolbarTracking;
 	static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private static final int previousEventTextID = R.string.previousActivityText;
@@ -192,24 +190,6 @@ public class EditEvent extends Activity {
 	}
 
 	/**
-	 * Launches the Settings activity.
-	 */
-	private void startSettingsActivity() {
-		Intent settingsIntent = new Intent(EditEvent.this, Settings.class);
-		settingsIntent.putExtra(getString(R.string.isTracking), isTracking());
-		startActivity(settingsIntent);
-	}
-
-	/**
-	 * Launches the ListEvents activity.
-	 */
-	private void startListEventsActivity() {
-		Intent listIntent = new Intent(EditEvent.this, ListEvents.class);
-		listIntent.putExtra(getString(R.string.isTracking), isTracking());
-		startActivity(listIntent);
-	}
-
-	/**
 	 * Updates the UI using the currentEvent and previousEvent.
 	 */
 	private void updateUI() {
@@ -325,7 +305,7 @@ public class EditEvent extends Activity {
 	/**
 	 * @return Whether or not an activity is currently being tracked.
 	 */
-	private boolean isTracking() {
+	protected boolean isTracking() {
 		return currentEvent != null;
 	}
 

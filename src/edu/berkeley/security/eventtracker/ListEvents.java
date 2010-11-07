@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,7 +15,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
-public class ListEvents extends Activity {
+public class ListEvents extends EventActivity {
 	private EventManager mEventsManager;
 	private boolean isTracking;
 	// Create an array to specify the fields we want to display in the list
@@ -145,6 +144,7 @@ public class ListEvents extends Activity {
 			mEventsManager.deleteEvent(rowId);
 			mEventsCursor.requery();
 			if (isInProgress) {
+				isTracking = false;
 				TextView textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
 				textViewIsTracking.setText(EditEvent.notTrackingStringID);
 			}
@@ -196,5 +196,10 @@ public class ListEvents extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean(getString(R.string.isTracking), isTracking);
+	}
+
+	@Override
+	protected boolean isTracking() {
+		return isTracking;
 	}
 }
