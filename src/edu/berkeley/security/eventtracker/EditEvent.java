@@ -22,8 +22,8 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
 public class EditEvent extends Activity {
-	private static final int trackingStringID = R.string.toolbarTracking;
-	private static final int notTrackingStringID = R.string.toolbarNotTracking;
+	static final int trackingStringID = R.string.toolbarTracking;
+	static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private static final int previousEventTextID = R.string.previousActivityText;
 	private static final int previousEventDefaultID = R.string.previousActivityDefault;
 

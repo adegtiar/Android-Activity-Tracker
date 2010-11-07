@@ -134,17 +134,19 @@ public class ListEvents extends Activity {
 	 */
 	private class DeleteRowListener implements OnClickListener {
 		private long rowId;
-		private boolean canDelete; 
+		private boolean isInProgress; 
 		
-		private DeleteRowListener(long rowId, boolean canDelete) {
+		private DeleteRowListener(long rowId, boolean isInProgress) {
 			this.rowId = rowId;
-			this.canDelete = canDelete;
+			this.isInProgress = isInProgress;
 		}
 		@Override
 		public void onClick(View v) {
-			if (canDelete) {
-				mEventsManager.deleteEvent(rowId);
-				mEventsCursor.requery();
+			mEventsManager.deleteEvent(rowId);
+			mEventsCursor.requery();
+			if (isInProgress) {
+				TextView textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
+				textViewIsTracking.setText(EditEvent.notTrackingStringID);
 			}
 		}
 		
@@ -167,8 +169,8 @@ public class ListEvents extends Activity {
 			case ROWID:
 				// Initializing the delete button
 				long rowId = cursor.getLong(columnIndex);
-				boolean canDelete = cursor.getLong(cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) != 0;
-				view.setOnClickListener(new DeleteRowListener(rowId, canDelete));
+				boolean isInProgress = cursor.getLong(cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) == 0;
+				view.setOnClickListener(new DeleteRowListener(rowId, isInProgress));
 				return true;
 			case START_TIME:
 			case END_TIME:
