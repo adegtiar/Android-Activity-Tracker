@@ -2,12 +2,11 @@ package com.securityresearch.eventtracker;
 
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,18 +20,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.securityresearch.eventtracker.EventEntry.ColumnType;
+
 public class EditEvent extends Activity {
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private static final int previousEventTextID = R.string.previousActivityText;
 	private static final int previousEventDefaultID = R.string.previousActivityDefault;
 
-	private EventDbAdapter mDbHelper;
+	private EventManager mEventManager;
 	private EventEntry currentEvent;
 	private EventEntry previousEvent;
 
 	private ArrayList<String> autoCompleteActivities=new ArrayList<String>();
 	private ArrayList<String> autoCompleteLocations=new ArrayList<String>();
+	private Set<String> mActivityNames = new HashSet<String>();
+	private Set<String> mActivityLocations = new HashSet<String>();
 
 	private ArrayAdapter<String> adapterActivities;
 	private ArrayAdapter<String> adapterLocations;
@@ -55,8 +58,7 @@ public class EditEvent extends Activity {
 		v.setLayoutResource(R.layout.edit_event);
 		v.inflate();
 
-		mDbHelper = new EventDbAdapter(this);
-		mDbHelper.open();
+		mEventManager = new EventManager(this).open();
 
 		initializeToolbar();
 		initializeEditTexts();
@@ -124,9 +126,9 @@ public class EditEvent extends Activity {
 	private void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		editTextEventLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
-//		TODO uncomment these to disable soft keyboard
-//		editTextEventName.setInputType(0); 
-//		editTextEventLocation.setInputType(0);
+		//		TODO uncomment these to disable soft keyboard
+		editTextEventName.setInputType(0); 
+		editTextEventLocation.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
@@ -220,10 +222,9 @@ public class EditEvent extends Activity {
 	protected void onResume() {
 		super.onResume();
 
-
-		List<EventEntry> events = getLatestEvents(2);
-		if (events.size() != 0) {
-			EventEntry event = events.remove(0);
+		EventCursor events = mEventManager.fetchSortedEvents();
+		if (events.moveToNext()) {
+			EventEntry event = events.getEvent();
 			if (event.mEndTime != 0) {
 				// We aren't tracking
 				currentEvent = null;
@@ -231,7 +232,7 @@ public class EditEvent extends Activity {
 			} else {
 				// We are tracking
 				currentEvent = event;
-				previousEvent = events.size() != 0 ? events.remove(0) : null;
+				previousEvent = events.moveToNext() ? events.getEvent() : null;
 			}
 		} else {
 			currentEvent = null;
@@ -250,10 +251,9 @@ public class EditEvent extends Activity {
 	 */
 	private void fillViewWithEventInfo() {
 		if (currentEvent != null) {
-			editTextEventName.setText(currentEvent.mName != null ? currentEvent.mName : "");
-			editTextEventLocation.setText(currentEvent.mLocation != null ? currentEvent.mLocation : "");
-			// TODO make this not in ListEvents
-			textViewStartTime.setText(ListEvents.getDateString(currentEvent.mStartTime));
+			editTextEventName.setText(currentEvent.mName);
+			editTextEventLocation.setText(currentEvent.mLocation);
+			textViewStartTime.setText(currentEvent.formatColumn(ColumnType.START_TIME));
 		} else {
 			editTextEventName.setText("");
 			editTextEventLocation.setText("");
@@ -262,9 +262,12 @@ public class EditEvent extends Activity {
 		previousActivityBar.setText(getPreviousEventString());
 	}
 
+	/**
+	 * Updates the UI start time box with the start time of the current event.
+	 */
 	private void updateStartTime() {
 		if (currentEvent != null)
-			textViewStartTime.setText(ListEvents.getDateString(currentEvent.mStartTime));
+			textViewStartTime.setText(currentEvent.formatColumn(ColumnType.START_TIME));
 		else
 			textViewStartTime.setText("");
 	}
@@ -296,75 +299,28 @@ public class EditEvent extends Activity {
 
 	}
 
+	private void updateAutoComplete(){
+		String activityName=editTextEventName.getText().toString();
+		String activityLocation=editTextEventLocation.getText().toString();
+		if(mActivityNames.add(activityName))
+			adapterActivities.add(activityName);
+		if(mActivityLocations.add(activityLocation))
+			adapterLocations.add(activityLocation);
+	}
+	
 	/**
-	 * Creates a database entry for the EventEntry that is in progress
-	 * Updates the EventEntry with its corresponding rowID for the database
-	 * @param entry- the entry of the activity thats in progress
-	 * @return false if an error occurred, otherwise true. 
+	 * Updates the database with the given EventEntry. If an event is
+	 * created, the event's rowID is updated with the new rowID.
+	 
+	 * @param event The EventEntry to push to the database. 
+	 * @return Whether or not the update occured without error.
 	 */
 	private boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
 		event.mName = editTextEventName.getText().toString();
 		event.mLocation = editTextEventLocation.getText().toString();
-		if(event.mDbRowID==-1) {
-			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mLocation, event.mStartTime, event.mEndTime);
-			return event.mDbRowID != -1;
-		} else {
-			return mDbHelper.updateEvent(event.mDbRowID, event.mName, 
-					event.mLocation, event.mStartTime,event.mEndTime);
-		}
-	}
-
-	/**
-	 * Queries the database for the events in sorted order.
-	 * @param numEvents The number of events to return.
-	 * @return  A list of EventEntry objects.
-	 */
-	private List<EventEntry> getLatestEvents(int numEvents){
-		List<EventEntry> eventList=new LinkedList<EventEntry>();
-		Cursor sortedEvents=mDbHelper.fetchSortedEvents();
-		if (sortedEvents.getCount() > 0) {
-			while (sortedEvents.moveToNext() && numEvents > 0) {
-				long dbRowID =		getLong(sortedEvents, EventDbAdapter.KEY_ROWID);
-				String name =		getString(sortedEvents, EventDbAdapter.KEY_NAME);
-				String location =	getString(sortedEvents, EventDbAdapter.KEY_LOCATION);
-				long startTime =	getLong(sortedEvents, EventDbAdapter.KEY_START_TIME);
-				long endTime =		getLong(sortedEvents, EventDbAdapter.KEY_END_TIME);
-				eventList.add(new EventEntry(dbRowID, name, location, startTime, endTime));
-				numEvents--;
-			}
-		}
-		return eventList;
-	}
-
-	/**
-	 * @param cursor A cursor at a particular row.
-	 * @param columnName The name of the column in the DB.
-	 * @return The Long at the column with the given name, or null
-	 * 		   it doesn't exist.
-	 */
-	private long getLong(Cursor cursor, String columnName) {
-		return cursor.getLong(cursor.getColumnIndex(columnName));
-	}
-
-	/**
-	 * 
-	 * @param cursor A cursor at a particular row.
-	 * @param columnName The name of the column in the DB.
-	 * @return The String at the colum with the given name.
-	 */
-	private String getString(Cursor cursor, String columnName) {
-		return cursor.getString(cursor.getColumnIndex(columnName));
-	}
-
-	private void updateAutoComplete(){
-		String activity=editTextEventName.getText().toString();
-		String location=editTextEventLocation.getText().toString();
-		if(!mDbHelper.getEvents().contains(activity))
-			adapterActivities.add(activity);
-		if(!mDbHelper.getLocations().contains(location))
-			adapterLocations.add(location);
+		return mEventManager.updateDatabase(event);
 	}
 
 	/**
@@ -374,49 +330,26 @@ public class EditEvent extends Activity {
 		return currentEvent != null;
 	}
 
-	private void initializeAutoComplete(){
-
+	private void initializeAutoComplete() {
 		adapterActivities.clear();
+		mActivityNames.clear();
 		adapterLocations.clear();
-		for(String event: mDbHelper.getEvents()){
-
-			adapterActivities.add(event);
+		mActivityLocations.clear();
+		EventCursor allEventsCursor = mEventManager.fetchAllEvents();
+		EventEntry nextEvent;
+		while(allEventsCursor.moveToNext()) {
+			nextEvent = allEventsCursor.getEvent();
+			if (mActivityNames.add(nextEvent.mName))
+				adapterActivities.add(nextEvent.mName);
+			if(mActivityLocations.add(nextEvent.mLocation))
+				adapterLocations.add(nextEvent.mLocation);
 		}
-		for(String location: mDbHelper.getLocations()){
-			adapterLocations.add(location);
-		}
-
 	}
+
 	private void focusOnNothing(){
-	LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
-	editTextEventName.clearFocus();
-	editTextEventLocation.clearFocus();
-	dummy.requestFocus();
-	}
-	/**
-	 * A local, in-memory version of a Event database entry. This is pushed and pulled
-	 * from the database when necessary.  
-	 * 
-	 * @author AlexD
-	 *
-	 */
-	private class EventEntry {
-		long mDbRowID=-1;
-		String mName="";
-		String mLocation="";
-		long mStartTime;
-		long mEndTime;
-
-		public EventEntry() {
-			mStartTime = System.currentTimeMillis();
-		}
-
-		public EventEntry(long dbRowID, String name, String location, long startTime, long endTime){
-			this.mDbRowID = dbRowID;
-			this.mName=name;
-			this.mLocation=location;
-			this.mStartTime=startTime;
-			this.mEndTime=endTime;
-		}
+		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
+		editTextEventName.clearFocus();
+		editTextEventLocation.clearFocus();
+		dummy.requestFocus();
 	}
 }

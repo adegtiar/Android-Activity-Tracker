@@ -105,7 +105,6 @@ public class EventDbAdapter {
 
     /**
      * Create a new entry in the database corresponding to the given eventName, location, and startTime
-     * The endTime is not specified and the sql database will hopefully set it to null?
      */
     public Long createEvent(String eventName, String location, long startTime, long endTime) {
         ContentValues initialValues = new ContentValues();
@@ -128,7 +127,7 @@ public class EventDbAdapter {
     }
 
     /**
-     * Return a Cursor over the list of all notes in the database
+     * Return a Cursor over the list of all events in the database
      * 
      * @return Cursor over all notes
      */
@@ -157,7 +156,7 @@ public class EventDbAdapter {
      * @return Cursor positioned to matching note, if found
      * @throws SQLException if note could not be found/retrieved
      */
-    public Cursor fetchEvent(Long rowId) throws SQLException {
+    public Cursor fetchEvent(long rowId) throws SQLException {
 
         Cursor mCursor =
 
@@ -168,8 +167,8 @@ public class EventDbAdapter {
             mCursor.moveToFirst();
         }
         return mCursor;
-
     }
+    
     public ArrayList<String> getEvents(){
     	ArrayList<String> toReturn=new ArrayList<String>();
     	Cursor c = this.fetchAllEvents();

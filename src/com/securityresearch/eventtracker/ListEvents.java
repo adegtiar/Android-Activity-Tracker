@@ -1,8 +1,5 @@
 package com.securityresearch.eventtracker;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,8 +15,10 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
+import com.securityresearch.eventtracker.EventEntry.ColumnType;
+
 public class ListEvents extends Activity {
-	private EventDbAdapter mDbHelper;
+	private EventManager mEventsManager;
 	private boolean isTracking;
 	// Create an array to specify the fields we want to display in the list
 	// (only TITLE)
@@ -28,7 +27,7 @@ public class ListEvents extends Activity {
 
 	private int[] to = new int[] { R.id.row_event_title,
 			R.id.row_event_start_time, R.id.row_event_end_time, R.id.row_event_delete_button };
-	private Cursor mEventsCursor;
+	private EventCursor mEventsCursor;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +37,7 @@ public class ListEvents extends Activity {
 		v.setLayoutResource(R.layout.events_list);
 		v.inflate();
 
-		mDbHelper = new EventDbAdapter(this);
-		mDbHelper.open();
+		mEventsManager = new EventManager(this).open();
 		fillData();
 
 		initializeToolbars();
@@ -83,13 +81,13 @@ public class ListEvents extends Activity {
 	 */
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
-		mEventsCursor = mDbHelper.fetchSortedEvents();
-		startManagingCursor(mEventsCursor);
+		mEventsCursor = mEventsManager.fetchSortedEvents();
+		startManagingCursor(mEventsCursor.getDBCursor());
 		
 		ListView eventList = (ListView) findViewById(R.id.events_list_view);
 		
 		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
-				R.layout.events_row, mEventsCursor, from, to);
+				R.layout.events_row, mEventsCursor.getDBCursor(), from, to);
 		eventsCursor.setViewBinder(new EventRowViewBinder());
 		
 		initializeHeaders(eventList);
@@ -146,7 +144,7 @@ public class ListEvents extends Activity {
 		@Override
 		public void onClick(View v) {
 			if (canDelete) {
-				mDbHelper.deleteEvent(rowId);
+				mEventsManager.deleteEvent(rowId);
 				mEventsCursor.requery();
 			}
 		}
@@ -164,37 +162,25 @@ public class ListEvents extends Activity {
 
 		@Override
 		public boolean setViewValue(View view, final Cursor cursor, int columnIndex) {
-			if (columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_ROWID)) {
+			EventCursor eCursor = new EventCursor(cursor);
+			ColumnType colType = eCursor.getColumnType(columnIndex);
+			switch(colType){
+			case ROWID:
+				// Initializing the delete button
 				long rowId = cursor.getLong(columnIndex);
 				boolean canDelete = cursor.getLong(cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) != 0;
 				view.setOnClickListener(new DeleteRowListener(rowId, canDelete));
 				return true;
-			}
-				
-			if (columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_START_TIME)
-					|| columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME)) {
-				long dateLong = cursor.getLong(columnIndex);
-				String dateString;
-				if (dateLong == 0 && columnIndex == cursor.getColumnIndex(EventDbAdapter.KEY_END_TIME))
-					dateString = "In Progress";
-				else
-					dateString = getDateString(dateLong);
+			case START_TIME:
+			case END_TIME:
+				EventEntry event = eCursor.getEvent();
+				String dateString = event.formatColumn(eCursor.getColumnType(columnIndex));
 				((TextView) view).setText(dateString);
 				return true;
-			}
-			return false;
+			default:
+				return false;
+			}		
 		}
-	}
-	
-
-	/**
-	 * Converts the given date long into the default date String.
-	 * @param dateLong The long time.
-	 * @return The default string representation of the date.
-	 */
-	static String getDateString(long dateLong) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat();
-		return dateFormat.format(new Date(dateLong));
 	}
 	
 	@Override
