@@ -23,14 +23,14 @@
 
 		</AutoCompleteTextView>
 
-		<TextView android:id="@+id/locationText" android:textStyle="bold"
+		<TextView android:id="@+id/notesText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/Location" />
-		<AutoCompleteTextView android:id="@+id/editLocation"
+			android:text="@string/Notes" />
+		<AutoCompleteTextView android:id="@+id/editNotes"
 			android:layout_width="fill_parent" android:imeOptions="actionDone"
 			android:layout_height="wrap_content" />
 			
-		<TextView android:textStyle="bold" android:layout_below="@id/editLocation"
+		<TextView android:textStyle="bold" android:layout_below="@id/editNotes"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/startTime" android:id="@+id/startTimeLabel" 
 			android:focusable="true"/>

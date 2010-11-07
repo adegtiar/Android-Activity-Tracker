@@ -29,8 +29,8 @@ import android.util.Log;
 
 public class EventDbAdapter {
 
-    public static final String KEY_NAME = "event";
-    public static final String KEY_LOCATION = "location";
+    public static final String KEY_NAME = "eventname";
+    public static final String KEY_NOTES = "notes";
     public static final String KEY_START_TIME = "startTime";
     public static final String KEY_END_TIME = "endTime";
     public static final String KEY_ROWID = "_id";
@@ -45,11 +45,14 @@ public class EventDbAdapter {
             
     private static final String DATABASE_CREATE =
             "create table data (_id integer primary key autoincrement, "
-                    + "event text not null, location text not null, startTime Long, endTime Long);";
+                    + KEY_NAME + " text not null, "
+                    + KEY_NOTES + " text not null, "
+                    + KEY_START_TIME + " Long, "
+                    + KEY_END_TIME + " Long);";
 
-    private static final String DATABASE_NAME = "Events";
+    private static final String DATABASE_NAME = "events";
     private static final String DATABASE_TABLE = "data";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private final Context mCtx;
 
@@ -69,7 +72,7 @@ public class EventDbAdapter {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS notes");
+            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
             onCreate(db);
         }
     }
@@ -104,12 +107,12 @@ public class EventDbAdapter {
     }
 
     /**
-     * Create a new entry in the database corresponding to the given eventName, location, and startTime
+     * Create a new entry in the database corresponding to the given eventName, notes, and startTime
      */
-    public Long createEvent(String eventName, String location, long startTime, long endTime) {
+    public Long createEvent(String eventName, String notes, long startTime, long endTime) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_NAME, eventName);
-        initialValues.put(KEY_LOCATION, location);
+        initialValues.put(KEY_NOTES, notes);
         initialValues.put(KEY_START_TIME,startTime);
         initialValues.put(KEY_END_TIME, endTime);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
@@ -134,7 +137,7 @@ public class EventDbAdapter {
     public Cursor fetchAllEvents() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_NAME,
-                KEY_LOCATION, KEY_START_TIME, KEY_END_TIME}, null, null, null, null, null);
+                KEY_NOTES, KEY_START_TIME, KEY_END_TIME}, null, null, null, null, null);
     }
 
     /**
@@ -146,7 +149,7 @@ public class EventDbAdapter {
     	String orderBy="startTime DESC";
     	String limitClause="20";
     	return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_NAME,
-                KEY_LOCATION, KEY_START_TIME, KEY_END_TIME}, null, null, null, null, orderBy,limitClause);
+                KEY_NOTES, KEY_START_TIME, KEY_END_TIME}, null, null, null, null, orderBy,limitClause);
     }
    
     /**
@@ -161,7 +164,7 @@ public class EventDbAdapter {
         Cursor mCursor =
 
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                        KEY_NAME, KEY_LOCATION, KEY_START_TIME, KEY_END_TIME}, KEY_ROWID + "=" + rowId, null,
+                        KEY_NAME, KEY_NOTES, KEY_START_TIME, KEY_END_TIME}, KEY_ROWID + "=" + rowId, null,
                         null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -186,7 +189,7 @@ public class EventDbAdapter {
 		c.close();
 		return toReturn;
     }
-    public ArrayList<String> getLocations(){
+    public ArrayList<String> getNotes(){
     	ArrayList<String> toReturn=new ArrayList<String>();
     	Cursor c = this.fetchAllEvents();
 		if (c==null){
@@ -195,9 +198,9 @@ public class EventDbAdapter {
 		if (c.getCount() > 0) {
 			
 		     while (c.moveToNext()) {
-		    	 String location=c.getString(c.getColumnIndex((EventDbAdapter.KEY_LOCATION)));
-		    	 if(!toReturn.contains(location))
-		    		 toReturn.add(location);
+		    	 String notes=c.getString(c.getColumnIndex((EventDbAdapter.KEY_NOTES)));
+		    	 if(!toReturn.contains(notes))
+		    		 toReturn.add(notes);
 		     }
 	        }
 		   
@@ -208,18 +211,18 @@ public class EventDbAdapter {
     /**
      * Update the event using the details provided.
      * 
-     * @param rowId id of event to update
-     * @param title value to set event title to
-     * @param location value to set event location to
-     *  @param startTime value to set event start time to
-     *  @param endTime value to set event end time to to
+     * @param rowId id of event to update.
+     * @param title value to set event title to.
+     * @param notes value to set event notes to.
+     *  @param startTime value to set event start time to.
+     *  @param endTime value to set event end time to to.
      * 
-     * @return true if the note was successfully updated, false otherwise
+     * @return true if the note was successfully updated, false otherwise.
      */
-    public boolean updateEvent(Long rowId, String title, String location, Long startTime, Long endTime) {
+    public boolean updateEvent(Long rowId, String title, String notes, Long startTime, Long endTime) {
         ContentValues args = new ContentValues();
         args.put(KEY_NAME, title);
-        args.put(KEY_LOCATION, location);
+        args.put(KEY_NOTES, notes);
         args.put(KEY_START_TIME, startTime);
         args.put(KEY_END_TIME, endTime);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;

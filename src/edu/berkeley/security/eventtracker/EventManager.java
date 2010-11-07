@@ -27,14 +27,14 @@ public class EventManager {
 	}
 	
 	/**
-     * Create a new entry in the database corresponding to the given eventName, location, and startTime
+     * Create a new entry in the database corresponding to the given eventName, notes, and startTime
      * 
      * @return a new EventEntry corresponding to the database entry, or null upon error.
      */
-    public EventEntry createEvent(String eventName, String location, long startTime, long endTime) {
-        long newRowID = mDbHelper.createEvent(eventName, location, startTime, endTime);
+    public EventEntry createEvent(String eventName, String notes, long startTime, long endTime) {
+        long newRowID = mDbHelper.createEvent(eventName, notes, startTime, endTime);
         if (newRowID != -1)
-        	return new EventEntry(newRowID, eventName, location, startTime, endTime);
+        	return new EventEntry(newRowID, eventName, notes, startTime, endTime);
         else
         	return null;
     }
@@ -48,11 +48,11 @@ public class EventManager {
     	if (event == null)
 			return false;
     	if(event.mDbRowID==-1) {
-			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mLocation, event.mStartTime, event.mEndTime);
+			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes, event.mStartTime, event.mEndTime);
 			return event.mDbRowID != -1;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName, 
-					event.mLocation, event.mStartTime,event.mEndTime);
+					event.mNotes, event.mStartTime,event.mEndTime);
 		}
     }
     

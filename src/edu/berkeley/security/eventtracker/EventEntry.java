@@ -15,7 +15,7 @@ import android.database.Cursor;
 class EventEntry {
 	long mDbRowID=-1;
 	String mName="";
-	String mLocation="";
+	String mNotes="";
 	long mStartTime;
 	long mEndTime;
 	
@@ -26,7 +26,7 @@ class EventEntry {
 	 */
 	enum ColumnType {
 		NAME(EventDbAdapter.KEY_NAME),
-		LOCATION(EventDbAdapter.KEY_LOCATION),
+		NOTES(EventDbAdapter.KEY_NOTES),
 		START_TIME(EventDbAdapter.KEY_START_TIME),
 		END_TIME(EventDbAdapter.KEY_END_TIME),
 		ROWID(EventDbAdapter.KEY_ROWID);
@@ -48,12 +48,12 @@ class EventEntry {
 		mStartTime = System.currentTimeMillis();
 	}
 
-	public EventEntry(long dbRowID, String name, String location, long startTime, long endTime){
-		this.mDbRowID = dbRowID;
-		this.mName=name;
-		this.mLocation=location;
-		this.mStartTime=startTime;
-		this.mEndTime=endTime;
+	public EventEntry(long dbRowID, String name, String notes, long startTime, long endTime){
+		this.mDbRowID =		dbRowID;
+		this.mName =		name;
+		this.mNotes =		notes;
+		this.mStartTime =	startTime;
+		this.mEndTime =		endTime;
 	}
 	
 	/**
@@ -67,10 +67,10 @@ class EventEntry {
     			|| eventCursor.isAfterLast()));
     	long dbRowID =		getLong(eventCursor, EventDbAdapter.KEY_ROWID);
 		String name =		getString(eventCursor, EventDbAdapter.KEY_NAME);
-		String location =	getString(eventCursor, EventDbAdapter.KEY_LOCATION);
+		String notes =	getString(eventCursor, EventDbAdapter.KEY_NOTES);
 		long startTime =	getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
 		long endTime =		getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, location, startTime, endTime);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime);
     }
 	
 	public String toString() {
@@ -87,8 +87,8 @@ class EventEntry {
 		switch(colType) {
 		case NAME:
 			return mName;
-		case LOCATION:
-			return mLocation;
+		case NOTES:
+			return mNotes;
 		case START_TIME:
 			return getDateString(mStartTime);
 		case END_TIME:

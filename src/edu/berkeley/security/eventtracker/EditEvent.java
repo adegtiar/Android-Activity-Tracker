@@ -32,14 +32,14 @@ public class EditEvent extends Activity {
 	private EventEntry previousEvent;
 
 	private ArrayList<String> autoCompleteActivities=new ArrayList<String>();
-	private ArrayList<String> autoCompleteLocations=new ArrayList<String>();
+	private ArrayList<String> autoCompleteNotes=new ArrayList<String>();
 	private Set<String> mActivityNames = new HashSet<String>();
-	private Set<String> mActivityLocations = new HashSet<String>();
+	private Set<String> mActivityNotes = new HashSet<String>();
 
 	private ArrayAdapter<String> adapterActivities;
-	private ArrayAdapter<String> adapterLocations;
+	private ArrayAdapter<String> adapterNotes;
 	private AutoCompleteTextView editTextEventName;
-	private AutoCompleteTextView editTextEventLocation;
+	private AutoCompleteTextView editTextEventNotes;
 	private Button previousActivityBar;
 	private Button nextActivityButton;
 	private Button stopTrackingButton;
@@ -75,7 +75,7 @@ public class EditEvent extends Activity {
 
 		initializeActivityButtons();
 		editTextEventName.setHint(getString(R.string.eventNameHint));
-		editTextEventLocation.setHint(getString(R.string.eventLocationHint));
+		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
 	}
 
 	/**
@@ -124,22 +124,22 @@ public class EditEvent extends Activity {
 	 */
 	private void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
-		editTextEventLocation = (AutoCompleteTextView) findViewById(R.id.editLocation);
+		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
 		//		TODO uncomment these to disable soft keyboard
 		editTextEventName.setInputType(0); 
-		editTextEventLocation.setInputType(0);
+		editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
-		adapterLocations = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoCompleteLocations);
+		adapterNotes = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line, autoCompleteNotes);
 
 		editTextEventName.setAdapter(adapterActivities);
-		editTextEventLocation.setAdapter(adapterLocations);
+		editTextEventNotes.setAdapter(adapterNotes);
 
 
 		editTextEventName.addTextChangedListener(new StartTrackingListener());
-		editTextEventLocation.addTextChangedListener(new StartTrackingListener());
+		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
 	}
 
 	/**
@@ -251,11 +251,11 @@ public class EditEvent extends Activity {
 	private void fillViewWithEventInfo() {
 		if (currentEvent != null) {
 			editTextEventName.setText(currentEvent.mName);
-			editTextEventLocation.setText(currentEvent.mLocation);
+			editTextEventNotes.setText(currentEvent.mNotes);
 			textViewStartTime.setText(currentEvent.formatColumn(ColumnType.START_TIME));
 		} else {
 			editTextEventName.setText("");
-			editTextEventLocation.setText("");
+			editTextEventNotes.setText("");
 			textViewStartTime.setText("");
 		}
 		previousActivityBar.setText(getPreviousEventString());
@@ -300,11 +300,11 @@ public class EditEvent extends Activity {
 
 	private void updateAutoComplete(){
 		String activityName=editTextEventName.getText().toString();
-		String activityLocation=editTextEventLocation.getText().toString();
+		String activityNotes=editTextEventNotes.getText().toString();
 		if(mActivityNames.add(activityName))
 			adapterActivities.add(activityName);
-		if(mActivityLocations.add(activityLocation))
-			adapterLocations.add(activityLocation);
+		if(mActivityNotes.add(activityNotes))
+			adapterNotes.add(activityNotes);
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class EditEvent extends Activity {
 		if (event == null)
 			return true;
 		event.mName = editTextEventName.getText().toString();
-		event.mLocation = editTextEventLocation.getText().toString();
+		event.mNotes = editTextEventNotes.getText().toString();
 		return mEventManager.updateDatabase(event);
 	}
 
@@ -332,23 +332,23 @@ public class EditEvent extends Activity {
 	private void initializeAutoComplete() {
 		adapterActivities.clear();
 		mActivityNames.clear();
-		adapterLocations.clear();
-		mActivityLocations.clear();
+		adapterNotes.clear();
+		mActivityNotes.clear();
 		EventCursor allEventsCursor = mEventManager.fetchAllEvents();
 		EventEntry nextEvent;
 		while(allEventsCursor.moveToNext()) {
 			nextEvent = allEventsCursor.getEvent();
 			if (mActivityNames.add(nextEvent.mName))
 				adapterActivities.add(nextEvent.mName);
-			if(mActivityLocations.add(nextEvent.mLocation))
-				adapterLocations.add(nextEvent.mLocation);
+			if(mActivityNotes.add(nextEvent.mNotes))
+				adapterNotes.add(nextEvent.mNotes);
 		}
 	}
 
 	private void focusOnNothing(){
 		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
-		editTextEventLocation.clearFocus();
+		editTextEventNotes.clearFocus();
 		dummy.requestFocus();
 	}
 }
