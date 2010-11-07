@@ -1,8 +1,8 @@
-package com.securityresearch.eventtracker;
+package edu.berkeley.security.eventtracker;
 
 import android.database.Cursor;
 
-import com.securityresearch.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
 /**
  * A cursor that maps rows of a database to EventEntry objects.

@@ -1,4 +1,4 @@
-package com.securityresearch.eventtracker;
+package edu.berkeley.security.eventtracker;
 
 
 import java.util.ArrayList;
@@ -19,8 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.securityresearch.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
 public class EditEvent extends Activity {
 	private static final int trackingStringID = R.string.toolbarTracking;

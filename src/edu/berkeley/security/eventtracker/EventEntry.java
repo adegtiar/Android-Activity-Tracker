@@ -1,4 +1,4 @@
-package com.securityresearch.eventtracker;
+package edu.berkeley.security.eventtracker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

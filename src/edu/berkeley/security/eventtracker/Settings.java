@@ -1,4 +1,4 @@
-package com.securityresearch.eventtracker;
+package edu.berkeley.security.eventtracker;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,4 +1,4 @@
-package com.securityresearch.eventtracker;
+package edu.berkeley.security.eventtracker;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,8 +14,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
-
-import com.securityresearch.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
 public class ListEvents extends Activity {
 	private EventManager mEventsManager;
