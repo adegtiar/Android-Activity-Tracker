@@ -7,9 +7,6 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
  * A cursor that maps rows of a database to EventEntry objects.
  * It is backed by a DB cursor of event rows and has most of
  * the methods a cursor has.
- * 
- * @author AlexD
- *
  */
 public class EventCursor {
 	private Cursor mCursor;

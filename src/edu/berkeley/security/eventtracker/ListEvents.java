@@ -97,8 +97,6 @@ public class ListEvents extends EventActivity {
 	/**
 	 * The listener associated with a delete button. Deletes the event
 	 * corresponding to the row the button is in.
-	 * @author AlexD
-	 *
 	 */
 	private class DeleteRowListener implements OnClickListener {
 		private long rowId;
@@ -122,9 +120,6 @@ public class ListEvents extends EventActivity {
 	/**
 	 * Helps interface the Cursor with the view, updating the views of a row
 	 * with values in the DB.
-	 * 
-	 * @author AlexD
-	 *
 	 */
 	private class EventRowViewBinder implements ViewBinder {
 
