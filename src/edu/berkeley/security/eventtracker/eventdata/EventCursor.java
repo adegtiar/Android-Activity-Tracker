@@ -1,8 +1,7 @@
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.eventdata;
 
 import android.database.Cursor;
-
-import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 /**
  * A cursor that maps rows of a database to EventEntry objects.
@@ -12,7 +11,7 @@ import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
  * @author AlexD
  *
  */
-class EventCursor {
+public class EventCursor {
 	private Cursor mCursor;
 	
 	public EventCursor(Cursor eventCursor) {

@@ -1,4 +1,4 @@
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.eventdata;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,19 +12,19 @@ import android.database.Cursor;
  * @author AlexD
  *
  */
-class EventEntry {
-	long mDbRowID=-1;
-	String mName="";
-	String mNotes="";
-	long mStartTime;
-	long mEndTime;
+public class EventEntry {
+	public long mDbRowID=-1;
+	public String mName="";
+	public String mNotes="";
+	public long mStartTime;
+	public long mEndTime;
 	
 	/**
 	 * An enumeration of column type names in the event table.
 	 * @author AlexD
 	 *
 	 */
-	enum ColumnType {
+	public enum ColumnType {
 		NAME(EventDbAdapter.KEY_NAME),
 		NOTES(EventDbAdapter.KEY_NOTES),
 		START_TIME(EventDbAdapter.KEY_START_TIME),

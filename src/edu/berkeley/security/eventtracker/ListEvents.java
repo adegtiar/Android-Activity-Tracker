@@ -11,7 +11,10 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
-import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventCursor;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 /**
  * Handles the event list view that displays all events from most recent to least recent.

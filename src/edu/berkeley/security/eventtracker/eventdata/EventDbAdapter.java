@@ -14,7 +14,7 @@
  * the License.
  */
 
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.ArrayList;
 

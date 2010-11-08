@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker;
 
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

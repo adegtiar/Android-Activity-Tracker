@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventCursor;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class EditEvent extends EventActivity {
 	private static final int previousEventTextID = R.string.previousActivityText;
@@ -80,7 +82,7 @@ public class EditEvent extends EventActivity {
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(true);
-				focusOnNothing();
+				editTextEventName.requestFocus();
 			}
 		});
 

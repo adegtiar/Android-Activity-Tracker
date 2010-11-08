@@ -1,5 +1,6 @@
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.eventdata;
 
+import edu.berkeley.security.eventtracker.EventActivity;
 import android.content.Context;
 import android.database.SQLException;
 
