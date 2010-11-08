@@ -88,7 +88,7 @@ public class EventDbAdapter {
     }
 
     /**
-     * Open the notes database. If it cannot be opened, try to create a new
+     * Open the events database. If it cannot be opened, try to create a new
      * instance of the database. If it cannot be created, throw an exception to
      * signal the failure
      * 

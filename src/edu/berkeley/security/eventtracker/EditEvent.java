@@ -22,7 +22,6 @@ public class EditEvent extends EventActivity {
 	private static final int previousEventTextID = R.string.previousActivityText;
 	private static final int previousEventDefaultID = R.string.previousActivityDefault;
 
-	private EventManager mEventManager;
 	private EventEntry currentEvent;
 	private EventEntry previousEvent;
 
@@ -30,16 +29,15 @@ public class EditEvent extends EventActivity {
 	private ArrayList<String> autoCompleteNotes=new ArrayList<String>();
 	private Set<String> mActivityNames = new HashSet<String>();
 	private Set<String> mActivityNotes = new HashSet<String>();
-
 	private ArrayAdapter<String> adapterActivities;
 	private ArrayAdapter<String> adapterNotes;
+	
 	private AutoCompleteTextView editTextEventName;
 	private AutoCompleteTextView editTextEventNotes;
 	private Button previousActivityBar;
 	private Button nextActivityButton;
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
-	private TextView textViewIsTracking;
 
 
 	/** Called when the activity is first created. */
@@ -47,9 +45,6 @@ public class EditEvent extends EventActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mEventManager = new EventManager(this).open();
-
-		initializeToolbar();
 		initializeEditTexts();
 		initializeAutoComplete();
 
@@ -66,6 +61,11 @@ public class EditEvent extends EventActivity {
 		initializeActivityButtons();
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
+	}
+	
+	@Override
+	protected int getLayoutResource() {
+		return R.layout.edit_event;
 	}
 
 	/**
@@ -127,7 +127,6 @@ public class EditEvent extends EventActivity {
 		editTextEventName.setAdapter(adapterActivities);
 		editTextEventNotes.setAdapter(adapterNotes);
 
-
 		editTextEventName.addTextChangedListener(new StartTrackingListener());
 		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
 	}
@@ -160,18 +159,10 @@ public class EditEvent extends EventActivity {
 	/**
 	 * Initializes the toolbar onClickListeners and intializes references to toolbar views.
 	 */
-	private void initializeToolbar() {		
-		textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
-		((ImageView) findViewById(R.id.toolbar_left_option)).setImageResource(R.drawable.list_icon);
-
-		findViewById(R.id.toolbar_right_option).setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				startSettingsActivity();
-			}
-		});
-
+	protected void initializeToolbar() {
+		super.initializeToolbar();
+		ImageView toolbarLeftOption = ((ImageView) findViewById(R.id.toolbar_left_option)); 
+		toolbarLeftOption.setImageResource(R.drawable.list_icon);
 		findViewById(R.id.toolbar_left_option).setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -180,19 +171,25 @@ public class EditEvent extends EventActivity {
 			}
 		});
 	}
-
-	/**
-	 * Updates the UI using the currentEvent and previousEvent.
-	 */
-	private void updateUI() {
-		updateTrackingUI();
-		fillViewWithEventInfo();
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		updateAutoComplete();
+		updateDatabase(currentEvent);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		
+		initializeAutoComplete();
+		fillViewWithEventInfo();
+		focusOnNothing();
+	}
+	
+	@Override
+	protected void refreshState() {
 		EventCursor events = mEventManager.fetchSortedEvents();
 		if (events.moveToNext()) {
 			EventEntry event = events.getEvent();
@@ -209,11 +206,6 @@ public class EditEvent extends EventActivity {
 			currentEvent = null;
 			previousEvent = null;
 		}
-		initializeAutoComplete();
-		updateUI();
-
-		focusOnNothing();
-
 	}
 
 	/**
@@ -252,24 +244,27 @@ public class EditEvent extends EventActivity {
 		return previousActivityLabel + " " + previousEventString;
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		updateAutoComplete();
-		updateDatabase(currentEvent);
-	}
-
 	/**
 	 * Changes the appearance of this activity to reflect the fact that this activity is now tracking
 	 */
-	private void updateTrackingUI(){
-		boolean isTracking = isTracking();
-		textViewIsTracking.setText(isTracking ? trackingStringID : notTrackingStringID);
+	protected boolean updateTrackingUI(){
+		boolean isTracking = super.updateTrackingUI();
 		nextActivityButton.setEnabled(isTracking);
-		stopTrackingButton.setEnabled(isTracking);	
-
+		stopTrackingButton.setEnabled(isTracking);
+		return isTracking;
+	}
+	
+	/**
+	 * Updates the UI using the currentEvent and previousEvent.
+	 */
+	private void updateUI() {
+		updateTrackingUI();
+		fillViewWithEventInfo();
 	}
 
+	/**
+	 * Updates the the AutoComplete adapter with the current name/notes.
+	 */
 	private void updateAutoComplete(){
 		String activityName=editTextEventName.getText().toString();
 		String activityNotes=editTextEventNotes.getText().toString();
@@ -301,6 +296,9 @@ public class EditEvent extends EventActivity {
 		return currentEvent != null;
 	}
 
+	/**
+	 * Refreshes the AutoComplete adapters with all events from the database.
+	 */
 	private void initializeAutoComplete() {
 		adapterActivities.clear();
 		mActivityNames.clear();
@@ -317,15 +315,13 @@ public class EditEvent extends EventActivity {
 		}
 	}
 
+	/**
+	 * Used to switch focus away from any particular UI element.
+	 */
 	private void focusOnNothing(){
 		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
 		editTextEventNotes.clearFocus();
 		dummy.requestFocus();
-	}
-
-	@Override
-	protected int getLayoutResource() {
-		return R.layout.edit_event;
 	}
 }

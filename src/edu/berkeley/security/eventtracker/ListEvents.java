@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -14,59 +13,31 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import edu.berkeley.security.eventtracker.EventEntry.ColumnType;
 
+/**
+ * Handles the event list view that displays all events from most recent to least recent.
+ * @author AlexD
+ *
+ */
 public class ListEvents extends EventActivity {
-	private EventManager mEventsManager;
-	private boolean isTracking;
-	// Create an array to specify the fields we want to display in the list
-	// (only TITLE)
+	// An array that specifies the fields we want to display in the list (only TITLE)
 	private String[] from = new String[] { EventDbAdapter.KEY_NAME,
 			EventDbAdapter.KEY_START_TIME, EventDbAdapter.KEY_END_TIME , EventDbAdapter.KEY_ROWID};
-
+	
+	// An array that specifies the layout elements we want to map event fields to.
 	private int[] to = new int[] { R.id.row_event_title,
 			R.id.row_event_start_time, R.id.row_event_end_time, R.id.row_event_delete_button };
-	private EventCursor mEventsCursor;
+	private EventCursor mEventsCursor; // TODO this should probably be closed at some point
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mEventsManager = new EventManager(this).open();
 		fillData();
-
-		initializeToolbars();
-		
-		isTracking = this.getIntent().getBooleanExtra(getString(R.string.isTracking), false);
-        ((TextView) findViewById(R.id.toolbar_center)).setText(
-        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
 	}
 	
-	/**
-	 * Sets the onClickListeners for the toolbar content.
-	 */
-	private void initializeToolbars() {
-		findViewById(R.id.toolbar_right_option).setOnClickListener(
-				new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent settingsIntent = new Intent(ListEvents.this,
-								Settings.class);
-						settingsIntent.putExtra(getString(R.string.isTracking), isTracking);
-						startActivity(settingsIntent);
-					}
-				});
-
-		findViewById(R.id.toolbar_left_option).setOnClickListener(
-				new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						Intent editIntent = new Intent(ListEvents.this,
-								EditEvent.class);
-						editIntent.putExtra(getString(R.string.isTracking), isTracking);
-						startActivity(editIntent);
-					}
-				});
+	@Override
+	protected int getLayoutResource() {
+		return R.layout.events_list;
 	}
 
 	/**
@@ -74,7 +45,7 @@ public class ListEvents extends EventActivity {
 	 */
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
-		mEventsCursor = mEventsManager.fetchSortedEvents();
+		mEventsCursor = mEventManager.fetchSortedEvents();
 		startManagingCursor(mEventsCursor.getDBCursor());
 		
 		ListView eventList = (ListView) findViewById(R.id.events_list_view);
@@ -136,12 +107,10 @@ public class ListEvents extends EventActivity {
 		}
 		@Override
 		public void onClick(View v) {
-			mEventsManager.deleteEvent(rowId);
+			mEventManager.deleteEvent(rowId);
 			mEventsCursor.requery();
 			if (isInProgress) {
-				isTracking = false;
-				TextView textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
-				textViewIsTracking.setText(EditEvent.notTrackingStringID);
+				updateTrackingUI(false);
 			}
 		}
 		
@@ -177,29 +146,5 @@ public class ListEvents extends EventActivity {
 				return false;
 			}		
 		}
-	}
-	
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		isTracking = savedInstanceState.getBoolean(getString(R.string.isTracking));
-        ((TextView) findViewById(R.id.toolbar_center)).setText(
-        		isTracking ? R.string.toolbarTracking : R.string.toolbarNotTracking);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putBoolean(getString(R.string.isTracking), isTracking);
-	}
-
-	@Override
-	protected boolean isTracking() {
-		return isTracking;
-	}
-
-	@Override
-	protected int getLayoutResource() {
-		return R.layout.events_list;
-	}
+	}	
 }

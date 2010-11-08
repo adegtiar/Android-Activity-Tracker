@@ -4,19 +4,37 @@ import android.content.Context;
 import android.database.SQLException;
 
 /**
- * Manages the event data back-end. Acts as a wrapper around a database adapter.
+ * Manages the event data back-end and acts as a wrapper around a database adapter.
+ * A manager should be shared across all event-related activities.
  * 
  * @author AlexD
  *
  */
 public class EventManager {
 	private EventDbAdapter mDbHelper;
+	private static EventManager mEventManager;
 	
 	
-	public EventManager(Context context) {
+	private EventManager(Context context) {
 		mDbHelper = new EventDbAdapter(context);
 	}
 	
+	/**
+	 * Returns an instance of an EventManager. Only one may be active at a time.
+	 * @param mainActivity The single activity the EventManger should start from.
+	 * @return The EventManger instance.
+	 */
+	public static EventManager getManager(EventActivity mainActivity) {
+		if (mEventManager == null)
+			mEventManager = new EventManager(mainActivity).open();
+		return mEventManager;
+	}
+	
+	/**
+	 * Opens the database.
+	 * @return this (self reference, allowing this to be chained
+	 * 		in an initialization call)
+	 */
 	public EventManager open() {
 		mDbHelper.open();
 		return this;
@@ -99,7 +117,7 @@ public class EventManager {
     	EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents());
     	if (!events.moveToFirst())
     		return false; // no events, so can't be tracking
-    	// if end time isn't 0(initial value), we are still tracking.
-        return events.getEvent().mEndTime != 0; 
+    	// if end time is 0(initial value), we are still tracking.
+        return events.getEvent().mEndTime == 0; 
     }
 }
