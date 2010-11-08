@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
- * @author AlexD
- *
  */
 public class Settings extends EventActivity {
 

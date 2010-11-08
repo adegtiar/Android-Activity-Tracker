@@ -7,9 +7,6 @@ import android.database.SQLException;
 /**
  * Manages the event data back-end and acts as a wrapper around a database adapter.
  * A manager should be shared across all event-related activities.
- * 
- * @author AlexD
- *
  */
 public class EventManager {
 	private EventDbAdapter mDbHelper;

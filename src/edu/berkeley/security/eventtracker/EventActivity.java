@@ -15,8 +15,6 @@ import android.widget.TextView;
 /**
  * The main activity that all event-related activities extend. It houses a
  * toolbar and a global EventManager.
- * @author AlexD
- *
  */
 abstract public class EventActivity extends Activity{
 	private static final int trackingStringID = R.string.toolbarTracking;

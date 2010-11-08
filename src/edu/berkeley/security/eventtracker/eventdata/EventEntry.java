@@ -8,9 +8,6 @@ import android.database.Cursor;
 /**
  * A local, in-memory version of a Event database entry. This is pushed and pulled
  * from the database when necessary.  
- * 
- * @author AlexD
- *
  */
 public class EventEntry {
 	public long mDbRowID=-1;
@@ -21,8 +18,6 @@ public class EventEntry {
 	
 	/**
 	 * An enumeration of column type names in the event table.
-	 * @author AlexD
-	 *
 	 */
 	public enum ColumnType {
 		NAME(EventDbAdapter.KEY_NAME),
