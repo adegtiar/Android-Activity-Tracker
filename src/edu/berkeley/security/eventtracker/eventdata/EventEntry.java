@@ -25,9 +25,9 @@ public class EventEntry {
 		START_TIME(EventDbAdapter.KEY_START_TIME),
 		END_TIME(EventDbAdapter.KEY_END_TIME),
 		ROWID(EventDbAdapter.KEY_ROWID);
-	String columnName;
+	private String columnName;
 	
-	ColumnType(String columnName) {
+	private ColumnType(String columnName) {
 		this.columnName = columnName;
 	}
 	
@@ -36,6 +36,10 @@ public class EventEntry {
 			if (colType.columnName.equals(columnName))
 				return colType;
 		return null;
+	}
+	
+	public String getColumnName() {
+		return columnName;
 	}
 	};
 	
@@ -58,8 +62,9 @@ public class EventEntry {
      * @return The EventEntry corresponding to the cursor event row.
      */
     public static EventEntry fromCursor(Cursor eventCursor) {
-    	assert(!(eventCursor.isClosed() || eventCursor.isBeforeFirst()
-    			|| eventCursor.isAfterLast()));
+    	if(eventCursor == null || eventCursor.isClosed() ||
+    			eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
+    		return null;
     	long dbRowID =		getLong(eventCursor, EventDbAdapter.KEY_ROWID);
 		String name =		getString(eventCursor, EventDbAdapter.KEY_NAME);
 		String notes =	getString(eventCursor, EventDbAdapter.KEY_NOTES);
