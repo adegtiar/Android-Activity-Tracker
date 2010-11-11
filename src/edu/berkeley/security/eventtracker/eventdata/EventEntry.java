@@ -16,7 +16,7 @@ public class EventEntry {
 	public String mNotes="";
 	public long mStartTime;
 	public long mEndTime;
-	private EventManager mManager;
+	EventManager mManager;
 	
 	/**
 	 * An enumeration of column type names in the event table.

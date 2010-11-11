@@ -68,12 +68,13 @@ public class EventManager {
     public boolean updateDatabase(EventEntry event) {
     	if (event == null)
 			return false;
+    	event.mManager = this;
     	if(event.mDbRowID==-1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes, event.mStartTime, event.mEndTime);
 			return event.mDbRowID != -1;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName, 
-					event.mNotes, event.mStartTime,event.mEndTime);
+					event.mNotes, event.mStartTime, event.mEndTime);
 		}
     }
     
