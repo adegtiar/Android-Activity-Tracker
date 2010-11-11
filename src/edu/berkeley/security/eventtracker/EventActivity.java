@@ -177,6 +177,13 @@ abstract public class EventActivity extends Activity {
 	}
 
 	/**
+	 * @return the current event
+	 */
+	public EventEntry getCurrentEvent(){
+		return mEventManager.getCurrentEvent();
+	}
+	
+	/**
 	 * @return The layout resource to inflate in onCreate.
 	 */
 	abstract protected int getLayoutResource();
