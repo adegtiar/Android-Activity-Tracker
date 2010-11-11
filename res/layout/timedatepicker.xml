@@ -2,26 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	>
 	<TextView android:id="@+id/setTime" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:text="@string/timeText"
 		android:textStyle="bold" />
-
 	<TimePicker android:id="@+id/timePicker"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_below="@id/setTime" />
-
 	<TextView android:id="@+id/setDate" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:text="@string/dateText"
 		android:textStyle="bold" android:layout_below="@id/timePicker" />
-
-
-	<DatePicker android:id="@+id/datePicker" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_below="@id/setDate">
+	<DatePicker android:id="@+id/datePicker"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_below="@id/setDate">
 	</DatePicker>
-
 	<Button android:id="@+id/setTimeDate" android:text="@string/Set"
 		android:layout_height="wrap_content" android:layout_alignParentBottom="true"
 		android:layout_gravity="center" android:layout_width="fill_parent" />
-
 </RelativeLayout>
