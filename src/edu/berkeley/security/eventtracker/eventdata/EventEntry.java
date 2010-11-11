@@ -15,6 +15,7 @@ public class EventEntry {
 	public String mNotes="";
 	public long mStartTime;
 	public long mEndTime;
+	private EventManager mManager;
 	
 	/**
 	 * An enumeration of column type names in the event table.
@@ -47,12 +48,14 @@ public class EventEntry {
 		mStartTime = System.currentTimeMillis();
 	}
 
-	public EventEntry(long dbRowID, String name, String notes, long startTime, long endTime){
+	public EventEntry(long dbRowID, String name, String notes, long startTime,
+			long endTime, EventManager manager){
 		this.mDbRowID =		dbRowID;
 		this.mName =		name;
 		this.mNotes =		notes;
 		this.mStartTime =	startTime;
 		this.mEndTime =		endTime;
+		this.mManager = 	manager;
 	}
 	
 	/**
@@ -61,7 +64,7 @@ public class EventEntry {
      * @param eventCursor The cursor at the event to convert to an EventEntry.
      * @return The EventEntry corresponding to the cursor event row.
      */
-    public static EventEntry fromCursor(Cursor eventCursor) {
+    public static EventEntry fromCursor(Cursor eventCursor, EventManager manager) {
     	if(eventCursor == null || eventCursor.isClosed() ||
     			eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
     		return null;
@@ -70,7 +73,7 @@ public class EventEntry {
 		String notes =	getString(eventCursor, EventDbAdapter.KEY_NOTES);
 		long startTime =	getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
 		long endTime =		getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime, manager);
     }
 	
 	public String toString() {

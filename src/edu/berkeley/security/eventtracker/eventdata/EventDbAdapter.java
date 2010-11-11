@@ -135,7 +135,6 @@ public class EventDbAdapter {
      * @return Cursor over all notes
      */
     public Cursor fetchAllEvents() {
-
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_NAME,
                 KEY_NOTES, KEY_START_TIME, KEY_END_TIME}, null, null, null, null, null);
     }

@@ -10,9 +10,11 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
  */
 public class EventCursor {
 	private Cursor mCursor;
+	private EventManager mManager;
 	
-	public EventCursor(Cursor eventCursor) {
+	public EventCursor(Cursor eventCursor, EventManager manager) {
 		this.mCursor = eventCursor;
+		mManager = manager;
 	}
 	
 	/**
@@ -52,7 +54,7 @@ public class EventCursor {
 	 * @return The EventEntry at the cursor position.
 	 */
 	public EventEntry getEvent() {
-		return EventEntry.fromCursor(mCursor);
+		return EventEntry.fromCursor(mCursor, mManager);
 	}
 	
 	/**
