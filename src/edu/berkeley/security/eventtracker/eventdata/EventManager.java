@@ -1,7 +1,11 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.berkeley.security.eventtracker.EventActivity;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 
 /**
@@ -9,6 +13,7 @@ import android.database.SQLException;
  * A manager should be shared across all event-related activities.
  */
 public class EventManager {
+	private GPSDbAdapter mGPSHelper;
 	private EventDbAdapter mDbHelper;
 	private static EventManager mEventManager;
 	
@@ -112,10 +117,36 @@ public class EventManager {
      * @return true if we are still tracking an activity, otherwise false.
      */
     public boolean isTracking() {
-    	EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
-    	if (!events.moveToFirst())
-    		return false; // no events, so can't be tracking
-    	// if end time is 0(initial value), we are still tracking.
-        return events.getEvent().mEndTime == 0; 
+    	return getCurrentEvent() != null;
     }
+    
+	public List<GPSCoordinates> getGPSCoordinates(Long rowID){
+		ArrayList<GPSCoordinates> toBeReturned=new ArrayList<GPSCoordinates>();
+		Cursor c=mGPSHelper.getGPSCoordinates(rowID);
+		
+		if (c.getCount() > 0) {
+		     while (c.moveToNext()) {
+		    	 double latitude=c.getDouble(c.getColumnIndex((GPSDbAdapter.KEY_LATITUDE)));
+		    	 double longitude=c.getDouble(c.getColumnIndex((GPSDbAdapter.KEY_LONGITUDE)));
+		    	 toBeReturned.add(new GPSCoordinates(latitude, longitude));
+		    	 
+		     }
+	        }
+		c.close();
+		return toBeReturned;
+		
+	}
+	public EventEntry getCurrentEvent(){
+		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
+    	if (!events.moveToFirst())
+    		return null; // no events, so can't be tracking
+    	// if end time is 0(initial value), we are still tracking.
+    	EventEntry currentEvent=events.getEvent();
+    	return currentEvent.mEndTime == 0 ? currentEvent : null;
+        
+	}
+	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID){
+		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(), coord.getLongitude());
+		
+	}
 }

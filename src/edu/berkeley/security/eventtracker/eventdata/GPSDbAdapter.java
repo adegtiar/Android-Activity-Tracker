@@ -16,8 +16,6 @@
 
 package edu.berkeley.security.eventtracker.eventdata;
 
-
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,10 +42,8 @@ public class GPSDbAdapter extends AbstractDbAdapter {
     }
 
 
-    /**
-     * Create a new entry in the database corresponding to the given eventName, notes, and startTime
-     */
-    public Long createGPSEntry(Long eventRowID, Long latitude, Long longitude) {
+   
+    public Long createGPSEntry(long eventRowID, double latitude, double longitude) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_EVENT_ROWID, eventRowID);
         initialValues.put(KEY_LATITUDE, latitude);
@@ -88,22 +84,23 @@ public class GPSDbAdapter extends AbstractDbAdapter {
     }
     
     
-    /**
-     * Update the event using the details provided.
-     * 
-     * @param rowId id of event to update.
-     * @param title value to set event title to.
-     * @param notes value to set event notes to.
-     *  @param startTime value to set event start time to.
-     *  @param endTime value to set event end time to to.
-     * 
-     * @return true if the note was successfully updated, false otherwise.
-     */
-    public boolean updateGPSEntry(Long rowId, Long eventRowID, Long longitude, Long latitude) {
+
+    public boolean updateGPSEntry(long rowId, long eventRowID, double longitude, double latitude) {
         ContentValues args = new ContentValues();
         args.put(KEY_EVENT_ROWID, eventRowID);
         args.put(KEY_LONGITUDE, longitude);
         args.put(KEY_LATITUDE, latitude);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
+
+
+
+	public Cursor getGPSCoordinates(long eventRowID) {
+		
+//		String selection="SELECT * FROM "+ DATABASE_TABLE+ " WHERE " +KEY_EVENT_ROWID +"=" + eventRowID;
+		return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID,
+                    		KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE}, KEY_EVENT_ROWID + "=" + eventRowID, null, null, null, null);
+
+	}
+
 }

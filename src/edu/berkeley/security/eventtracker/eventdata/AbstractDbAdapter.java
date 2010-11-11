@@ -23,9 +23,9 @@ public abstract class AbstractDbAdapter {
     
     protected static final String TABLE_CREATE_GPSDATA =    
   	  "create table gpsData (_id integer primary key autoincrement, "
-        + "eventRowID long, "
-        + "latitude Long, "
-        + "longitude Long);";
+        + "eventRowID rong, "
+        + "latitude real, "
+        + "longitude real);";
 
     protected static final String DATABASE_NAME = "data";
     protected static final int DATABASE_VERSION = 3;

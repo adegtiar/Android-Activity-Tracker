@@ -2,18 +2,18 @@ package edu.berkeley.security.eventtracker.eventdata;
 
 public class GPSCoordinates {
 	
-	public GPSCoordinates(int latitude, int longitude){
+	public GPSCoordinates(double latitude, double longitude){
 		this.mLongitude=longitude;
 		this.mLatitude=latitude;
 	}
 
-	public int getLatitude(){
+	public double getLatitude(){
 		return mLatitude;
 	}
-	public int getLongitude(){
+	public double getLongitude(){
 		return mLongitude;
 	}
 	
-	private int mLatitude;
-	private int mLongitude;
+	private double mLatitude;
+	private double mLongitude;
 }

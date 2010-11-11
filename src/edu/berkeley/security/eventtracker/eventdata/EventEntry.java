@@ -135,7 +135,7 @@ public class EventEntry {
 	}
 	
 	public List<GPSCoordinates> getGPSCoordinates(){
-		return null;
+		return mManager.getGPSCoordinates(mDbRowID);
 	}
 	
 }
