@@ -32,7 +32,7 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		fillData();
 	}
 	
@@ -123,7 +123,7 @@ public class ListEvents extends EventActivity {
 
 		@Override
 		public boolean setViewValue(View view, final Cursor cursor, int columnIndex) {
-			EventCursor eCursor = new EventCursor(cursor);
+			EventCursor eCursor = new EventCursor(cursor, mEventManager);
 			ColumnType colType = eCursor.getColumnType(columnIndex);
 			switch(colType){
 			case ROWID:

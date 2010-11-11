@@ -50,7 +50,7 @@ public class EventManager {
     public EventEntry createEvent(String eventName, String notes, long startTime, long endTime) {
         long newRowID = mDbHelper.createEvent(eventName, notes, startTime, endTime);
         if (newRowID != -1)
-        	return new EventEntry(newRowID, eventName, notes, startTime, endTime);
+        	return new EventEntry(newRowID, eventName, notes, startTime, endTime, this);
         else
         	return null;
     }
@@ -86,14 +86,14 @@ public class EventManager {
      * @return An Iterator over all events in the database.
      */
     public EventCursor fetchAllEvents() {
-    	return new EventCursor(mDbHelper.fetchAllEvents());
+    	return new EventCursor(mDbHelper.fetchAllEvents(), this);
     }
     
     /**
      * @return An iterator over all events in descending endTime order.
      */
     public EventCursor fetchSortedEvents() {
-    	return new EventCursor(mDbHelper.fetchSortedEvents());
+    	return new EventCursor(mDbHelper.fetchSortedEvents(), this);
     }
     
     /**
@@ -104,7 +104,7 @@ public class EventManager {
      * @throws SQLException if note could not be found/retrieved
      */
     public EventEntry fetchEvent(long rowId) throws SQLException {
-    	EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId));
+    	EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId), this);
         return events.getCount() > 0 ? events.getEvent() : null;
     }
     
@@ -112,7 +112,7 @@ public class EventManager {
      * @return true if we are still tracking an activity, otherwise false.
      */
     public boolean isTracking() {
-    	EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents());
+    	EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
     	if (!events.moveToFirst())
     		return false; // no events, so can't be tracking
     	// if end time is 0(initial value), we are still tracking.

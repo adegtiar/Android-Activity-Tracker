@@ -134,8 +134,6 @@ public class EditEvent extends EventActivity {
 
 	/**
 	 * Listens for a text change and creates a new event if one doesn't exist.
-	 * @author AlexD
-	 *
 	 */
 	private class StartTrackingListener implements TextWatcher {
 
