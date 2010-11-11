@@ -47,19 +47,17 @@ abstract public class EventActivity extends Activity {
 		if (m_location_manager == null) {
 			m_location_manager = (LocationManager) getSystemService(LOCATION_SERVICE);
 			try {
-				
+
 				m_location_manager.requestLocationUpdates(
 						LocationManager.GPS_PROVIDER, 60000, 100,
 						mLocationListener);
-				Boolean gpsEnabled = m_location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+				Boolean gpsEnabled = m_location_manager
+						.isProviderEnabled(LocationManager.GPS_PROVIDER);
 				Log.d("onCreateonCreate", String.valueOf(gpsEnabled));
 			} catch (Exception e) {
 
-				
-
 			}
 		}
-	
 
 	}
 
@@ -192,8 +190,8 @@ abstract public class EventActivity extends Activity {
 	private class SampleLocationListener implements LocationListener {
 		public void onLocationChanged(Location location) {
 			EventEntry currentEvent = mEventManager.getCurrentEvent();
-			if (location != null && currentEvent !=null) {
-				
+			if (location != null && currentEvent != null) {
+
 				mEventManager.addGPSCoordinates(new GPSCoordinates(location
 						.getLatitude(), location.getLongitude()),
 						currentEvent.mDbRowID);

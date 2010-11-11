@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,74 +8,70 @@ import android.util.Log;
 
 public abstract class AbstractDbAdapter {
 
-    protected static final String TAG = "DbAdapter";
-    protected DatabaseHelper mDbHelper;
-    protected SQLiteDatabase mDb;
+	protected static final String TAG = "DbAdapter";
+	protected DatabaseHelper mDbHelper;
+	protected SQLiteDatabase mDb;
 
-    protected static final String TABLE_CREATE_EVENTS =
-    	  "create table eventData (_id integer primary key autoincrement, "
-        + "eventname text not null, "
-        + "notes text not null, "
-        + "startTime Long, "
-        + "endTime Long);";
-    
-    
-    protected static final String TABLE_CREATE_GPSDATA =    
-  	  "create table gpsData (_id integer primary key autoincrement, "
-        + "eventRowID rong, "
-        + "latitude real, "
-        + "longitude real);";
+	protected static final String TABLE_CREATE_EVENTS = "create table eventData (_id integer primary key autoincrement, "
+			+ "eventname text not null, "
+			+ "notes text not null, "
+			+ "startTime Long, " + "endTime Long);";
 
-    protected static final String DATABASE_NAME = "data";
-    protected static final int DATABASE_VERSION = 3;
+	protected static final String TABLE_CREATE_GPSDATA = "create table gpsData (_id integer primary key autoincrement, "
+			+ "eventRowID rong, " + "latitude real, " + "longitude real);";
 
-    protected final Context mCtx;
+	protected static final String DATABASE_NAME = "data";
+	protected static final int DATABASE_VERSION = 3;
 
-    protected static class DatabaseHelper extends SQLiteOpenHelper {
+	protected final Context mCtx;
 
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
+	protected static class DatabaseHelper extends SQLiteOpenHelper {
 
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(TABLE_CREATE_EVENTS);
-            db.execSQL(TABLE_CREATE_GPSDATA);
-        }
+		DatabaseHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
 
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS routes");
-            onCreate(db);
-        }
-    }
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL(TABLE_CREATE_EVENTS);
+			db.execSQL(TABLE_CREATE_GPSDATA);
+		}
 
-    /**
-     * Constructor - takes the context to allow the database to be
-     * opened/created
-     * 
-     * @param ctx the Context within which to work
-     */
-    public AbstractDbAdapter(Context ctx) {
-        this.mCtx = ctx;
-    }
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+					+ newVersion + ", which will destroy all old data");
+			db.execSQL("DROP TABLE IF EXISTS routes");
+			onCreate(db);
+		}
+	}
 
-    /**
-     * Open or create the routes database.
-     * 
-     * @return this
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public AbstractDbAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
-    }
+	/**
+	 * Constructor - takes the context to allow the database to be
+	 * opened/created
+	 * 
+	 * @param ctx
+	 *            the Context within which to work
+	 */
+	public AbstractDbAdapter(Context ctx) {
+		this.mCtx = ctx;
+	}
 
-    public void close() {
-        mDbHelper.close();
-    }
+	/**
+	 * Open or create the routes database.
+	 * 
+	 * @return this
+	 * @throws SQLException
+	 *             if the database could be neither opened or created
+	 */
+	public AbstractDbAdapter open() throws SQLException {
+		mDbHelper = new DatabaseHelper(mCtx);
+		mDb = mDbHelper.getWritableDatabase();
+		return this;
+	}
+
+	public void close() {
+		mDbHelper.close();
+	}
 
 }

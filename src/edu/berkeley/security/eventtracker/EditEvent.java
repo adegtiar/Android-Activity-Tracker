@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,20 +26,19 @@ public class EditEvent extends EventActivity {
 	private EventEntry currentEvent;
 	private EventEntry previousEvent;
 
-	private ArrayList<String> autoCompleteActivities=new ArrayList<String>();
-	private ArrayList<String> autoCompleteNotes=new ArrayList<String>();
+	private ArrayList<String> autoCompleteActivities = new ArrayList<String>();
+	private ArrayList<String> autoCompleteNotes = new ArrayList<String>();
 	private Set<String> mActivityNames = new HashSet<String>();
 	private Set<String> mActivityNotes = new HashSet<String>();
 	private ArrayAdapter<String> adapterActivities;
 	private ArrayAdapter<String> adapterNotes;
-	
+
 	private AutoCompleteTextView editTextEventName;
 	private AutoCompleteTextView editTextEventNotes;
 	private Button previousActivityBar;
 	private Button nextActivityButton;
 	private Button stopTrackingButton;
 	private TextView textViewStartTime;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class EditEvent extends EventActivity {
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
 	}
-	
+
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.edit_event;
@@ -73,8 +71,8 @@ public class EditEvent extends EventActivity {
 	 * Initializes the NextActivity and StopTracking buttons.
 	 */
 	private void initializeActivityButtons() {
-		nextActivityButton=(Button)findViewById(R.id.NextActivityButton);
-		stopTrackingButton=(Button)findViewById(R.id.StopTrackingButton);
+		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
+		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
 
 		nextActivityButton.setOnClickListener(new OnClickListener() {
 
@@ -97,9 +95,11 @@ public class EditEvent extends EventActivity {
 	}
 
 	/**
-	 * Finishes the currently running activity and start tracking
-	 * a new activity, if specified.
-	 * @param createNewActivity Whether or not to start tracking a new activity.
+	 * Finishes the currently running activity and start tracking a new
+	 * activity, if specified.
+	 * 
+	 * @param createNewActivity
+	 *            Whether or not to start tracking a new activity.
 	 */
 	private void finishCurrentActivity(boolean createNewActivity) {
 		currentEvent.mEndTime = System.currentTimeMillis();
@@ -111,17 +111,19 @@ public class EditEvent extends EventActivity {
 	}
 
 	/**
-	 * Initializes the AutoCompleteTextViews and intializes references to related views.
+	 * Initializes the AutoCompleteTextViews and intializes references to
+	 * related views.
 	 */
 	private void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
-		//		TODO uncomment these to disable soft keyboard
-		editTextEventName.setInputType(0); 
+		// TODO uncomment these to disable soft keyboard
+		editTextEventName.setInputType(0);
 		editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
+				android.R.layout.simple_dropdown_item_1line,
+				autoCompleteActivities);
 		adapterNotes = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteNotes);
 
@@ -138,7 +140,7 @@ public class EditEvent extends EventActivity {
 	private class StartTrackingListener implements TextWatcher {
 
 		@Override
-		public void afterTextChanged(Editable s) { 
+		public void afterTextChanged(Editable s) {
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
 				updateStartTime();
@@ -148,29 +150,33 @@ public class EditEvent extends EventActivity {
 
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {}
+				int after) {
+		}
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {}
+				int count) {
+		}
 	}
 
 	/**
-	 * Initializes the toolbar onClickListeners and intializes references to toolbar views.
+	 * Initializes the toolbar onClickListeners and intializes references to
+	 * toolbar views.
 	 */
 	protected void initializeToolbar() {
 		super.initializeToolbar();
-		ImageView toolbarLeftOption = ((ImageView) findViewById(R.id.toolbar_left_option)); 
+		ImageView toolbarLeftOption = ((ImageView) findViewById(R.id.toolbar_left_option));
 		toolbarLeftOption.setImageResource(R.drawable.list_icon);
-		findViewById(R.id.toolbar_left_option).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.toolbar_left_option).setOnClickListener(
+				new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				startListEventsActivity();
-			}
-		});
+					@Override
+					public void onClick(View v) {
+						startListEventsActivity();
+					}
+				});
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -181,12 +187,12 @@ public class EditEvent extends EventActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		initializeAutoComplete();
 		fillViewWithEventInfo();
 		focusOnNothing();
 	}
-	
+
 	@Override
 	protected void refreshState() {
 		EventCursor events = mEventManager.fetchSortedEvents();
@@ -215,7 +221,8 @@ public class EditEvent extends EventActivity {
 		if (currentEvent != null) {
 			editTextEventName.setText(currentEvent.mName);
 			editTextEventNotes.setText(currentEvent.mNotes);
-			textViewStartTime.setText(currentEvent.formatColumn(ColumnType.START_TIME));
+			textViewStartTime.setText(currentEvent
+					.formatColumn(ColumnType.START_TIME));
 		} else {
 			editTextEventName.setText("");
 			editTextEventNotes.setText("");
@@ -229,30 +236,34 @@ public class EditEvent extends EventActivity {
 	 */
 	private void updateStartTime() {
 		if (currentEvent != null)
-			textViewStartTime.setText(currentEvent.formatColumn(ColumnType.START_TIME));
+			textViewStartTime.setText(currentEvent
+					.formatColumn(ColumnType.START_TIME));
 		else
 			textViewStartTime.setText("");
 	}
 
 	/**
-	 * @return The text that the previous event bar should have, based on the previousEvent.
+	 * @return The text that the previous event bar should have, based on the
+	 *         previousEvent.
 	 */
 	private String getPreviousEventString() {
 		String previousActivityLabel = getString(previousEventTextID);
-		String previousEventString = previousEvent != null ? previousEvent.mName : getString(previousEventDefaultID); 
+		String previousEventString = previousEvent != null ? previousEvent.mName
+				: getString(previousEventDefaultID);
 		return previousActivityLabel + " " + previousEventString;
 	}
 
 	/**
-	 * Changes the appearance of this activity to reflect the fact that this activity is now tracking
+	 * Changes the appearance of this activity to reflect the fact that this
+	 * activity is now tracking
 	 */
-	protected boolean updateTrackingUI(){
+	protected boolean updateTrackingUI() {
 		boolean isTracking = super.updateTrackingUI();
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
 		return isTracking;
 	}
-	
+
 	/**
 	 * Updates the UI using the currentEvent and previousEvent.
 	 */
@@ -264,20 +275,21 @@ public class EditEvent extends EventActivity {
 	/**
 	 * Updates the the AutoComplete adapter with the current name/notes.
 	 */
-	private void updateAutoComplete(){
-		String activityName=editTextEventName.getText().toString();
-		String activityNotes=editTextEventNotes.getText().toString();
-		if(mActivityNames.add(activityName))
+	private void updateAutoComplete() {
+		String activityName = editTextEventName.getText().toString();
+		String activityNotes = editTextEventNotes.getText().toString();
+		if (mActivityNames.add(activityName))
 			adapterActivities.add(activityName);
-		if(mActivityNotes.add(activityNotes))
+		if (mActivityNotes.add(activityNotes))
 			adapterNotes.add(activityNotes);
 	}
-	
+
 	/**
-	 * Updates the database with the given EventEntry. If an event is
-	 * created, the event's rowID is updated with the new rowID.
-	 
-	 * @param event The EventEntry to push to the database. 
+	 * Updates the database with the given EventEntry. If an event is created,
+	 * the event's rowID is updated with the new rowID.
+	 * 
+	 * @param event
+	 *            The EventEntry to push to the database.
 	 * @return Whether or not the update occured without error.
 	 */
 	private boolean updateDatabase(EventEntry event) {
@@ -305,11 +317,11 @@ public class EditEvent extends EventActivity {
 		mActivityNotes.clear();
 		EventCursor allEventsCursor = mEventManager.fetchAllEvents();
 		EventEntry nextEvent;
-		while(allEventsCursor.moveToNext()) {
+		while (allEventsCursor.moveToNext()) {
 			nextEvent = allEventsCursor.getEvent();
 			if (mActivityNames.add(nextEvent.mName))
 				adapterActivities.add(nextEvent.mName);
-			if(mActivityNotes.add(nextEvent.mNotes))
+			if (mActivityNotes.add(nextEvent.mNotes))
 				adapterNotes.add(nextEvent.mNotes);
 		}
 	}
@@ -317,8 +329,8 @@ public class EditEvent extends EventActivity {
 	/**
 	 * Used to switch focus away from any particular UI element.
 	 */
-	private void focusOnNothing(){
-		LinearLayout dummy=(LinearLayout)findViewById(R.id.dummyLayout);
+	private void focusOnNothing() {
+		LinearLayout dummy = (LinearLayout) findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
 		editTextEventNotes.clearFocus();
 		dummy.requestFocus();

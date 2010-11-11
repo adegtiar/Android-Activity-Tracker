@@ -7,88 +7,91 @@ import java.util.List;
 import android.database.Cursor;
 
 /**
- * A local, in-memory version of a Event database entry. This is pushed and pulled
- * from the database when necessary.  
+ * A local, in-memory version of a Event database entry. This is pushed and
+ * pulled from the database when necessary.
  */
 public class EventEntry {
-	public long mDbRowID=-1;
-	public String mName="";
-	public String mNotes="";
+	public long mDbRowID = -1;
+	public String mName = "";
+	public String mNotes = "";
 	public long mStartTime;
 	public long mEndTime;
 	EventManager mManager;
-	
+
 	/**
 	 * An enumeration of column type names in the event table.
 	 */
 	public enum ColumnType {
-		NAME(EventDbAdapter.KEY_NAME),
-		NOTES(EventDbAdapter.KEY_NOTES),
-		START_TIME(EventDbAdapter.KEY_START_TIME),
-		END_TIME(EventDbAdapter.KEY_END_TIME),
-		ROWID(EventDbAdapter.KEY_ROWID);
-	private String columnName;
-	
-	private ColumnType(String columnName) {
-		this.columnName = columnName;
-	}
-	
-	static ColumnType fromColumnName(String columnName) {
-		for (ColumnType colType : ColumnType.values())
-			if (colType.columnName.equals(columnName))
-				return colType;
-		return null;
-	}
-	
-	public String getColumnName() {
-		return columnName;
-	}
+		NAME(EventDbAdapter.KEY_NAME), NOTES(EventDbAdapter.KEY_NOTES), START_TIME(
+				EventDbAdapter.KEY_START_TIME), END_TIME(
+				EventDbAdapter.KEY_END_TIME), ROWID(EventDbAdapter.KEY_ROWID);
+		private String columnName;
+
+		private ColumnType(String columnName) {
+			this.columnName = columnName;
+		}
+
+		static ColumnType fromColumnName(String columnName) {
+			for (ColumnType colType : ColumnType.values())
+				if (colType.columnName.equals(columnName))
+					return colType;
+			return null;
+		}
+
+		public String getColumnName() {
+			return columnName;
+		}
 	};
-	
+
 	public EventEntry() {
 		mStartTime = System.currentTimeMillis();
 	}
 
 	public EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, EventManager manager){
-		this.mDbRowID =		dbRowID;
-		this.mName =		name;
-		this.mNotes =		notes;
-		this.mStartTime =	startTime;
-		this.mEndTime =		endTime;
-		this.mManager = 	manager;
+			long endTime, EventManager manager) {
+		this.mDbRowID = dbRowID;
+		this.mName = name;
+		this.mNotes = notes;
+		this.mStartTime = startTime;
+		this.mEndTime = endTime;
+		this.mManager = manager;
 	}
-	
+
 	/**
-     * Creates an EventEntry corresponding to the event row at the given
-     * cursor. Assumes the given cursor is at the correct entry.
-     * @param eventCursor The cursor at the event to convert to an EventEntry.
-     * @return The EventEntry corresponding to the cursor event row.
-     */
-    public static EventEntry fromCursor(Cursor eventCursor, EventManager manager) {
-    	if(eventCursor == null || eventCursor.isClosed() ||
-    			eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
-    		return null;
-    	long dbRowID =		getLong(eventCursor, EventDbAdapter.KEY_ROWID);
-		String name =		getString(eventCursor, EventDbAdapter.KEY_NAME);
-		String notes =	getString(eventCursor, EventDbAdapter.KEY_NOTES);
-		long startTime =	getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
-		long endTime =		getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
+	 * Creates an EventEntry corresponding to the event row at the given cursor.
+	 * Assumes the given cursor is at the correct entry.
+	 * 
+	 * @param eventCursor
+	 *            The cursor at the event to convert to an EventEntry.
+	 * @return The EventEntry corresponding to the cursor event row.
+	 */
+	public static EventEntry fromCursor(Cursor eventCursor, EventManager manager) {
+		if (eventCursor == null || eventCursor.isClosed()
+				|| eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
+			return null;
+		long dbRowID = getLong(eventCursor, EventDbAdapter.KEY_ROWID);
+		String name = getString(eventCursor, EventDbAdapter.KEY_NAME);
+		String notes = getString(eventCursor, EventDbAdapter.KEY_NOTES);
+		long startTime = getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
+		long endTime = getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
 		return new EventEntry(dbRowID, name, notes, startTime, endTime, manager);
-    }
-	
-	public String toString() {
-		return "{" + mDbRowID + " : " + mName + ", (" + formatColumn(ColumnType.START_TIME)
-					+ "->" + formatColumn(ColumnType.END_TIME) + ")";
 	}
-	
+
+	public String toString() {
+		return "{" + mDbRowID + " : " + mName + ", ("
+				+ formatColumn(ColumnType.START_TIME) + "->"
+				+ formatColumn(ColumnType.END_TIME) + ")";
+	}
+
 	/**
 	 * Formats a column into a String.
-	 * @param colType The column to format.
+	 * 
+	 * @param colType
+	 *            The column to format.
 	 * @return A String depicting the column value.
 	 */
 	public String formatColumn(ColumnType colType) {
-		switch(colType) {
+		switch (colType) {
 		case NAME:
 			return mName;
 		case NOTES:
@@ -103,7 +106,7 @@ public class EventEntry {
 			throw new IllegalArgumentException("Unknown ColumnType: " + colType);
 		}
 	}
-	
+
 	/**
 	 * Formats a long date in a standard date format.
 	 */
@@ -113,12 +116,14 @@ public class EventEntry {
 		SimpleDateFormat dateFormat = new SimpleDateFormat();
 		return dateFormat.format(new Date(dateLong));
 	}
-	
-    /**
-	 * @param cursor A cursor at a particular row.
-	 * @param columnName The name of the column in the DB.
-	 * @return The Long at the column with the given name, or null
-	 * 		   it doesn't exist.
+
+	/**
+	 * @param cursor
+	 *            A cursor at a particular row.
+	 * @param columnName
+	 *            The name of the column in the DB.
+	 * @return The Long at the column with the given name, or null it doesn't
+	 *         exist.
 	 */
 	private static long getLong(Cursor cursor, String columnName) {
 		return cursor.getLong(cursor.getColumnIndex(columnName));
@@ -126,16 +131,18 @@ public class EventEntry {
 
 	/**
 	 * 
-	 * @param cursor A cursor at a particular row.
-	 * @param columnName The name of the column in the DB.
+	 * @param cursor
+	 *            A cursor at a particular row.
+	 * @param columnName
+	 *            The name of the column in the DB.
 	 * @return The String at the column with the given name.
 	 */
 	private static String getString(Cursor cursor, String columnName) {
 		return cursor.getString(cursor.getColumnIndex(columnName));
 	}
-	
-	public List<GPSCoordinates> getGPSCoordinates(){
+
+	public List<GPSCoordinates> getGPSCoordinates() {
 		return mManager.getGPSCoordinates(mDbRowID);
 	}
-	
+
 }
