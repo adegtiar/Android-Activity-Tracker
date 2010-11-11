@@ -32,7 +32,6 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		fillData();
 	}
 	
@@ -47,12 +46,12 @@ public class ListEvents extends EventActivity {
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
 		mEventsCursor = mEventManager.fetchSortedEvents();
-		startManagingCursor(mEventsCursor.getDBCursor());
+		startManagingCursor(mEventsCursor);
 		
 		ListView eventList = (ListView) findViewById(R.id.events_list_view);
 		
 		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
-				R.layout.events_row, mEventsCursor.getDBCursor(), from, to);
+				R.layout.events_row, mEventsCursor, from, to);
 		eventsCursor.setViewBinder(new EventRowViewBinder());
 		
 		initializeHeaders(eventList);
@@ -86,12 +85,6 @@ public class ListEvents extends EventActivity {
 		list.addHeaderView(listHeader);
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mEventsCursor.requery();
-	}
-
 	/**
 	 * The listener associated with a delete button. Deletes the event
 	 * corresponding to the row the button is in.
@@ -111,8 +104,7 @@ public class ListEvents extends EventActivity {
 			if (isInProgress) {
 				updateTrackingUI(false);
 			}
-		}
-		
+		}	
 	}
 	
 	/**
