@@ -2,6 +2,7 @@ package edu.berkeley.security.eventtracker.eventdata;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.database.Cursor;
 
@@ -124,4 +125,9 @@ public class EventEntry {
 	private static String getString(Cursor cursor, String columnName) {
 		return cursor.getString(cursor.getColumnIndex(columnName));
 	}
+	
+	public List<GPSCoordinates> getGPSCoordinates(){
+		return null;
+	}
+	
 }

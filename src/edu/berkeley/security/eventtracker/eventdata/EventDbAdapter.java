@@ -22,60 +22,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 
-public class EventDbAdapter {
+public class EventDbAdapter extends AbstractDbAdapter {
 
     public static final String KEY_NAME = "eventname";
     public static final String KEY_NOTES = "notes";
     public static final String KEY_START_TIME = "startTime";
     public static final String KEY_END_TIME = "endTime";
     public static final String KEY_ROWID = "_id";
+    private static final String DATABASE_TABLE = "eventData";
 
-    private static final String TAG = "EventDbAdapter";
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
     
-    /**
-     * Database creation sql statement
-     */
-            
-    private static final String DATABASE_CREATE =
-            "create table data (_id integer primary key autoincrement, "
-                    + KEY_NAME + " text not null, "
-                    + KEY_NOTES + " text not null, "
-                    + KEY_START_TIME + " Long, "
-                    + KEY_END_TIME + " Long);";
-
-    private static final String DATABASE_NAME = "events";
-    private static final String DATABASE_TABLE = "data";
-    private static final int DATABASE_VERSION = 3;
-
-    private final Context mCtx;
-
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-
-            db.execSQL(DATABASE_CREATE);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
-            onCreate(db);
-        }
-    }
 
     /**
      * Constructor - takes the context to allow the database to be
@@ -84,28 +42,10 @@ public class EventDbAdapter {
      * @param ctx the Context within which to work
      */
     public EventDbAdapter(Context ctx) {
-        this.mCtx = ctx;
+       super(ctx);
     }
 
-    /**
-     * Open the events database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     * 
-     * @return this (self reference, allowing this to be chained in an
-     *         initialization call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public EventDbAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
-        return this;
-    }
-    
-    public void close() {
-        mDbHelper.close();
-    }
-
+   
     /**
      * Create a new entry in the database corresponding to the given eventName, notes, and startTime
      */
