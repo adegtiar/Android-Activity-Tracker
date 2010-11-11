@@ -306,6 +306,9 @@ public class EditEvent extends EventActivity {
 	protected boolean isTracking() {
 		return currentEvent != null;
 	}
+	public EventEntry getCurrentEvent() {
+		return currentEvent;
+	}
 
 	/**
 	 * Refreshes the AutoComplete adapters with all events from the database.

@@ -189,7 +189,7 @@ abstract public class EventActivity extends Activity {
 	// GPS
 	private class SampleLocationListener implements LocationListener {
 		public void onLocationChanged(Location location) {
-			EventEntry currentEvent = mEventManager.getCurrentEvent();
+			EventEntry currentEvent = getCurrentEvent();
 			if (location != null && currentEvent != null) {
 
 				mEventManager.addGPSCoordinates(new GPSCoordinates(location
