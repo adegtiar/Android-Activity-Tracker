@@ -16,6 +16,8 @@
 
 package edu.berkeley.security.eventtracker.eventdata;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -47,7 +49,26 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 			initialValues.put(KEY_EVENT_ROWID, eventRowID);
 			initialValues.put(KEY_LATITUDE, latitude);
 			initialValues.put(KEY_LONGITUDE, longitude);
-			return mDb.insert(DATABASE_TABLE, null, initialValues);
+			long toBeReturned=mDb.insert(DATABASE_TABLE, null, initialValues);
+			//TODO delete this later. just for debugging purposes
+			 Cursor c=this.getGPSCoordinates(eventRowID);
+			 ArrayList<GPSCoordinates> list = new ArrayList<GPSCoordinates>();
+			
+
+				if (c.getCount() > 0) {
+					while (c.moveToNext()) {
+						double alatitude = c.getDouble(c
+								.getColumnIndex((GPSDbAdapter.KEY_LATITUDE)));
+						double alongitude = c.getDouble(c
+								.getColumnIndex((GPSDbAdapter.KEY_LONGITUDE)));
+						list.add(new GPSCoordinates(alatitude, alongitude));
+
+					}
+				}
+			 
+			 
+			 
+			return toBeReturned;
 		
 	}
 
