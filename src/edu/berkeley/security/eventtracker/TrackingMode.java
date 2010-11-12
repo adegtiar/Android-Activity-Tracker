@@ -108,4 +108,62 @@ public class TrackingMode extends AbstractEventEdit {
 		textViewStartTime.setText(currentEvent
 				.formatColumn(ColumnType.START_TIME));
 	}
+	
+	@Override
+	protected void initializeActivityButtons() {
+		super.initializeActivityButtons();
+		
+		nextActivityButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finishCurrentActivity(true);
+				editTextEventName.requestFocus();
+			}
+		});
+
+		stopTrackingButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finishCurrentActivity(false);
+				focusOnNothing();
+
+			}
+		});
+	}
+	
+	/**
+	 * Finishes the currently running activity and start tracking a new
+	 * activity, if specified.
+	 * 
+	 * @param createNewActivity
+	 *            Whether or not to start tracking a new activity.
+	 */
+	private void finishCurrentActivity(boolean createNewActivity) {
+		currentEvent.mEndTime = System.currentTimeMillis();
+		updateAutoComplete();
+		syncToEventFromUI();
+		updateDatabase(currentEvent);
+		previousEvent = currentEvent;
+		if (createNewActivity)
+			startNewActivity();
+		else
+			currentEvent = null;
+		updateUI();
+	}
+	
+	
+	private void startNewActivity() {
+		currentEvent = new EventEntry();
+		updateDatabase(currentEvent);
+	}
+	
+	/**
+	 * Updates the UI using the currentEvent and previousEvent.
+	 */
+	private void updateUI() {
+		updateTrackingUI();
+		fillViewWithEventInfo();
+	}
 }

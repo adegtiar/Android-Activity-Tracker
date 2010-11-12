@@ -29,4 +29,5 @@
 <string name="activityInProgressText">Activity in Progress:</string>
 <string name="confirmText">Confirm</string>
 <string name="cancelText">Cancel</string>
+<string name="editModeHeader">Editing...</string>
 </resources>

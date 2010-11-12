@@ -9,12 +9,11 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class EditMode extends AbstractEventEdit {
-	protected static final int currentEventTextID = R.string.currentActivityText;
-	protected static final int currentEventDefaultID = R.string.previousActivityDefault;
 	
 	private EventEntry editingEvent;
 	private Button startTimeButton;
 	private Button endTimeButton;
+	private boolean saveToDB;
 
 	/*
 	 * (non-Javadoc)
@@ -36,14 +35,16 @@ public class EditMode extends AbstractEventEdit {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		updateDatabase(editingEvent);
+		if (saveToDB)
+			updateDatabase(editingEvent);
 	}
 
 	@Override
 	protected boolean updateTrackingUI() {
-		if (isTracking())
-			bottomBar.setText(getPreviousEventString());
-		return false;
+		boolean isTracking = isTracking(); 
+		bottomBar.setText(getCurrentEventString());
+		textViewIsTracking.setText(R.string.editModeHeader);
+		return isTracking;
 	}
 
 	@Override
@@ -53,6 +54,35 @@ public class EditMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
+				if (isTracking()) {
+					finish();
+					EditMode.this.startTrackingActivity();
+				}
+			}
+		});
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.berkeley.security.eventtracker.AbstractEventEdit#initializeActivityButtons()
+	 */
+	@Override
+	protected void initializeActivityButtons() {
+		super.initializeActivityButtons();
+		
+		nextActivityButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				saveToDB = true;
+				finish();
+			}
+		});
+
+		stopTrackingButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				saveToDB = false;
 				finish();
 			}
 		});
@@ -68,8 +98,6 @@ public class EditMode extends AbstractEventEdit {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
 				i.putExtra("Time",editingEvent.mStartTime);
 				startActivityForResult(i, ColumnType.START_TIME.ordinal());
-
-
 			}
 		});
 		endTimeButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +132,7 @@ public class EditMode extends AbstractEventEdit {
 		editTextEventNotes.setText(editingEvent.mNotes);
 		startTimeButton.setText(editingEvent
 				.formatColumn(ColumnType.START_TIME));
-		startTimeButton.setText(editingEvent.formatColumn(ColumnType.END_TIME));
+		endTimeButton.setText(editingEvent.formatColumn(ColumnType.END_TIME));
 	}
 
 	@Override
@@ -116,6 +144,17 @@ public class EditMode extends AbstractEventEdit {
 	protected void syncToEventFromUI() {
 		editingEvent.mName = editTextEventName.getText().toString();
 		editingEvent.mNotes = editTextEventNotes.getText().toString();
+	}
+	
+	/**
+	 * @return The text that the current event bar should have, based on the
+	 *         currentEvent.
+	 */
+	protected String getCurrentEventString() {
+		String previousActivityLabel = getString(currentEventTextID);
+		String previousEventString = currentEvent != null ? currentEvent.mName
+				: getString(previousEventDefaultID);
+		return previousActivityLabel + " " + previousEventString;
 	}
 
 }

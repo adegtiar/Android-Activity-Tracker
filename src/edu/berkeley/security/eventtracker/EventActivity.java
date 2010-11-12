@@ -1,16 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
-import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventManager;
-import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import android.app.Activity;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +10,9 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 /**
  * The main activity that all event-related activities extend. It houses a
@@ -26,7 +21,7 @@ import android.widget.TextView;
 abstract public class EventActivity extends Activity {
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
-	private TextView textViewIsTracking;
+	protected TextView textViewIsTracking;
 	protected EventManager mEventManager;
 
 
@@ -66,7 +61,7 @@ abstract public class EventActivity extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						startEditEventActivity();
+						startTrackingActivity();
 					}
 				});
 	}
@@ -123,13 +118,13 @@ abstract public class EventActivity extends Activity {
 	/**
 	 * Launches the AbstractEventEdit activity.
 	 */
-	protected void startEditEventActivity() {
+	protected void startTrackingActivity() {
 		Intent settingsIntent = new Intent(this, TrackingMode.class);
 		startActivity(settingsIntent);
 	}
 
 	protected void startEditEventActivity(long rowId) {
-		Intent settingsIntent = new Intent(this, TrackingMode.class);
+		Intent settingsIntent = new Intent(this, EditMode.class);
 		settingsIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
 		startActivity(settingsIntent);
 	}

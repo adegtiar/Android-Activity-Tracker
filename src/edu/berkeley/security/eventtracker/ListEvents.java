@@ -36,7 +36,7 @@ public class ListEvents extends EventActivity {
 	private int[] to = new int[] { R.id.row_event_title,
 			R.id.row_event_start_time, R.id.row_event_end_time,
 			R.id.row_event_delete_button };
-	
+
 	private EventCursor mEventsCursor;
 
 	@Override
@@ -72,17 +72,17 @@ public class ListEvents extends EventActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-//				if (position < 2)
-//					return;
-//				if (position == 2 && isTracking())
-//					return;
-//				startEditEventActivity(id);
-				 TextView t = (TextView)
-				 view.findViewById(R.id.row_event_title);
-				 t.setText(t.getText() + "+");
+				if (position < 2)
+					return;
+				else if (position == 2 && isTracking())
+					finish(); // trying to edit event in progress
+				else
+					startEditEventActivity(id);
+//				TextView t = (TextView) view.findViewById(R.id.row_event_title);
+//				t.setText(t.getText() + "+");
 			}
 		});
-		
+
 		eventList.setAdapter(eventsCursorAdapter);
 	}
 
