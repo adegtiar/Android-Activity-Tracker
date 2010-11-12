@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker;
 
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -165,5 +166,50 @@ public class TrackingMode extends AbstractEventEdit {
 	private void updateUI() {
 		updateTrackingUI();
 		fillViewWithEventInfo();
+	}
+	
+	private class ProgressTimer {
+		private CountDownTimer myTimer;
+		private boolean isSpinning = false;
+		private long spinTime;
+		
+		private ProgressTimer(long spinTime) {
+			this.spinTime = spinTime;
+			resetTimer();
+		}
+		
+		private void spin() {
+			synchronized(myTimer) {
+				textViewStartTime.setText("Spinning...");
+				if (isSpinning)
+					myTimer.cancel();
+				isSpinning = true;
+				resetTimer().start();;
+			}
+		}
+		
+		private CountDownTimer resetTimer() {
+			return myTimer = new MyTimer(spinTime, Long.MAX_VALUE); 
+		}
+		
+		private class MyTimer extends CountDownTimer {
+
+			public MyTimer(long millisInFuture, long countDownInterval) {
+				super(millisInFuture, countDownInterval);
+			}
+
+			@Override
+			synchronized public void onFinish() {
+				isSpinning = false;
+				textViewStartTime.setText("Spinning...Done!");
+				resetTimer();
+			}
+
+			@Override
+			public void onTick(long millisUntilFinished) {
+				// do nothing
+			}
+			
+		}
 	}
 }
