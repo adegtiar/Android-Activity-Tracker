@@ -19,8 +19,11 @@ public class EventManager {
 
 	private EventManager(Context context) {
 		mDbHelper = new EventDbAdapter(context);
+		mGPSHelper= new GPSDbAdapter(context);
 	}
 
+	
+	
 	/**
 	 * Returns an instance of an EventManager. Only one may be active at a time.
 	 * 
@@ -28,12 +31,15 @@ public class EventManager {
 	 *            The single activity the EventManger should start from.
 	 * @return The EventManger instance.
 	 */
-	public static EventManager getManager(EventActivity mainActivity) {
+	public static EventManager getManager(Context context) {
 		if (mEventManager == null)
-			mEventManager = new EventManager(mainActivity).open();
+			mEventManager = new EventManager(context).open();
 		return mEventManager;
 	}
-
+	public static EventManager getManager() {
+		return mEventManager;
+	}
+	
 	/**
 	 * Opens the database.
 	 * 
@@ -42,11 +48,13 @@ public class EventManager {
 	 */
 	public EventManager open() {
 		mDbHelper.open();
+		mGPSHelper.open();
 		return this;
 	}
 
 	public void close() {
 		mDbHelper.close();
+		mGPSHelper.close();
 	}
 
 	/**
@@ -154,6 +162,7 @@ public class EventManager {
 	}
 
 	public EventEntry getCurrentEvent() {
+		
 		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(),
 				this);
 		if (!events.moveToFirst())
@@ -167,6 +176,7 @@ public class EventManager {
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
 		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(), coord
 				.getLongitude());
+		
 
 	}
 }

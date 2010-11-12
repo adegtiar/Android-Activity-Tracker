@@ -28,8 +28,7 @@ abstract public class EventActivity extends Activity {
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private TextView textViewIsTracking;
 	protected EventManager mEventManager;
-	private static SampleLocationListener mLocationListener;
-	private static LocationManager m_location_manager;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,24 +41,8 @@ abstract public class EventActivity extends Activity {
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
-		if (mLocationListener == null) {
-			mLocationListener = new SampleLocationListener();
-		}
-		if (m_location_manager == null) {
-			m_location_manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-			try {
-
-				m_location_manager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 60000, 100,
-						mLocationListener);
-				Boolean gpsEnabled = m_location_manager
-						.isProviderEnabled(LocationManager.GPS_PROVIDER);
-				Log.d("onCreateonCreate", String.valueOf(gpsEnabled));
-			} catch (Exception e) {
-
-			}
-		}
-
+		   startService(new Intent(EventActivity.this,
+                   GPSLoggerService.class));
 	}
 
 	/**
@@ -194,32 +177,33 @@ abstract public class EventActivity extends Activity {
 	abstract protected int getLayoutResource();
 
 	// GPS
-	private class SampleLocationListener implements LocationListener {
-		public void onLocationChanged(Location location) {
-			EventEntry currentEvent = getCurrentEvent();
-			if (location != null && currentEvent != null) {
-
-				mEventManager.addGPSCoordinates(new GPSCoordinates(location
-						.getLatitude(), location.getLongitude()),
-						currentEvent.mDbRowID);
-
-			}
-		}
-
-		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-			Log.d("SampleLocationListener onProviderDisabled", provider);
-		}
-
-		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-			Log.d("SampleLocationListener onProviderEnabled", provider);
-		}
-
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-			Log.d("SampleLocationListener onStatusChanged", provider);
-		}
-	}
+	
+//	private class SampleLocationListener implements LocationListener {
+//		public void onLocationChanged(Location location) {
+//			EventEntry currentEvent = getCurrentEvent();
+//			if (location != null && currentEvent != null) {
+//
+//				mEventManager.addGPSCoordinates(new GPSCoordinates(location
+//						.getLatitude(), location.getLongitude()),
+//						currentEvent.mDbRowID);
+//
+//			}
+//		}
+//
+//		public void onProviderDisabled(String provider) {
+//			// TODO Auto-generated method stub
+//			Log.d("SampleLocationListener onProviderDisabled", provider);
+//		}
+//
+//		public void onProviderEnabled(String provider) {
+//			// TODO Auto-generated method stub
+//			Log.d("SampleLocationListener onProviderEnabled", provider);
+//		}
+//
+//		public void onStatusChanged(String provider, int status, Bundle extras) {
+//			// TODO Auto-generated method stub
+//			Log.d("SampleLocationListener onStatusChanged", provider);
+//		}
+//	}
 
 }

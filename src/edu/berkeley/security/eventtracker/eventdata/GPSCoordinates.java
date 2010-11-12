@@ -17,4 +17,9 @@ public class GPSCoordinates {
 
 	private double mLatitude;
 	private double mLongitude;
+	
+	@Override
+	public String toString() {
+		return "(Latitude: " +Double.toString(mLatitude) + "Longitude: " + Double.toString(mLongitude) +")";
+	}
 }
