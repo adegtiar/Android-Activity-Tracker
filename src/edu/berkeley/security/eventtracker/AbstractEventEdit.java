@@ -90,7 +90,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 		updateAutoComplete();
 		updateDatabase(currentEvent);
 		previousEvent = currentEvent;
-		currentEvent = createNewActivity ? new EventEntry() : null;
+		if (createNewActivity)
+			startNewActivity();
 		updateUI();
 	}
 
@@ -130,7 +131,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		@Override
 		public void afterTextChanged(Editable s) {
 			if (s.length() != 0 && currentEvent == null) {
-				currentEvent = new EventEntry();
+				startNewActivity();
 				fillViewWithEventInfo();
 				updateTrackingUI();
 			}
@@ -145,6 +146,11 @@ abstract public class AbstractEventEdit extends EventActivity {
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
 		}
+	}
+	
+	private void startNewActivity() {
+		currentEvent = new EventEntry();
+		updateDatabase(currentEvent);
 	}
 
 	/**
