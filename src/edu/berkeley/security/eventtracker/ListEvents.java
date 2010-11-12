@@ -60,14 +60,13 @@ public class ListEvents extends EventActivity {
 
 		ListView eventList = (ListView) findViewById(R.id.events_list_view);
 
-		SimpleCursorAdapter eventsCursor = new SimpleCursorAdapter(this,
+		SimpleCursorAdapter eventsCursorAdapter = new SimpleCursorAdapter(this,
 				R.layout.events_row, mEventsCursor, from, to);
-		eventsCursor.setViewBinder(new EventRowViewBinder());
+		eventsCursorAdapter.setViewBinder(new EventRowViewBinder());
 
 		initializeHeaders(eventList);
 
 		eventList.setEmptyView(findViewById(R.id.empty_list_view));
-		eventList.setAdapter(eventsCursor);
 
 		eventList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -83,6 +82,8 @@ public class ListEvents extends EventActivity {
 				 t.setText(t.getText() + "+");
 			}
 		});
+		
+		eventList.setAdapter(eventsCursorAdapter);
 	}
 
 	/**
