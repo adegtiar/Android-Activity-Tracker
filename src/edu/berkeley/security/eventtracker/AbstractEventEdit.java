@@ -14,31 +14,28 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
-public class EditEvent extends EventActivity {
-	private static final int previousEventTextID = R.string.previousActivityText;
-	private static final int previousEventDefaultID = R.string.previousActivityDefault;
+abstract public class AbstractEventEdit extends EventActivity {
+	protected static final int previousEventTextID = R.string.previousActivityText;
+	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
 
 	private EventEntry currentEvent;
 	private EventEntry previousEvent;
 
-	private ArrayList<String> autoCompleteActivities = new ArrayList<String>();
-	private ArrayList<String> autoCompleteNotes = new ArrayList<String>();
-	private Set<String> mActivityNames = new HashSet<String>();
-	private Set<String> mActivityNotes = new HashSet<String>();
-	private ArrayAdapter<String> adapterActivities;
-	private ArrayAdapter<String> adapterNotes;
+	protected ArrayList<String> autoCompleteActivities = new ArrayList<String>();
+	protected ArrayList<String> autoCompleteNotes = new ArrayList<String>();
+	protected Set<String> mActivityNames = new HashSet<String>();
+	protected Set<String> mActivityNotes = new HashSet<String>();
+	protected ArrayAdapter<String> adapterActivities;
+	protected ArrayAdapter<String> adapterNotes;
 
-	private AutoCompleteTextView editTextEventName;
-	private AutoCompleteTextView editTextEventNotes;
-	private Button previousActivityBar;
-	private Button nextActivityButton;
-	private Button stopTrackingButton;
-	private TextView textViewStartTime;
+	protected AutoCompleteTextView editTextEventName;
+	protected AutoCompleteTextView editTextEventNotes;
+	protected Button bottomBar;
+	protected Button nextActivityButton;
+	protected Button stopTrackingButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,25 +43,12 @@ public class EditEvent extends EventActivity {
 
 		initializeEditTexts();
 		initializeAutoComplete();
-
-		textViewStartTime = (TextView) findViewById(R.id.startTime);
-		previousActivityBar = (Button) findViewById(R.id.previous_activity_bar);
-		previousActivityBar.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				startListEventsActivity();
-			}
-		});
-
+		initializeBottomBar();
 		initializeActivityButtons();
+		initializeTimesUI();
+
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
-	}
-
-	@Override
-	protected int getLayoutResource() {
-		return R.layout.edit_event;
 	}
 
 	/**
@@ -134,6 +118,10 @@ public class EditEvent extends EventActivity {
 		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
 	}
 
+	abstract protected void initializeBottomBar();
+
+	abstract protected void initializeTimesUI();
+
 	/**
 	 * Listens for a text change and creates a new event if one doesn't exist.
 	 */
@@ -143,7 +131,7 @@ public class EditEvent extends EventActivity {
 		public void afterTextChanged(Editable s) {
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
-				updateStartTime();
+				fillViewWithEventInfo();
 				updateTrackingUI();
 			}
 		}
@@ -181,7 +169,6 @@ public class EditEvent extends EventActivity {
 	protected void onPause() {
 		super.onPause();
 		updateAutoComplete();
-		updateDatabase(currentEvent);
 	}
 
 	@Override
@@ -217,36 +204,24 @@ public class EditEvent extends EventActivity {
 	 * Fills the text entries and views with the correct info based on the
 	 * current/previous events.
 	 */
-	private void fillViewWithEventInfo() {
-		if (currentEvent != null) {
-			editTextEventName.setText(currentEvent.mName);
-			editTextEventNotes.setText(currentEvent.mNotes);
-			textViewStartTime.setText(currentEvent
-					.formatColumn(ColumnType.START_TIME));
-		} else {
-			editTextEventName.setText("");
-			editTextEventNotes.setText("");
-			textViewStartTime.setText("");
-		}
-		previousActivityBar.setText(getPreviousEventString());
-	}
-
-	/**
-	 * Updates the UI start time box with the start time of the current event.
-	 */
-	private void updateStartTime() {
-		if (currentEvent != null)
-			textViewStartTime.setText(currentEvent
-					.formatColumn(ColumnType.START_TIME));
-		else
-			textViewStartTime.setText("");
-	}
-
+	protected abstract void fillViewWithEventInfo();
+	
 	/**
 	 * @return The text that the previous event bar should have, based on the
 	 *         previousEvent.
 	 */
-	private String getPreviousEventString() {
+	protected String getCurrentEventString() {
+		String previousActivityLabel = getString(previousEventTextID);
+		String previousEventString = previousEvent != null ? previousEvent.mName
+				: getString(previousEventDefaultID);
+		return previousActivityLabel + " " + previousEventString;
+	}
+	
+	/**
+	 * @return The text that the previous event bar should have, based on the
+	 *         previousEvent.
+	 */
+	protected String getPreviousEventString() {
 		String previousActivityLabel = getString(previousEventTextID);
 		String previousEventString = previousEvent != null ? previousEvent.mName
 				: getString(previousEventDefaultID);
@@ -254,14 +229,11 @@ public class EditEvent extends EventActivity {
 	}
 
 	/**
-	 * Changes the appearance of this activity to reflect the fact that this
-	 * activity is now tracking
+	 * Changes the appearance of this activity to reflect whether or not an
+	 * event is in progress.
 	 */
 	protected boolean updateTrackingUI() {
-		boolean isTracking = super.updateTrackingUI();
-		nextActivityButton.setEnabled(isTracking);
-		stopTrackingButton.setEnabled(isTracking);
-		return isTracking;
+		return super.updateTrackingUI();
 	}
 
 	/**
@@ -292,7 +264,7 @@ public class EditEvent extends EventActivity {
 	 *            The EventEntry to push to the database.
 	 * @return Whether or not the update occured without error.
 	 */
-	private boolean updateDatabase(EventEntry event) {
+	protected boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
 		event.mName = editTextEventName.getText().toString();
@@ -306,6 +278,7 @@ public class EditEvent extends EventActivity {
 	protected boolean isTracking() {
 		return currentEvent != null;
 	}
+
 	public EventEntry getCurrentEvent() {
 		return currentEvent;
 	}

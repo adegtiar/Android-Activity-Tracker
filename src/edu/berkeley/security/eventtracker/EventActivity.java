@@ -3,6 +3,7 @@ package edu.berkeley.security.eventtracker;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
@@ -137,10 +138,16 @@ abstract public class EventActivity extends Activity {
 	}
 
 	/**
-	 * Launches the EditEvent activity.
+	 * Launches the AbstractEventEdit activity.
 	 */
 	protected void startEditEventActivity() {
-		Intent settingsIntent = new Intent(this, EditEvent.class);
+		Intent settingsIntent = new Intent(this, TrackingMode.class);
+		startActivity(settingsIntent);
+	}
+
+	protected void startEditEventActivity(long rowId) {
+		Intent settingsIntent = new Intent(this, TrackingMode.class);
+		settingsIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
 		startActivity(settingsIntent);
 	}
 
@@ -177,10 +184,10 @@ abstract public class EventActivity extends Activity {
 	/**
 	 * @return the current event
 	 */
-	public EventEntry getCurrentEvent(){
+	public EventEntry getCurrentEvent() {
 		return mEventManager.getCurrentEvent();
 	}
-	
+
 	/**
 	 * @return The layout resource to inflate in onCreate.
 	 */
