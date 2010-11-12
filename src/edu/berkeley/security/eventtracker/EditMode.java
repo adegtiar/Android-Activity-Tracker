@@ -112,4 +112,10 @@ public class EditMode extends AbstractEventEdit {
 		return R.layout.edit_event;
 	}
 
+	@Override
+	protected void syncToEventFromUI() {
+		editingEvent.mName = editTextEventName.getText().toString();
+		editingEvent.mNotes = editTextEventNotes.getText().toString();
+	}
+
 }

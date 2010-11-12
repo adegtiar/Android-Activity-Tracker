@@ -73,14 +73,14 @@ public class ListEvents extends EventActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (position < 2)
-					return;
-				if (position == 2 && isTracking())
-					return;
-				startEditEventActivity(id);
-				// TextView t = (TextView)
-				// view.findViewById(R.id.row_event_title);
-				// t.setText(t.getText() + "+");
+//				if (position < 2)
+//					return;
+//				if (position == 2 && isTracking())
+//					return;
+//				startEditEventActivity(id);
+				 TextView t = (TextView)
+				 view.findViewById(R.id.row_event_title);
+				 t.setText(t.getText() + "+");
 			}
 		});
 	}

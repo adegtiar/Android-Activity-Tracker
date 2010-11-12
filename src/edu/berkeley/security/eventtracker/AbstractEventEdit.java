@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -21,8 +19,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected static final int previousEventTextID = R.string.previousActivityText;
 	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
 
-	private EventEntry currentEvent;
-	private EventEntry previousEvent;
+	protected EventEntry currentEvent;
+	protected EventEntry previousEvent;
 
 	protected ArrayList<String> autoCompleteActivities = new ArrayList<String>();
 	protected ArrayList<String> autoCompleteNotes = new ArrayList<String>();
@@ -88,10 +86,13 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private void finishCurrentActivity(boolean createNewActivity) {
 		currentEvent.mEndTime = System.currentTimeMillis();
 		updateAutoComplete();
+		syncToEventFromUI();
 		updateDatabase(currentEvent);
 		previousEvent = currentEvent;
 		if (createNewActivity)
 			startNewActivity();
+		else
+			currentEvent = null;
 		updateUI();
 	}
 
@@ -99,7 +100,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * Initializes the AutoCompleteTextViews and intializes references to
 	 * related views.
 	 */
-	private void initializeEditTexts() {
+	protected void initializeEditTexts() {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
 		// TODO uncomment these to disable soft keyboard
@@ -114,39 +115,11 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 		editTextEventName.setAdapter(adapterActivities);
 		editTextEventNotes.setAdapter(adapterNotes);
-
-		editTextEventName.addTextChangedListener(new StartTrackingListener());
-		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
 	}
 
 	abstract protected void initializeBottomBar();
 
 	abstract protected void initializeTimesUI();
-
-	/**
-	 * Listens for a text change and creates a new event if one doesn't exist.
-	 */
-	private class StartTrackingListener implements TextWatcher {
-
-		@Override
-		public void afterTextChanged(Editable s) {
-			if (s.length() != 0 && currentEvent == null) {
-				startNewActivity();
-				fillViewWithEventInfo();
-				updateTrackingUI();
-			}
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-		}
-
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
-		}
-	}
 	
 	private void startNewActivity() {
 		currentEvent = new EventEntry();
@@ -175,6 +148,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected void onPause() {
 		super.onPause();
 		updateAutoComplete();
+		syncToEventFromUI();
 	}
 
 	@Override
@@ -205,6 +179,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 			previousEvent = null;
 		}
 	}
+	
+	protected abstract void syncToEventFromUI();
 
 	/**
 	 * Fills the text entries and views with the correct info based on the
@@ -273,8 +249,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
-		event.mName = editTextEventName.getText().toString();
-		event.mNotes = editTextEventNotes.getText().toString();
 		return mEventManager.updateDatabase(event);
 	}
 
