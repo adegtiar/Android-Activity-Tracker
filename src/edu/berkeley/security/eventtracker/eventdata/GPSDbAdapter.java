@@ -39,13 +39,16 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 		super(ctx);
 	}
 
-	public Long createGPSEntry(long eventRowID, double latitude,
-			double longitude) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_EVENT_ROWID, eventRowID);
-		initialValues.put(KEY_LATITUDE, latitude);
-		initialValues.put(KEY_LONGITUDE, longitude);
-		return mDb.insert(DATABASE_TABLE, null, initialValues);
+	public long createGPSEntry(Long eventRowID, Double latitude,
+			Double longitude) {
+		
+		
+			ContentValues initialValues = new ContentValues();
+			initialValues.put(KEY_EVENT_ROWID, eventRowID);
+			initialValues.put(KEY_LATITUDE, latitude);
+			initialValues.put(KEY_LONGITUDE, longitude);
+			return mDb.insert(DATABASE_TABLE, null, initialValues);
+		
 	}
 
 	/**

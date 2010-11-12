@@ -19,6 +19,7 @@ public class EventManager {
 
 	private EventManager(Context context) {
 		mDbHelper = new EventDbAdapter(context);
+		mGPSHelper= new GPSDbAdapter(context);
 	}
 
 	/**
@@ -42,6 +43,7 @@ public class EventManager {
 	 */
 	public EventManager open() {
 		mDbHelper.open();
+		mGPSHelper.open();
 		return this;
 	}
 
