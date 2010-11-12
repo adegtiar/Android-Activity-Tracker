@@ -6,6 +6,7 @@ import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,6 +29,8 @@ abstract public class EventActivity extends Activity {
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	private TextView textViewIsTracking;
 	protected EventManager mEventManager;
+	protected static Intent serviceIntent;
+	public static SharedPreferences settings;
 
 
 	@Override
@@ -39,10 +42,9 @@ abstract public class EventActivity extends Activity {
 		v.inflate();
 
 		initializeToolbar();
-
+		
 		mEventManager = EventManager.getManager(this);
-		   startService(new Intent(EventActivity.this,
-                   GPSLoggerService.class));
+	
 	}
 
 	/**

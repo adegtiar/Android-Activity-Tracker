@@ -17,45 +17,32 @@ import android.os.IBinder;
 
 
 public class GPSLoggerService extends Service {
-	public static final String DATABASE_NAME = "GPSLOGGERDB";
-
 
     private LocationManager lm;
     private LocationListener locationListener;
-    private SQLiteDatabase db;
     
-    private static long minTimeMillis = 2000;
-    private static long minDistanceMeters = 10;
-    private static float minAccuracyMeters = 35;
-    private static boolean showingDebugToast = false;
-    private static final String tag = "GPSLoggerService";
+    private static long minTimeMillis;
+    private static long minDistanceMeters;
+    private static float minAccuracyMeters=35;
     private EventManager manager;
 	private EventEntry currentEvent;
 
     /** Called when the activity is first created. */
     private void startLoggerService() {
 
-            // ---use the LocationManager class to obtain GPS locations---
+            //use the LocationManager class to obtain GPS locations
             lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
             locationListener = new MyLocationListener();
 
+            minTimeMillis=Settings.getGPSUpdateTime() * 60000;
+            minDistanceMeters=Settings.getGPSSensitivity();
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
                             minTimeMillis, 
                             minDistanceMeters,
                             locationListener);
-            initDatabase();
+          
     }
     
-    private void initDatabase() {
-    	
-//            db = this.openOrCreateDatabase(DATABASE_NAME, SQLiteDatabase.OPEN_READWRITE, null);
-//            db.execSQL("CREATE TABLE IF NOT EXISTS " +
-//                            POINTS_TABLE_NAME + " (GMTTIMESTAMP VARCHAR, LATITUDE REAL, LONGITUDE REAL," +
-//                                            "ALTITUDE REAL, ACCURACY REAL, SPEED REAL, BEARING REAL);");
-//            db.close();
-//            Log.i(tag, "Database opened ok");
-    }
 
     private void shutdownLoggerService() {
             lm.removeUpdates(locationListener);
@@ -152,13 +139,7 @@ public class GPSLoggerService extends Service {
             GPSLoggerService.minAccuracyMeters = minAccuracyMeters;
     }
 
-    public static void setShowingDebugToast(boolean showingDebugToast) {
-            GPSLoggerService.showingDebugToast = showingDebugToast;
-    }
-
-    public static boolean isShowingDebugToast() {
-            return showingDebugToast;
-    }
+  
 
     /**
      * Class for clients to access. Because we know this service always runs in

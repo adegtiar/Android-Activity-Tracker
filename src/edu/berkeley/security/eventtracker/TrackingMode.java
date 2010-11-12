@@ -1,5 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,6 +14,18 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
+
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		serviceIntent=new Intent(this, GPSLoggerService.class);
+		settings=   getSharedPreferences(Settings.PREFERENCE_FILENAME, MODE_PRIVATE);
+		if(Settings.isGPSEnabled()){
+			startService(serviceIntent);
+		}
+	}
 
 	@Override
 	protected void onPause() {
