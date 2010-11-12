@@ -7,7 +7,6 @@ import java.util.Set;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -19,6 +18,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 abstract public class AbstractEventEdit extends EventActivity {
 	protected static final int previousEventTextID = R.string.previousActivityText;
 	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
+	protected static final int currentEventTextID = R.string.currentActivityText;
 
 	protected EventEntry currentEvent;
 	protected EventEntry previousEvent;
@@ -53,48 +53,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	/**
 	 * Initializes the NextActivity and StopTracking buttons.
 	 */
-	private void initializeActivityButtons() {
+	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
-
-		nextActivityButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finishCurrentActivity(true);
-				editTextEventName.requestFocus();
-			}
-		});
-
-		stopTrackingButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finishCurrentActivity(false);
-				focusOnNothing();
-
-			}
-		});
-	}
-
-	/**
-	 * Finishes the currently running activity and start tracking a new
-	 * activity, if specified.
-	 * 
-	 * @param createNewActivity
-	 *            Whether or not to start tracking a new activity.
-	 */
-	private void finishCurrentActivity(boolean createNewActivity) {
-		currentEvent.mEndTime = System.currentTimeMillis();
-		updateAutoComplete();
-		syncToEventFromUI();
-		updateDatabase(currentEvent);
-		previousEvent = currentEvent;
-		if (createNewActivity)
-			startNewActivity();
-		else
-			currentEvent = null;
-		updateUI();
 	}
 
 	/**
@@ -121,11 +82,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	abstract protected void initializeBottomBar();
 
 	abstract protected void initializeTimesUI();
-	
-	private void startNewActivity() {
-		currentEvent = new EventEntry();
-		updateDatabase(currentEvent);
-	}
 
 	/**
 	 * Initializes the toolbar onClickListeners and intializes references to
@@ -193,17 +149,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * @return The text that the previous event bar should have, based on the
 	 *         previousEvent.
 	 */
-	protected String getCurrentEventString() {
-		String previousActivityLabel = getString(previousEventTextID);
-		String previousEventString = previousEvent != null ? previousEvent.mName
-				: getString(previousEventDefaultID);
-		return previousActivityLabel + " " + previousEventString;
-	}
-	
-	/**
-	 * @return The text that the previous event bar should have, based on the
-	 *         previousEvent.
-	 */
 	protected String getPreviousEventString() {
 		String previousActivityLabel = getString(previousEventTextID);
 		String previousEventString = previousEvent != null ? previousEvent.mName
@@ -220,17 +165,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	/**
-	 * Updates the UI using the currentEvent and previousEvent.
-	 */
-	private void updateUI() {
-		updateTrackingUI();
-		fillViewWithEventInfo();
-	}
-
-	/**
 	 * Updates the the AutoComplete adapter with the current name/notes.
 	 */
-	private void updateAutoComplete() {
+	protected void updateAutoComplete() {
 		String activityName = editTextEventName.getText().toString();
 		String activityNotes = editTextEventNotes.getText().toString();
 		if (mActivityNames.add(activityName))
@@ -286,7 +223,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	/**
 	 * Used to switch focus away from any particular UI element.
 	 */
-	private void focusOnNothing() {
+	protected void focusOnNothing() {
 		LinearLayout dummy = (LinearLayout) findViewById(R.id.dummyLayout);
 		editTextEventName.clearFocus();
 		editTextEventNotes.clearFocus();

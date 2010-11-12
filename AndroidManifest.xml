@@ -17,5 +17,6 @@
 		<activity android:name=".Settings" android:launchMode="singleTask"></activity>
 		<activity android:name=".EditMode"></activity>
 		<service android:name=".GPSLoggerService" />
-	</application>
+	<activity android:name=".TimeDatePicker"></activity>
+</application>
 </manifest> 
