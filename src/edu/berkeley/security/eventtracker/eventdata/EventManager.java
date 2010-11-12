@@ -179,4 +179,25 @@ public class EventManager {
 		
 
 	}
+	
+	/**
+	 * Delete all of the GPSEntrys with the given eventRowID
+	 * 
+	 * @param eventRowID
+	 *            id of gpsEntrys to delete
+	 * @return true if deleted, false otherwise
+	 */
+	public boolean deleteGPSEntries(long eventRowID) {
+		Cursor c=mGPSHelper.getGPSCoordinates(eventRowID);
+		
+		if (c.getCount() > 0) {
+			while (c.moveToNext()) {
+				long rowID=c.getColumnIndex(GPSDbAdapter.KEY_ROWID);
+				mGPSHelper.deleteEntry(rowID);
+			}
+		}
+		c.close();
+		return true;
+	}
+	
 }

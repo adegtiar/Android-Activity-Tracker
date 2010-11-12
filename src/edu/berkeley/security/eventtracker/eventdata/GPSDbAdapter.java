@@ -79,7 +79,7 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 	 *            id of note to delete
 	 * @return true if deleted, false otherwise
 	 */
-	public boolean deleteEvent(Long rowId) {
+	public boolean deleteEntry(Long rowId) {
 
 		return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
 	}
@@ -107,7 +107,7 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 	}
 
 	public boolean updateGPSEntry(long rowId, long eventRowID,
-			double longitude, double latitude) {
+							double longitude, double latitude) {
 		ContentValues args = new ContentValues();
 		args.put(KEY_EVENT_ROWID, eventRowID);
 		args.put(KEY_LONGITUDE, longitude);
