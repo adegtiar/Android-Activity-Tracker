@@ -65,8 +65,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
 		// TODO uncomment these to disable soft keyboard
-		editTextEventName.setInputType(0);
-		editTextEventNotes.setInputType(0);
+//		editTextEventName.setInputType(0);
+//		editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line,
