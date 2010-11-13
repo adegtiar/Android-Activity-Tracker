@@ -14,26 +14,6 @@ public class TimeDatePicker extends Activity {
 	private DatePicker date;
 	private Calendar cal;
 
-	private void updateTimes() {
-		cal = Calendar.getInstance();
-
-	}
-
-	/*
-	 * @Override protected void onResume() { super.onResume();
-	 * cal=Calendar.getInstance();
-	 * time=((TimePicker)findViewById(R.id.timePicker));
-	 * time.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
-	 * time.setCurrentMinute(cal.get(Calendar.MINUTE));
-	 * 
-	 * date=((DatePicker)findViewById(R.id.datePicker));
-	 * 
-	 * date.updateDate(cal.get(Calendar.YEAR),
-	 * cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
-	 * 
-	 * }
-	 */
-
 	@Override
 	protected void onResume() {
 		super.onResume();

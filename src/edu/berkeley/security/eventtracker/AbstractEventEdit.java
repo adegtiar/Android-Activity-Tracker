@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -136,7 +135,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 			previousEvent = null;
 		}
 	}
-	
+
 	protected abstract void syncToEventFromUI();
 
 	/**
@@ -144,7 +143,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * current/previous events.
 	 */
 	protected abstract void fillViewWithEventInfo();
-	
+
 	/**
 	 * @return The text that the previous event bar should have, based on the
 	 *         previousEvent.

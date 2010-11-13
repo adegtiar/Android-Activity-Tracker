@@ -27,7 +27,6 @@ abstract public class EventActivity extends Activity {
 	protected static Intent serviceIntent;
 	public static SharedPreferences settings;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,9 +36,9 @@ abstract public class EventActivity extends Activity {
 		v.inflate();
 
 		initializeToolbar();
-		
+
 		mEventManager = EventManager.getManager(this);
-	
+
 	}
 
 	/**
@@ -174,33 +173,33 @@ abstract public class EventActivity extends Activity {
 	abstract protected int getLayoutResource();
 
 	// GPS
-	
-//	private class SampleLocationListener implements LocationListener {
-//		public void onLocationChanged(Location location) {
-//			EventEntry currentEvent = getCurrentEvent();
-//			if (location != null && currentEvent != null) {
-//
-//				mEventManager.addGPSCoordinates(new GPSCoordinates(location
-//						.getLatitude(), location.getLongitude()),
-//						currentEvent.mDbRowID);
-//
-//			}
-//		}
-//
-//		public void onProviderDisabled(String provider) {
-//			// TODO Auto-generated method stub
-//			Log.d("SampleLocationListener onProviderDisabled", provider);
-//		}
-//
-//		public void onProviderEnabled(String provider) {
-//			// TODO Auto-generated method stub
-//			Log.d("SampleLocationListener onProviderEnabled", provider);
-//		}
-//
-//		public void onStatusChanged(String provider, int status, Bundle extras) {
-//			// TODO Auto-generated method stub
-//			Log.d("SampleLocationListener onStatusChanged", provider);
-//		}
-//	}
+
+	// private class SampleLocationListener implements LocationListener {
+	// public void onLocationChanged(Location location) {
+	// EventEntry currentEvent = getCurrentEvent();
+	// if (location != null && currentEvent != null) {
+	//
+	// mEventManager.addGPSCoordinates(new GPSCoordinates(location
+	// .getLatitude(), location.getLongitude()),
+	// currentEvent.mDbRowID);
+	//
+	// }
+	// }
+	//
+	// public void onProviderDisabled(String provider) {
+	// // TODO Auto-generated method stub
+	// Log.d("SampleLocationListener onProviderDisabled", provider);
+	// }
+	//
+	// public void onProviderEnabled(String provider) {
+	// // TODO Auto-generated method stub
+	// Log.d("SampleLocationListener onProviderEnabled", provider);
+	// }
+	//
+	// public void onStatusChanged(String provider, int status, Bundle extras) {
+	// // TODO Auto-generated method stub
+	// Log.d("SampleLocationListener onStatusChanged", provider);
+	// }
+	// }
 
 }

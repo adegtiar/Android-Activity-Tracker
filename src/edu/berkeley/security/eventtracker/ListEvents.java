@@ -78,8 +78,6 @@ public class ListEvents extends EventActivity {
 					finish(); // trying to edit event in progress
 				else
 					startEditEventActivity(id);
-//				TextView t = (TextView) view.findViewById(R.id.row_event_title);
-//				t.setText(t.getText() + "+");
 			}
 		});
 

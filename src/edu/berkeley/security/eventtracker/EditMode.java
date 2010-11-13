@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +9,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class EditMode extends AbstractEventEdit {
-	
+
 	private EventEntry editingEvent;
 	private Button startTimeButton;
 	private Button endTimeButton;
@@ -42,7 +41,7 @@ public class EditMode extends AbstractEventEdit {
 
 	@Override
 	protected boolean updateTrackingUI() {
-		boolean isTracking = isTracking(); 
+		boolean isTracking = isTracking();
 		bottomBar.setText(getCurrentEventString());
 		textViewIsTracking.setText(R.string.editModeHeader);
 		return isTracking;
@@ -63,13 +62,16 @@ public class EditMode extends AbstractEventEdit {
 		});
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.berkeley.security.eventtracker.AbstractEventEdit#initializeActivityButtons()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeedu.berkeley.security.eventtracker.AbstractEventEdit#
+	 * initializeActivityButtons()
 	 */
 	@Override
 	protected void initializeActivityButtons() {
 		super.initializeActivityButtons();
-		
+
 		nextActivityButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -93,31 +95,31 @@ public class EditMode extends AbstractEventEdit {
 	protected void initializeTimesUI() {
 		startTimeButton = (Button) findViewById(R.id.startTimeButton);
 		endTimeButton = (Button) findViewById(R.id.endTimeButton);
-		
+
 		startTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
-				i.putExtra("Time",editingEvent.mStartTime);
+				i.putExtra("Time", editingEvent.mStartTime);
 				startActivityForResult(i, ColumnType.START_TIME.ordinal());
 			}
 		});
 		endTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
-				i.putExtra("Time",editingEvent.mEndTime);
+				i.putExtra("Time", editingEvent.mEndTime);
 				startActivityForResult(i, ColumnType.END_TIME.ordinal());
 			}
 		});
 	}
-	
+
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, 
+	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		Bundle extras = intent.getExtras();
-		long time=extras.getLong("Time");
+		long time = extras.getLong("Time");
 		ColumnType type = ColumnType.values()[requestCode];
-		switch(type) {
+		switch (type) {
 		case START_TIME:
 			editingEvent.mStartTime = time;
 			break;
@@ -146,7 +148,7 @@ public class EditMode extends AbstractEventEdit {
 		editingEvent.mName = editTextEventName.getText().toString();
 		editingEvent.mNotes = editTextEventNotes.getText().toString();
 	}
-	
+
 	/**
 	 * @return The text that the current event bar should have, based on the
 	 *         currentEvent.
