@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,17 +15,20 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
+	private ProgressIndicatorSpinner myProgressTimer;
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
-		
-		serviceIntent=new Intent(this, GPSLoggerService.class);
-		settings=   getSharedPreferences(Settings.PREFERENCE_FILENAME, MODE_PRIVATE);
-		if(Settings.isGPSEnabled()){
+
+		serviceIntent = new Intent(this, GPSLoggerService.class);
+		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
+				MODE_PRIVATE);
+		if (Settings.isGPSEnabled()) {
 			startService(serviceIntent);
 		}
+		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}
 
 	@Override
@@ -100,6 +104,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 		@Override
 		public void afterTextChanged(Editable s) {
+			myProgressTimer.spin();
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
@@ -123,11 +128,11 @@ public class TrackingMode extends AbstractEventEdit {
 		textViewStartTime.setText(currentEvent
 				.formatColumn(ColumnType.START_TIME));
 	}
-	
+
 	@Override
 	protected void initializeActivityButtons() {
 		super.initializeActivityButtons();
-		
+
 		nextActivityButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -147,7 +152,7 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 		});
 	}
-	
+
 	/**
 	 * Finishes the currently running activity and start tracking a new
 	 * activity, if specified.
@@ -167,13 +172,12 @@ public class TrackingMode extends AbstractEventEdit {
 			currentEvent = null;
 		updateUI();
 	}
-	
-	
+
 	private void startNewActivity() {
 		currentEvent = new EventEntry();
 		updateDatabase(currentEvent);
 	}
-	
+
 	/**
 	 * Updates the UI using the currentEvent and previousEvent.
 	 */
@@ -181,41 +185,71 @@ public class TrackingMode extends AbstractEventEdit {
 		updateTrackingUI();
 		fillViewWithEventInfo();
 	}
-	
-	private class ProgressTimer {
+
+	/**
+	 * Controls the activity's progress indicator spinner. Sets it to spin for a
+	 * set amount of time when the spin method is called.
+	 */
+	private class ProgressIndicatorSpinner {
 		private CountDownTimer myTimer;
 		private boolean isSpinning = false;
 		private long spinTime;
-		
-		private ProgressTimer(long spinTime) {
+
+		private ProgressIndicatorSpinner(long spinTime) {
 			this.spinTime = spinTime;
+			setProgressBarIndeterminateVisibility(isSpinning);
 			resetTimer();
 		}
-		
+
+		/**
+		 * Starts the activity progress indicator spinner. If it is already
+		 * spinning, it resets the time for the spinner to stop.
+		 */
 		private void spin() {
-			synchronized(myTimer) {
-				textViewStartTime.setText("Spinning...");
+			synchronized (myTimer) {
 				if (isSpinning)
 					myTimer.cancel();
-				isSpinning = true;
-				resetTimer().start();;
+				setSpinning(true);
+				resetTimer().start();
 			}
 		}
-		
-		private CountDownTimer resetTimer() {
-			return myTimer = new MyTimer(spinTime, Long.MAX_VALUE); 
-		}
-		
-		private class MyTimer extends CountDownTimer {
 
-			public MyTimer(long millisInFuture, long countDownInterval) {
+		/**
+		 * Sets the spinner to start or stop spinning.
+		 * 
+		 * @param isSpinning
+		 *            Whether the spinner should spin or not.
+		 */
+		private void setSpinning(boolean isSpinning) {
+			synchronized (myTimer) {
+				if (this.isSpinning == isSpinning)
+					return;
+				this.isSpinning = isSpinning;
+				setProgressBarIndeterminateVisibility(isSpinning);
+			}
+		}
+
+		/**
+		 * Resets the timer to its initial value. Does not start the timer.
+		 * 
+		 * @return The timer it reset.
+		 */
+		private CountDownTimer resetTimer() {
+			return myTimer = new SpinTimer(spinTime, Long.MAX_VALUE);
+		}
+
+		/**
+		 * A timer that disables the spinner upon finish.
+		 */
+		private class SpinTimer extends CountDownTimer {
+
+			public SpinTimer(long millisInFuture, long countDownInterval) {
 				super(millisInFuture, countDownInterval);
 			}
 
 			@Override
 			synchronized public void onFinish() {
-				isSpinning = false;
-				textViewStartTime.setText("Spinning...Done!");
+				setSpinning(false);
 				resetTimer();
 			}
 
@@ -223,7 +257,7 @@ public class TrackingMode extends AbstractEventEdit {
 			public void onTick(long millisUntilFinished) {
 				// do nothing
 			}
-			
+
 		}
 	}
 }
