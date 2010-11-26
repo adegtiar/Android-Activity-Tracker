@@ -10,8 +10,10 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Event" />
 		<AutoCompleteTextView android:layout_below="@+id/EventText"
+			android:imeOptions="flagNoExtractUi"
+			
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:id="@+id/editEventName" android:imeOptions="actionDone">
+			android:id="@+id/editEventName" >
 		</AutoCompleteTextView>
 		<TextView android:id="@+id/notesText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
