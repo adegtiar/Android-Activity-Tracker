@@ -2,13 +2,20 @@ package edu.berkeley.security.eventtracker;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
@@ -18,7 +25,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected static final int previousEventTextID = R.string.previousActivityText;
 	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
 	protected static final int currentEventTextID = R.string.currentActivityText;
-
+	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
+	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
 	protected EventEntry currentEvent;
 	protected EventEntry previousEvent;
 
@@ -34,6 +42,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
+	protected ImageButton eventVoiceButton;
+	protected ImageButton noteVoiceButton;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +55,13 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeBottomBar();
 		initializeActivityButtons();
 		initializeTimesUI();
-
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
+		initializeVoice();
+		
 	}
+
+
 
 	/**
 	 * Initializes the NextActivity and StopTracking buttons.
@@ -65,8 +79,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
 		// TODO uncomment these to disable soft keyboard
-		editTextEventName.setInputType(0);
-		editTextEventNotes.setInputType(0);
+//		editTextEventName.setInputType(0);
+//		editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line,
@@ -218,7 +232,65 @@ abstract public class AbstractEventEdit extends EventActivity {
 				adapterNotes.add(nextEvent.mNotes);
 		}
 	}
+	protected void initializeVoice() {
+		eventVoiceButton=(ImageButton)findViewById(R.id.eventVoiceButton);
+		noteVoiceButton = (ImageButton) findViewById(R.id.noteVoiceButton);
+		  // Check to see if a recognition activity is present
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        if (activities.size() != 0) {
+            eventVoiceButton.setOnClickListener(new OnClickListener() {
+    			@Override
+    			public void onClick(View v) {
+    				startVoiceRecognitionActivity(VOICE_RECOGNITION_REQUEST_CODE_NAME);
+    			}
+    		});
+            noteVoiceButton.setOnClickListener(new OnClickListener() {
+    			@Override
+    			public void onClick(View v) {
+    				startVoiceRecognitionActivity(VOICE_RECOGNITION_REQUEST_CODE_NOTES);
+    			}
+    		});
+        } else {
+            eventVoiceButton.setEnabled(false);
+            noteVoiceButton.setEnabled(false);
+//            speakButton.setText("Recognizer not present");
+        }
+	}
+	 /**
+     * Fire an intent to start the speech recognition activity.
+     */
+    protected void startVoiceRecognitionActivity(int requestCode) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
+        startActivityForResult(intent, requestCode);
+    }
+    
+    protected abstract void setNameText(String name);
+    protected abstract void setNotesText(String name);
+    
+    /**
+     * Handle the results from the recognition activity.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	if(resultCode != RESULT_OK)
+    		 return;
+    	  ArrayList<String> matches = data.getStringArrayListExtra(
+                  RecognizerIntent.EXTRA_RESULTS);
+        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE_NAME) {
+      
+            setNameText(matches.get(0));
+        }else if(requestCode == VOICE_RECOGNITION_REQUEST_CODE_NOTES){
+        	setNotesText(matches.get(0));
+        }
 
+        
+    }
 	/**
 	 * Used to switch focus away from any particular UI element.
 	 */

@@ -54,6 +54,7 @@ public class TrackingMode extends AbstractEventEdit {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 	}
 
+	
 	@Override
 	protected void fillViewWithEventInfo() {
 		if (currentEvent != null) {
@@ -95,6 +96,25 @@ public class TrackingMode extends AbstractEventEdit {
 		super.initializeEditTexts();
 		editTextEventName.addTextChangedListener(new StartTrackingListener());
 		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
+	}
+
+	@Override
+	protected void setNameText(String name){
+		if(currentEvent == null){
+			currentEvent=new EventEntry();
+		}
+		currentEvent.mName=name;
+		updateDatabase(currentEvent);
+		
+	}
+	@Override
+	protected void setNotesText(String notes){
+		if(currentEvent == null){
+			currentEvent = new EventEntry();
+		}
+		currentEvent.mNotes=notes;
+		updateDatabase(currentEvent);
+			
 	}
 
 	/**

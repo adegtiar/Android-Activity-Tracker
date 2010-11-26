@@ -6,19 +6,49 @@
 		android:layout_width="fill_parent" android:layout_alignParentTop="true"
 		android:orientation="vertical" android:id="@+id/edit_event_contents"
 		android:layout_above="@+id/previous_activity_bar">
+		
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Event" />
-		<AutoCompleteTextView android:layout_below="@+id/EventText"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:id="@+id/editEventName" android:imeOptions="actionDone">
-		</AutoCompleteTextView>
+			
+			
+		<LinearLayout android:id="@+id/eventVoiceContainer"
+			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
+			<AutoCompleteTextView 
+				android:layout_below="@+id/EventText"
+				android:id="@+id/editEventName" 
+				android:layout_height="wrap_content" 
+				android:layout_width="wrap_content" 
+				android:layout_weight="10"/>
+		
+			
+			<ImageButton android:id="@+id/eventVoiceButton"
+				android:layout_gravity="center" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_btn_speak_now"/>    
+		
+		</LinearLayout>
+		
 		<TextView android:id="@+id/notesText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Notes" />
-		<AutoCompleteTextView android:id="@+id/editNotes"
-			android:layout_width="fill_parent" android:imeOptions="actionDone"
-			android:layout_height="wrap_content" />
+			
+	
+		<LinearLayout android:id="@+id/noteVoiceContainer"
+			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
+			<AutoCompleteTextView android:id="@+id/editNotes"
+				android:imeOptions="actionDone"
+				android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="10"/>
+		
+			<ImageButton android:id="@+id/noteVoiceButton"
+				android:layout_gravity="center" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_btn_speak_now"/>    
+			  
+		</LinearLayout>
+			
 		<TextView android:textStyle="bold" android:layout_below="@id/editNotes"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/startTime" android:id="@+id/startTimeLabel"

@@ -9,18 +9,46 @@
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Event" />
+			
+			
+	<LinearLayout android:id="@+id/eventVoiceContainer"
+			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
+					
 		<AutoCompleteTextView android:layout_below="@+id/EventText"
 			android:imeOptions="flagNoExtractUi"
 			
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:layout_weight="10"
 			android:id="@+id/editEventName" >
 		</AutoCompleteTextView>
+		
+		<ImageButton android:id="@+id/eventVoiceButton"
+				android:layout_gravity="center" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_btn_speak_now"/>  
+		
+	</LinearLayout>
+		
+		
 		<TextView android:id="@+id/notesText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Notes" />
-		<AutoCompleteTextView android:id="@+id/editNotes"
-			android:layout_width="fill_parent" android:imeOptions="actionDone"
-			android:layout_height="wrap_content" />
+			
+		<LinearLayout android:id="@+id/noteVoiceContainer"
+			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
+			<AutoCompleteTextView android:id="@+id/editNotes"
+				android:layout_width="fill_parent" android:imeOptions="actionDone"
+				android:layout_height="wrap_content" 
+				android:layout_weight="10"/>
+				
+			<ImageButton android:id="@+id/noteVoiceButton"
+				android:layout_gravity="center" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_btn_speak_now"/>   
+		</LinearLayout>
+		
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/startEndTimeContainer"
 			android:orientation="horizontal">

@@ -116,6 +116,9 @@ public class EditMode extends AbstractEventEdit {
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode != ColumnType.START_TIME.ordinal()
+				&& requestCode != ColumnType.END_TIME.ordinal())
+			return;
 		Bundle extras = intent.getExtras();
 		long time = extras.getLong("Time");
 		ColumnType type = ColumnType.values()[requestCode];
@@ -127,6 +130,22 @@ public class EditMode extends AbstractEventEdit {
 			editingEvent.mEndTime = time;
 		}
 		fillViewWithEventInfo();
+	}
+
+	protected void setNameText(String name) {
+		if (editingEvent != null) {
+			editingEvent.mName = name;
+			updateDatabase(editingEvent);
+
+		}
+	}
+
+	protected void setNotesText(String notes) {
+		if (editingEvent != null) {
+			editingEvent.mNotes = notes;
+			updateDatabase(editingEvent);
+
+		}
 	}
 
 	@Override
