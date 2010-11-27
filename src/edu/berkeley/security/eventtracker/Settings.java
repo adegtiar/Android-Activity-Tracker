@@ -43,11 +43,12 @@ public class Settings extends EventActivity {
 			@Override
 			public void onClick(View view) {
 				CheckBox gps = (CheckBox) view;
-				if (gps.isChecked() && mEventManager.isTracking()) {
-					startService(serviceIntent);
+				if (gps.isChecked() && mEventManager.isTracking()) {	
+					serviceIntent.putExtra("gps", true);
 				} else {
-					stopService(serviceIntent);
+					serviceIntent.putExtra("gps", false);
 				}
+				startService(serviceIntent);
 				GPSSensitivity.setEnabled(gps.isChecked());
 				GPSUpdateTime.setEnabled(gps.isChecked());
 

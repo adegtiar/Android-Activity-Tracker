@@ -84,19 +84,32 @@ public class GPSLoggerService extends Service {
 		}
 
 	}
+	
+	@Override
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
+		boolean gpsEnabled=intent.getBooleanExtra("gps", false);
+		if (gpsEnabled && locationListener==null){
+			startLoggerService();
+		}
+		if(!gpsEnabled && locationListener != null){
+			shutdownLoggerService();
+			locationListener=null;
+		}
+	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		startLoggerService();
+		
 
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		shutdownLoggerService();
+		if(lm != null)
+			shutdownLoggerService();
 
 	}
 
