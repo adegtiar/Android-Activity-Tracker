@@ -9,68 +9,69 @@
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Event" />
-			
-			
-	<LinearLayout android:id="@+id/eventVoiceContainer"
-			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
-					
-		<AutoCompleteTextView android:layout_below="@+id/EventText"
-			android:imeOptions="flagNoExtractUi"
-			
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:layout_weight="10"
-			android:id="@+id/editEventName" >
-		</AutoCompleteTextView>
-		
-		<ImageButton android:id="@+id/eventVoiceButton"
-				android:layout_gravity="center" 
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"
-				android:src="@drawable/ic_btn_speak_now"/>  
-		
-	</LinearLayout>
-		
-		
+
+
+		<LinearLayout android:id="@+id/eventVoiceContainer"
+			android:orientation="horizontal" android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+
+			<AutoCompleteTextView android:layout_below="@+id/EventText"
+				android:imeOptions="flagNoExtractUi" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:layout_weight="10"
+				android:id="@+id/editEventName">
+			</AutoCompleteTextView>
+
+			<ImageButton android:id="@+id/eventVoiceButton"
+				android:layout_gravity="center" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_btn_speak_now" />
+
+		</LinearLayout>
+
+
 		<TextView android:id="@+id/notesText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="@string/Notes" />
-			
+
 		<LinearLayout android:id="@+id/noteVoiceContainer"
-			android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">	
+			android:orientation="horizontal" android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
 			<AutoCompleteTextView android:id="@+id/editNotes"
 				android:layout_width="fill_parent" android:imeOptions="actionDone"
-				android:layout_height="wrap_content" 
-				android:layout_weight="10"/>
-				
+				android:layout_height="wrap_content" android:layout_weight="10" />
+
 			<ImageButton android:id="@+id/noteVoiceButton"
-				android:layout_gravity="center" 
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"
-				android:src="@drawable/ic_btn_speak_now"/>   
+				android:layout_gravity="center" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_btn_speak_now" />
 		</LinearLayout>
-		
+
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/startEndTimeContainer"
 			android:orientation="horizontal">
-			<LinearLayout android:layout_height="wrap_content" android:id="@+id/startTimeContainer"
-				android:orientation="vertical" android:layout_width="fill_parent" android:layout_weight="1">
+			<LinearLayout android:layout_height="wrap_content"
+				android:id="@+id/startTimeContainer" android:orientation="vertical"
+				android:layout_width="fill_parent" android:layout_weight="1">
 				<TextView android:textStyle="bold" android:layout_below="@id/editNotes"
 					android:layout_width="wrap_content" android:layout_height="wrap_content"
 					android:text="@string/startTime" android:id="@+id/startTimeLabel"
 					android:focusable="true" />
 				<Button android:id="@+id/startTimeButton"
-					android:layout_height="40px" android:layout_gravity="center" android:layout_width="wrap_content" android:text="@string/defaultDate"/>
+					android:layout_height="40px" android:layout_gravity="center"
+					android:layout_width="wrap_content" android:text="@string/defaultDate" />
 			</LinearLayout>
-			<LinearLayout android:layout_height="wrap_content" android:id="@+id/endTimeContainer"
-				android:orientation="vertical" android:layout_width="fill_parent" android:layout_weight="1">
+			<LinearLayout android:layout_height="wrap_content"
+				android:id="@+id/endTimeContainer" android:orientation="vertical"
+				android:layout_width="fill_parent" android:layout_weight="1">
 				<TextView android:textStyle="bold" android:layout_below="@id/editNotes"
 					android:layout_width="wrap_content" android:layout_height="wrap_content"
-					android:focusable="true"
-					android:id="@+id/endTimeLabel" android:text="@string/endTime"/>
-			<Button android:id="@+id/endTimeButton" android:layout_height="40px" android:layout_gravity="center" android:layout_width="wrap_content" android:text="@string/defaultDate"/></LinearLayout>
-			
+					android:focusable="true" android:id="@+id/endTimeLabel"
+					android:text="@string/endTime" />
+				<Button android:id="@+id/endTimeButton"
+					android:layout_height="40px" android:layout_gravity="center"
+					android:layout_width="wrap_content" android:text="@string/defaultDate" />
+			</LinearLayout>
+
 		</LinearLayout>
-		
+
 		<LinearLayout android:id="@+id/ActivityButtons"
 			android:layout_width="fill_parent" android:layout_margin="10dip"
 			android:layout_gravity="center" android:gravity="center"
@@ -84,11 +85,12 @@
 				android:layout_width="50dip" android:layout_weight="3"
 				android:textSize="8pt" android:text="@string/cancelText"></Button>
 		</LinearLayout>
-</LinearLayout>
+	</LinearLayout>
 	<Button android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true" android:layout_width="fill_parent"
 		android:clickable="false" android:gravity="left|center_vertical"
-		android:id="@+id/previous_activity_bar" android:focusable="true" android:text="@string/activityInProgressText"/>
+		android:id="@+id/previous_activity_bar" android:focusable="true"
+		android:text="@string/activityInProgressText" />
 	<LinearLayout android:id="@+id/dummyLayout"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:focusable="true" android:focusableInTouchMode="true">

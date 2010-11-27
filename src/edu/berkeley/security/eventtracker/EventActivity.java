@@ -156,7 +156,7 @@ abstract public class EventActivity extends Activity {
 		} else {
 			stopService(serviceIntent);
 		}
-		if (isTracking)
+		if (isTracking && Settings.areNotificationsEnabled())
 			enableTrackingNotification();
 		else
 			disableTrackingNotification();

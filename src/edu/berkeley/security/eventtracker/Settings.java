@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
@@ -16,10 +18,13 @@ public class Settings extends EventActivity {
 	public static final String GPSTime = "GPSTime";
 	public static final String Sensitivity = "Sensitivity";
 	public static final String isGPSEnabled = "isGPSEnabled";
+	public static final String areNotificationsEnabled = "notificationsEnabled";
 
 	private CheckBox GPSEnabled;
 	private NumberPicker GPSSensitivity;
 	private NumberPicker GPSUpdateTime;
+
+	private CheckBox notificationsEnabled;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,8 @@ public class Settings extends EventActivity {
 		GPSUpdateTime = (NumberPicker) findViewById(R.id.Picker1);
 		GPSSensitivity = (NumberPicker) findViewById(R.id.Picker2);
 		GPSEnabled = (CheckBox) findViewById(R.id.plain_cb);
+
+		notificationsEnabled = (CheckBox) findViewById(R.id.notifications_cb);
 
 		focusOnNothing();
 		initializeButtons();
@@ -46,6 +53,17 @@ public class Settings extends EventActivity {
 
 			}
 		});
+
+		notificationsEnabled
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						Settings.this.updatePreferences();
+						Settings.this.updateTrackingStatus();
+					}
+				});
 	}
 
 	@Override
@@ -75,6 +93,8 @@ public class Settings extends EventActivity {
 		prefEditor.putBoolean(isGPSEnabled, GPSEnabled.isChecked());
 		prefEditor.putInt(GPSTime, GPSUpdateTime.getValue());
 		prefEditor.putInt(Sensitivity, GPSSensitivity.getValue());
+		prefEditor.putBoolean(areNotificationsEnabled, notificationsEnabled
+				.isChecked());
 		prefEditor.commit();
 	}
 
@@ -97,6 +117,10 @@ public class Settings extends EventActivity {
 
 	public static int getGPSUpdateTime() {
 		return settings.getInt(GPSTime, 1);
+	}
+	
+	public static boolean areNotificationsEnabled() {
+		return settings.getBoolean(areNotificationsEnabled, true);
 	}
 
 }
