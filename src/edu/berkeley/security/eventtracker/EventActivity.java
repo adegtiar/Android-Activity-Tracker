@@ -138,6 +138,11 @@ abstract public class EventActivity extends Activity {
 	protected boolean updateTrackingUI() {
 		boolean isTracking = isTracking();
 		updateTrackingUI(isTracking);
+		if(isTracking && Settings.isGPSEnabled()){
+			startService(serviceIntent);
+		}else{
+			stopService(serviceIntent);
+		}
 		return isTracking;
 	}
 
@@ -158,6 +163,7 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected boolean isTracking() {
 		return mEventManager.isTracking();
+	
 	}
 
 	/**

@@ -44,6 +44,11 @@ public class EditMode extends AbstractEventEdit {
 		boolean isTracking = isTracking();
 		bottomBar.setText(getCurrentEventString());
 		textViewIsTracking.setText(R.string.editModeHeader);
+		if(isTracking && Settings.isGPSEnabled()){
+			startService(serviceIntent);
+		}else{
+			stopService(serviceIntent);
+		}
 		return isTracking;
 	}
 

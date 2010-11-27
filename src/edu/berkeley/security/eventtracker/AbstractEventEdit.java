@@ -208,6 +208,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	protected boolean isTracking() {
 		return currentEvent != null;
+		
 	}
 
 	public EventEntry getCurrentEvent() {

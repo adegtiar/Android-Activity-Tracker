@@ -31,38 +31,20 @@ public class Settings extends EventActivity {
 
 		focusOnNothing();
 		initializeButtons();
-		// listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-		// public void onSharedPreferenceChanged(SharedPreferences prefs, String
-		// key) {
-		// if(key.equals(isGPSEnabled)){
-		// if(isGPSEnabled()){
-		// startService(serviceIntent);
-		//						
-		// }else{
-		// stopService(serviceIntent);
-		// }
-		//						
-		//						
-		// }
-		//				  
-		// }
-		// };
-		// settings.registerOnSharedPreferenceChangeListener(listener);
+		
 
 		GPSEnabled.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-				CheckBox view2 = (CheckBox) view;
-				if (view2.isChecked()) {
-
+				CheckBox gps = (CheckBox) view;
+				if (gps.isChecked() && mEventManager.isTracking()) {
 					startService(serviceIntent);
 				} else {
-					Intent test = serviceIntent;
 					stopService(serviceIntent);
 				}
-				GPSSensitivity.setEnabled(view2.isChecked());
-				GPSUpdateTime.setEnabled(view2.isChecked());
+				GPSSensitivity.setEnabled(gps.isChecked());
+				GPSUpdateTime.setEnabled(gps.isChecked());
 
 			}
 		});

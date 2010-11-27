@@ -25,9 +25,7 @@ public class TrackingMode extends AbstractEventEdit {
 		serviceIntent = new Intent(this, GPSLoggerService.class);
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		if (Settings.isGPSEnabled()) {
-			startService(serviceIntent);
-		}
+		
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}
 
@@ -36,6 +34,8 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onPause();
 		updateDatabase(currentEvent);
 	}
+	
+
 
 	@Override
 	protected void initializeBottomBar() {
@@ -80,6 +80,11 @@ public class TrackingMode extends AbstractEventEdit {
 		boolean isTracking = super.updateTrackingUI();
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
+		if(isTracking && Settings.isGPSEnabled()){
+			startService(serviceIntent);
+		}else{
+			stopService(serviceIntent);
+		}
 		return isTracking;
 	}
 
