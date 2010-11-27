@@ -170,14 +170,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	/**
-	 * Changes the appearance of this activity to reflect whether or not an
-	 * event is in progress.
-	 */
-	protected boolean updateTrackingUI() {
-		return super.updateTrackingUI();
-	}
-
-	/**
 	 * Updates the the AutoComplete adapter with the current name/notes.
 	 */
 	protected void updateAutoComplete() {

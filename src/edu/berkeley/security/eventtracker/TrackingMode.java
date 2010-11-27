@@ -76,16 +76,10 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected boolean updateTrackingUI() {
-		boolean isTracking = super.updateTrackingUI();
+	protected void updateTrackingUI(boolean isTracking) {
+		super.updateTrackingUI(isTracking);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
-		if(isTracking && Settings.isGPSEnabled()){
-			startService(serviceIntent);
-		}else{
-			stopService(serviceIntent);
-		}
-		return isTracking;
 	}
 
 	@Override
@@ -134,7 +128,7 @@ public class TrackingMode extends AbstractEventEdit {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
 				updateStartTimeUI();
-				updateTrackingUI();
+				updateTrackingStatus();
 			}
 		}
 
@@ -195,20 +189,13 @@ public class TrackingMode extends AbstractEventEdit {
 			startNewActivity();
 		else
 			currentEvent = null;
-		updateUI();
+		updateTrackingStatus();
+		fillViewWithEventInfo();
 	}
 
 	private void startNewActivity() {
 		currentEvent = new EventEntry();
 		updateDatabase(currentEvent);
-	}
-
-	/**
-	 * Updates the UI using the currentEvent and previousEvent.
-	 */
-	private void updateUI() {
-		updateTrackingUI();
-		fillViewWithEventInfo();
 	}
 
 	/**

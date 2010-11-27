@@ -118,7 +118,7 @@ public class ListEvents extends EventActivity {
 			mEventManager.deleteEvent(rowId);
 			mEventsCursor.requery();
 			if (isInProgress) {
-				updateTrackingUI(false);
+				updateTrackingStatus(false);
 			}
 		}
 	}
