@@ -152,14 +152,21 @@ abstract public class EventActivity extends Activity {
 	protected void updateTrackingStatus(boolean isTracking) {
 		updateTrackingUI(isTracking);
 		if (isTracking && Settings.isGPSEnabled()) {
-			startService(serviceIntent);
-		} else {
-			stopService(serviceIntent);
+			serviceIntent.putExtra("gps", Settings.isGPSEnabled());
 		}
-		if (isTracking)
+		
+		if (isTracking){
+			startService(serviceIntent);
 			enableTrackingNotification();
-		else
+		}
+		else{
+			stopService(serviceIntent);
 			disableTrackingNotification();
+		}
+	}
+	
+	protected void startUpService(){
+		
 	}
 
 	private void enableTrackingNotification() {
