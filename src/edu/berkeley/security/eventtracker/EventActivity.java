@@ -26,7 +26,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 abstract public class EventActivity extends Activity {
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
-	private static final int TRACKING_NOTIFICATION = 1;
+	static final int TRACKING_NOTIFICATION = 1;
 	protected TextView textViewIsTracking;
 	protected EventManager mEventManager;
 	protected static Intent serviceIntent;
@@ -156,7 +156,6 @@ abstract public class EventActivity extends Activity {
 		}
 		if (isTracking){
 			startService(serviceIntent);
-			enableTrackingNotification();
 		}
 		else{
 			stopService(serviceIntent);
@@ -168,30 +167,7 @@ abstract public class EventActivity extends Activity {
 		
 	}
 
-	private void enableTrackingNotification() {
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-
-		int icon = R.drawable.edit_icon;
-		EventEntry trackedEvent = getCurrentEvent();
-		CharSequence tickerText = "Now tracking an event.";
-		long when = System.currentTimeMillis();
-
-		Notification notification = new Notification(icon, tickerText, when);
-
-		Context context = getApplicationContext();
-		CharSequence contentTitle = "Event in progress";
-		CharSequence contentText = "Event: " + trackedEvent.mName;
-		Intent notificationIntent = new Intent(this, TrackingMode.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
-
-		notification.flags |= Notification.FLAG_NO_CLEAR;
-
-		notification.setLatestEventInfo(context, contentTitle, contentText,
-				contentIntent);
-		mNotificationManager.notify(TRACKING_NOTIFICATION, notification);
-	}
+	
 
 	private void disableTrackingNotification() {
 		String ns = Context.NOTIFICATION_SERVICE;
@@ -231,6 +207,33 @@ abstract public class EventActivity extends Activity {
 	 * @return The layout resource to inflate in onCreate.
 	 */
 	abstract protected int getLayoutResource();
+	
+	static void enableTrackingNotification(Context mContext, EventEntry trackedEvent) {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(ns);
+
+		int icon = R.drawable.edit_icon;
+		if (trackedEvent == null)
+			trackedEvent = EventManager.getManager().getCurrentEvent();
+		CharSequence tickerText = "Now tracking an event.";
+		long when = System.currentTimeMillis();
+
+		Notification notification = new Notification(icon, tickerText, when);
+
+		Context context = mContext.getApplicationContext();
+		CharSequence contentTitle = "Event in progress";
+		CharSequence contentText = "Event: " + trackedEvent.mName;
+		Intent notificationIntent = new Intent(mContext, TrackingMode.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
+				notificationIntent, 0);
+
+		notification.flags |= Notification.FLAG_NO_CLEAR;
+
+		notification.setLatestEventInfo(context, contentTitle, contentText,
+				contentIntent);
+		mNotificationManager.notify(EventActivity.TRACKING_NOTIFICATION,
+				notification);
+	}
 
 	// GPS
 

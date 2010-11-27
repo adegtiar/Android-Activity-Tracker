@@ -52,10 +52,8 @@ public class EditMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				if (isTracking()) {
-					finish();
-					EditMode.this.startTrackingActivity();
-				}
+				finish();
+				EditMode.this.startTrackingActivity();
 			}
 		});
 	}

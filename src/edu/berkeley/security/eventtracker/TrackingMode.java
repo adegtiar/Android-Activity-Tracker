@@ -123,6 +123,10 @@ public class TrackingMode extends AbstractEventEdit {
 		@Override
 		public void afterTextChanged(Editable s) {
 			myProgressTimer.spin();
+			if (currentEvent != null) {
+				currentEvent.mName = s.toString();
+				updateTrackingNotification();
+			}
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
@@ -195,6 +199,10 @@ public class TrackingMode extends AbstractEventEdit {
 	private void startNewActivity() {
 		currentEvent = new EventEntry();
 		updateDatabase(currentEvent);
+	}
+	
+	private void updateTrackingNotification() {
+		enableTrackingNotification(this, getCurrentEvent());
 	}
 
 	/**
