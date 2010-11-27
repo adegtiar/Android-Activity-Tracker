@@ -134,7 +134,7 @@ abstract public class EventActivity extends Activity {
 		settingsIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
 		startActivity(settingsIntent);
 	}
-	
+
 	/**
 	 * Calls isTracking() and updates the state accordingly.
 	 * 
@@ -145,16 +145,15 @@ abstract public class EventActivity extends Activity {
 		updateTrackingStatus(isTracking);
 		return isTracking;
 	}
-	
+
 	/**
 	 * Updates the state according to whether or not it is being tracked.
 	 */
 	protected void updateTrackingStatus(boolean isTracking) {
 		updateTrackingUI(isTracking);
-		boolean gpsEnabled = false;
-		if(isTracking && (gpsEnabled = Settings.isGPSEnabled())){
+		if (isTracking && Settings.isGPSEnabled()) {
 			startService(serviceIntent);
-		}else{
+		} else {
 			stopService(serviceIntent);
 		}
 		if (isTracking)
@@ -162,35 +161,36 @@ abstract public class EventActivity extends Activity {
 		else
 			disableTrackingNotification();
 	}
-	
-	
+
 	private void enableTrackingNotification() {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		
+
 		int icon = R.drawable.edit_icon;
 		EventEntry trackedEvent = getCurrentEvent();
 		CharSequence tickerText = "Now tracking an event.";
 		long when = System.currentTimeMillis();
 
 		Notification notification = new Notification(icon, tickerText, when);
-		
+
 		Context context = getApplicationContext();
 		CharSequence contentTitle = "Event in progress";
 		CharSequence contentText = "Event: " + trackedEvent.mName;
 		Intent notificationIntent = new Intent(this, TrackingMode.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
 
 		notification.flags |= Notification.FLAG_NO_CLEAR;
-		
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+
+		notification.setLatestEventInfo(context, contentTitle, contentText,
+				contentIntent);
 		mNotificationManager.notify(TRACKING_NOTIFICATION, notification);
 	}
-	
+
 	private void disableTrackingNotification() {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		
+
 		mNotificationManager.cancel(TRACKING_NOTIFICATION);
 	}
 
@@ -211,7 +211,7 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected boolean isTracking() {
 		return mEventManager.isTracking();
-	
+
 	}
 
 	/**

@@ -25,7 +25,7 @@ public class TrackingMode extends AbstractEventEdit {
 		serviceIntent = new Intent(this, GPSLoggerService.class);
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		
+
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}
 
@@ -34,8 +34,6 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onPause();
 		updateDatabase(currentEvent);
 	}
-	
-
 
 	@Override
 	protected void initializeBottomBar() {
@@ -54,7 +52,6 @@ public class TrackingMode extends AbstractEventEdit {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 	}
 
-	
 	@Override
 	protected void fillViewWithEventInfo() {
 		if (currentEvent != null) {
@@ -98,22 +95,23 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected void setNameText(String name){
-		if(currentEvent == null){
-			currentEvent=new EventEntry();
-		}
-		currentEvent.mName=name;
-		updateDatabase(currentEvent);
-		
-	}
-	@Override
-	protected void setNotesText(String notes){
-		if(currentEvent == null){
+	protected void setNameText(String name) {
+		if (currentEvent == null) {
 			currentEvent = new EventEntry();
 		}
-		currentEvent.mNotes=notes;
+		currentEvent.mName = name;
 		updateDatabase(currentEvent);
-			
+
+	}
+
+	@Override
+	protected void setNotesText(String notes) {
+		if (currentEvent == null) {
+			currentEvent = new EventEntry();
+		}
+		currentEvent.mNotes = notes;
+		updateDatabase(currentEvent);
+
 	}
 
 	/**
