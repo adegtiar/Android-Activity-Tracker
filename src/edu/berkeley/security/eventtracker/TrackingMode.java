@@ -26,7 +26,7 @@ public class TrackingMode extends AbstractEventEdit {
 		
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		
+
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}
 
@@ -35,8 +35,6 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onPause();
 		updateDatabase(currentEvent);
 	}
-	
-
 
 	@Override
 	protected void initializeBottomBar() {
@@ -55,7 +53,6 @@ public class TrackingMode extends AbstractEventEdit {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
 	}
 
-	
 	@Override
 	protected void fillViewWithEventInfo() {
 		if (currentEvent != null) {
@@ -77,16 +74,10 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected boolean updateTrackingUI() {
-		boolean isTracking = super.updateTrackingUI();
+	protected void updateTrackingUI(boolean isTracking) {
+		super.updateTrackingUI(isTracking);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
-		if(isTracking && Settings.isGPSEnabled()){
-			startService(serviceIntent);
-		}else{
-			stopService(serviceIntent);
-		}
-		return isTracking;
 	}
 
 	@Override
@@ -105,22 +96,23 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected void setNameText(String name){
-		if(currentEvent == null){
-			currentEvent=new EventEntry();
-		}
-		currentEvent.mName=name;
-		updateDatabase(currentEvent);
-		
-	}
-	@Override
-	protected void setNotesText(String notes){
-		if(currentEvent == null){
+	protected void setNameText(String name) {
+		if (currentEvent == null) {
 			currentEvent = new EventEntry();
 		}
-		currentEvent.mNotes=notes;
+		currentEvent.mName = name;
 		updateDatabase(currentEvent);
-			
+
+	}
+
+	@Override
+	protected void setNotesText(String notes) {
+		if (currentEvent == null) {
+			currentEvent = new EventEntry();
+		}
+		currentEvent.mNotes = notes;
+		updateDatabase(currentEvent);
+
 	}
 
 	/**
@@ -135,7 +127,7 @@ public class TrackingMode extends AbstractEventEdit {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
 				updateStartTimeUI();
-				updateTrackingUI();
+				updateTrackingStatus();
 			}
 		}
 
@@ -196,20 +188,13 @@ public class TrackingMode extends AbstractEventEdit {
 			startNewActivity();
 		else
 			currentEvent = null;
-		updateUI();
+		updateTrackingStatus();
+		fillViewWithEventInfo();
 	}
 
 	private void startNewActivity() {
 		currentEvent = new EventEntry();
 		updateDatabase(currentEvent);
-	}
-
-	/**
-	 * Updates the UI using the currentEvent and previousEvent.
-	 */
-	private void updateUI() {
-		updateTrackingUI();
-		fillViewWithEventInfo();
 	}
 
 	/**
