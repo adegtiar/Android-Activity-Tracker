@@ -23,6 +23,7 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onCreate(savedInstanceState);
 
 		serviceIntent = new Intent(this, GPSLoggerService.class);
+		
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
 		
