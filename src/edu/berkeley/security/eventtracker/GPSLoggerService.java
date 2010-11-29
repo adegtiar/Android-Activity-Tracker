@@ -33,7 +33,8 @@ public class GPSLoggerService extends Service {
 
 		minTimeMillis = Settings.getGPSUpdateTime() * 60000;
 		minDistanceMeters = Settings.getGPSSensitivity();
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMillis,
+		// TODO later
+		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMillis,
 				minDistanceMeters, locationListener);
 
 	}
