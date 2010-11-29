@@ -80,7 +80,7 @@ public class EventEntry {
 	public String toString() {
 		return "{" + mDbRowID + " : " + mName + ", ("
 				+ formatColumn(ColumnType.START_TIME) + "->"
-				+ formatColumn(ColumnType.END_TIME) + ")";
+				+ formatColumn(ColumnType.END_TIME) + ")}";
 	}
 
 	/**

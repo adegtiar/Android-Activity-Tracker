@@ -3,7 +3,6 @@ package edu.berkeley.security.eventtracker.eventdata;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.berkeley.security.eventtracker.EventActivity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -36,6 +35,7 @@ public class EventManager {
 			mEventManager = new EventManager(context).open();
 		return mEventManager;
 	}
+	
 	public static EventManager getManager() {
 		return mEventManager;
 	}
