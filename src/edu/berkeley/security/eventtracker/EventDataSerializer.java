@@ -50,7 +50,10 @@ public class EventDataSerializer extends Activity {
 		while (cursor.moveToNext()) {
 			jsonArray.put(toJSONObject(cursor.getEvent()));
 		}
+		// this is the production json output
 		//setDataResult(jsonArray.toString());
+		
+		// this is the debugging jsonArray output
 		setDataResult(jsonArray.toString(5));
 	}
 	
