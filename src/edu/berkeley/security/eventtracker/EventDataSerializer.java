@@ -16,7 +16,9 @@ import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
 public class EventDataSerializer extends Activity {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -25,11 +27,11 @@ public class EventDataSerializer extends Activity {
 		try {
 			serializeAllRowsJSON();
 		} catch (Exception e) {
-			
+
 		}
 		finish();
 	}
-	
+
 	private void serializeAllRowsString() {
 		EventManager manager = EventManager.getManager(this);
 		EventCursor cursor = manager.fetchSortedEvents();
@@ -42,7 +44,7 @@ public class EventDataSerializer extends Activity {
 		}
 		setDataResult(stringData.toString());
 	}
-	
+
 	private void serializeAllRowsJSON() throws JSONException {
 		EventManager manager = EventManager.getManager(this);
 		EventCursor cursor = manager.fetchSortedEvents();
@@ -51,12 +53,12 @@ public class EventDataSerializer extends Activity {
 			jsonArray.put(toJSONObject(cursor.getEvent()));
 		}
 		// this is the production json output
-		//setDataResult(jsonArray.toString());
-		
+		setDataResult(jsonArray.toString());
+
 		// this is the debugging jsonArray output
-		setDataResult(jsonArray.toString(5));
+		// setDataResult(jsonArray.toString(5));
 	}
-	
+
 	private JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();
 		try {
@@ -64,16 +66,17 @@ public class EventDataSerializer extends Activity {
 			json.accumulate("notes", event.mNotes);
 			json.accumulate("startTime", event.mStartTime);
 			json.accumulate("endTime", event.mEndTime);
-			json.accumulate("gpsCoordinates", toJSONArray(event.getGPSCoordinates()));
+			json.accumulate("gpsCoordinates", toJSONArray(event
+					.getGPSCoordinates()));
 		} catch (JSONException e) {
 			json = null;
 		}
 		return json;
 	}
-	
+
 	private JSONArray toJSONArray(List<GPSCoordinates> coordsList) {
 		JSONArray gpsArray = new JSONArray();
-		for (GPSCoordinates coords: coordsList)
+		for (GPSCoordinates coords : coordsList)
 			try {
 				gpsArray.put(toJSONObject(coords));
 			} catch (JSONException e) {
@@ -81,14 +84,14 @@ public class EventDataSerializer extends Activity {
 			}
 		return gpsArray;
 	}
-	
+
 	private JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
 		JSONObject jsonCoords = new JSONObject();
 		jsonCoords.put("latitude", coords.getLongitude());
 		jsonCoords.put("longitude", coords.getLongitude());
 		return jsonCoords;
 	}
-	
+
 	private void setDataResult(String data) {
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("mSerializedData", data);
