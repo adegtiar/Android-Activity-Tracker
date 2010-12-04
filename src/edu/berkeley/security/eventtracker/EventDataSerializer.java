@@ -25,7 +25,7 @@ public class EventDataSerializer extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		try {
-			serializeAllRowsJSON();
+			serializeAllRowsJSONaData();
 		} catch (Exception e) {
 
 		}
@@ -45,7 +45,7 @@ public class EventDataSerializer extends Activity {
 		setDataResult(stringData.toString());
 	}
 
-	private void serializeAllRowsJSON() throws JSONException {
+	private void serializeAllRowsJSONArray() throws JSONException {
 		EventManager manager = EventManager.getManager(this);
 		EventCursor cursor = manager.fetchSortedEvents();
 		JSONArray jsonArray = new JSONArray();
@@ -57,6 +57,28 @@ public class EventDataSerializer extends Activity {
 
 		// this is the debugging jsonArray output
 		// setDataResult(jsonArray.toString(5));
+	}
+	
+	private void serializeAllRowsJSONaData() throws JSONException {
+		EventManager manager = EventManager.getManager(this);
+		EventCursor cursor = manager.fetchSortedEvents();
+		
+		JSONObject aData = new JSONObject();
+		JSONArray aDataValue = new JSONArray();
+		
+		while (cursor.moveToNext()) {
+			EventEntry event = cursor.getEvent();
+			JSONArray eventRowArray = new JSONArray();
+			eventRowArray.put(event.mName);
+			eventRowArray.put(event.mStartTime);
+			eventRowArray.put(event.mEndTime);
+			eventRowArray.put(event.mNotes);
+			aDataValue.put(eventRowArray);
+		}
+		aData.put("aaData", aDataValue);
+		// this is the production json output
+		
+		setDataResult(aData.toString());
 	}
 
 	private JSONObject toJSONObject(EventEntry event) {
