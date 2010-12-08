@@ -10,7 +10,7 @@ import android.widget.Button;
 
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
-	public static final String isServerRunning = "isGPSEnabled";
+	public static final String isServerRunning = "isServerRunning";
 	private Button serverButton;
 
 	@Override
@@ -21,9 +21,11 @@ public class ServerActivity extends EventActivity {
 
 			@Override
 			public void onClick(View view) {
-				//call methods isServerRunning and updateServerStatus
-				//change text of button
-				//what if not able to connect to internet?? 
+				boolean isServerRunning = !isServerRunning();
+				updateServerStatus(isServerRunning);
+				serverButton.setText(isServerRunning ? R.string.stopEventServer
+						: R.string.startEventServer);
+				// what if not able to connect to internet??
 			}
 		});
 	}
