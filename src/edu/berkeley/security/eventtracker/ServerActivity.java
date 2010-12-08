@@ -33,7 +33,7 @@ public class ServerActivity extends EventActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		serverButton.setEnabled(canStartServer());
+		updateButtonStatus();
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ServerActivity extends EventActivity {
 	 * Returns whether or not the web server is currently running
 	 */
 	public static boolean isServerRunning() {
-		return settings.getBoolean(isServerRunning, false);
+		return serverSettings.getBoolean(isServerRunning, false);
 
 	}
 
@@ -83,6 +83,13 @@ public class ServerActivity extends EventActivity {
 				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
 		return wifi.isAvailable() || mobile.isAvailable();
+	}
+
+	private void updateButtonStatus() {
+		boolean isServerRunning = isServerRunning();
+		serverButton.setText(isServerRunning ? R.string.stopEventServer
+				: R.string.startEventServer);
+		serverButton.setEnabled(canStartServer());
 	}
 
 }
