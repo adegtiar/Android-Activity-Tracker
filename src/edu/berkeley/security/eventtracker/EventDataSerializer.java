@@ -13,6 +13,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class EventDataSerializer extends Activity {
 
@@ -69,10 +70,10 @@ public class EventDataSerializer extends Activity {
 		while (cursor.moveToNext()) {
 			EventEntry event = cursor.getEvent();
 			JSONArray eventRowArray = new JSONArray();
-			eventRowArray.put(event.mName);
-			eventRowArray.put(event.mStartTime);
-			eventRowArray.put(event.mEndTime);
-			eventRowArray.put(event.mNotes);
+			eventRowArray.put(event.formatColumn(ColumnType.NAME));
+			eventRowArray.put(event.formatColumn(ColumnType.START_TIME));
+			eventRowArray.put(event.formatColumn(ColumnType.END_TIME));
+			eventRowArray.put(event.formatColumn(ColumnType.NOTES));
 			aDataValue.put(eventRowArray);
 		}
 		aData.put("aaData", aDataValue);
