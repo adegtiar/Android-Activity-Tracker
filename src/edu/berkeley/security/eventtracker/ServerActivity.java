@@ -1,6 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +36,12 @@ public class ServerActivity extends EventActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		updateButtonStatus();
+	}
+
+	@Override
 	protected int getLayoutResource() {
 		return R.layout.server;
 	}
@@ -42,7 +50,7 @@ public class ServerActivity extends EventActivity {
 	 * Returns whether or not the web server is currently running
 	 */
 	public static boolean isServerRunning() {
-		return settings.getBoolean(isServerRunning, false);
+		return serverSettings.getBoolean(isServerRunning, false);
 
 	}
 
@@ -62,6 +70,31 @@ public class ServerActivity extends EventActivity {
 		} else {
 			stopService(serverServiceIntent);
 		}
+	}
+
+	/**
+	 * Returns true if the phone has either wifi or 3G access
+	 */
+	private boolean canStartServer() {
+
+		final ConnectivityManager connMgr = (ConnectivityManager) this
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		final android.net.NetworkInfo wifi =
+
+		connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+		final android.net.NetworkInfo mobile = connMgr
+				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+		return wifi.isAvailable() || mobile.isAvailable();
+	}
+
+	private void updateButtonStatus() {
+		boolean isServerRunning = isServerRunning();
+		serverButton.setText(isServerRunning ? R.string.stopEventServer
+				: R.string.startEventServer);
+		serverButton.setEnabled(canStartServer());
 	}
 
 }
