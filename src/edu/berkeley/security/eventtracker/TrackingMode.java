@@ -32,6 +32,10 @@ public class TrackingMode extends AbstractEventEdit {
 		serverSettings=getSharedPreferences(ServerActivity.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
 		
+		//starts the web server if it happened to be destroyed
+		if(ServerActivity.isServerRunning()){
+			startService(serverServiceIntent);
+		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}

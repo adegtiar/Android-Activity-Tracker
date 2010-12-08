@@ -19,7 +19,9 @@ public class ServerActivity extends EventActivity {
 
 			@Override
 			public void onClick(View view) {
-
+				//call methods isServerRunning and updateServerStatus
+				//change text of button
+				//what if not able to connect to internet?? 
 			}
 		});
 	}
