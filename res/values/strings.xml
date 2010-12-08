@@ -31,7 +31,7 @@
 <string name="cancelText">Cancel</string>
 <string name="editModeHeader">Editing...</string>
 <string name="webserverViewText">View your events online</string>
-<string name="webserverAddressIntro">Your event data:</string>
+<string name="webserverAddressIntro">You data is available at:</string>
 <string name="webserverAddress">http://192.168.0.105:3000 (temporary)</string>
 <string name="startEventServer">Start Event Server</string>
 <string name="stopEventServer">Stop Event Server</string>

@@ -7,5 +7,5 @@
 
 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/webserverTitle" android:textSize="10pt" android:text="@string/webserverViewText" android:layout_margin="10dip" android:gravity="center"></TextView><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/serverButton" android:layout_margin="10dip" android:text="Start Event Server"></Button>
 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/serverText" android:text="@string/webserverAddressIntro" android:layout_margin="10dip"></TextView>
-<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_margin="10dip" android:text="@string/webserverAddress"></TextView>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_margin="10dip" android:text="@string/webserverAddress" android:id="@+id/serverAddressText"></TextView>
 </LinearLayout>

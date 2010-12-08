@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
@@ -24,12 +25,8 @@ public class ServerActivity extends EventActivity {
 			public void onClick(View view) {
 				boolean newServerStatus = !isServerRunning();
 				updateServerStatus(newServerStatus);
-				serverButton
-						.setText(newServerStatus ? R.string.stopEventServer
-								: R.string.startEventServer);
-				((ImageView) findViewById(R.id.toolbar_right_option))
-						.setImageResource(newServerStatus ? R.drawable.server_on_64
-								: R.drawable.server_off_64);
+				updateGUIStatus();
+
 				// what if not able to connect to internet??
 			}
 		});
@@ -38,7 +35,7 @@ public class ServerActivity extends EventActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updateButtonStatus();
+		updateGUIStatus();
 	}
 
 	@Override
@@ -90,11 +87,17 @@ public class ServerActivity extends EventActivity {
 		return wifi.isAvailable() || mobile.isAvailable();
 	}
 
-	private void updateButtonStatus() {
+	private void updateGUIStatus() {
 		boolean isServerRunning = isServerRunning();
 		serverButton.setText(isServerRunning ? R.string.stopEventServer
 				: R.string.startEventServer);
 		serverButton.setEnabled(canStartServer());
+		((ImageView) findViewById(R.id.toolbar_right_option))
+				.setImageResource(isServerRunning ? R.drawable.server_on_64
+						: R.drawable.server_off_64);
+		((TextView) findViewById(R.id.serverText))
+				.setVisibility(isServerRunning ? View.VISIBLE : View.INVISIBLE);
+		((TextView) findViewById(R.id.serverAddressText))
+				.setVisibility(isServerRunning ? View.VISIBLE : View.INVISIBLE);
 	}
-
 }
