@@ -1,4 +1,4 @@
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.List;
 
@@ -7,12 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import edu.berkeley.security.eventtracker.eventdata.EventCursor;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventManager;
-import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 public class EventDataSerializer extends Activity {
@@ -53,20 +50,29 @@ public class EventDataSerializer extends Activity {
 		while (cursor.moveToNext()) {
 			jsonArray.put(toJSONObject(cursor.getEvent()));
 		}
-		// this is the production json output
-		setDataResult(jsonArray.toString());
 
-		// this is the debugging jsonArray output
-		// setDataResult(jsonArray.toString(5));
+		setDataResult(jsonArray.toString());
 	}
-	
+
 	private void serializeAllRowsJSONaData() throws JSONException {
-		EventManager manager = EventManager.getManager(this);
+		setDataResult(getAllRowsSerializedJSONaData(this));
+	}
+
+	/**
+	 * Serializes all rows in the <tt>EventManager</tt> into a JSON array.
+	 * 
+	 * @param dbContext the <tt>Context</tt> to use for the <tt>EventManager</tt>.
+	 * @return the <tt>String</tt> JSON output.
+	 * @throws JSONException
+	 */
+	public static String getAllRowsSerializedJSONaData(Context dbContext)
+			throws JSONException {
+		EventManager manager = EventManager.getManager(dbContext);
 		EventCursor cursor = manager.fetchSortedEvents();
-		
+
 		JSONObject aData = new JSONObject();
 		JSONArray aDataValue = new JSONArray();
-		
+
 		while (cursor.moveToNext()) {
 			EventEntry event = cursor.getEvent();
 			JSONArray eventRowArray = new JSONArray();
@@ -77,9 +83,8 @@ public class EventDataSerializer extends Activity {
 			aDataValue.put(eventRowArray);
 		}
 		aData.put("aaData", aDataValue);
-		// this is the production json output
 		
-		setDataResult(aData.toString());
+		return aData.toString();
 	}
 
 	private JSONObject toJSONObject(EventEntry event) {
