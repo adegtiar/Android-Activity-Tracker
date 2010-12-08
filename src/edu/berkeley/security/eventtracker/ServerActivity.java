@@ -1,6 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,10 +29,16 @@ public class ServerActivity extends EventActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		serverButton.setEnabled(canStartServer());
+	}
+
+	@Override
 	protected int getLayoutResource() {
 		return R.layout.server;
 	}
-	
+
 	/**
 	 * Returns whether or not the web server is currently running
 	 */
@@ -38,21 +46,41 @@ public class ServerActivity extends EventActivity {
 		return settings.getBoolean(isServerRunning, false);
 
 	}
+
 	/**
-	 * Called whenever a change to the status of the web server has been made
-	 * by clicking on the serverButton. Updates preferences and starts/stops
-	 * the service that begins the web server
+	 * Called whenever a change to the status of the web server has been made by
+	 * clicking on the serverButton. Updates preferences and starts/stops the
+	 * service that begins the web server
+	 * 
 	 * @param serverRunning
 	 */
 	private void updateServerStatus(boolean serverRunning) {
 		SharedPreferences.Editor prefEditor = serverSettings.edit();
 		prefEditor.putBoolean(isServerRunning, serverRunning);
 		prefEditor.commit();
-		if(serverRunning){
+		if (serverRunning) {
 			startService(serverServiceIntent);
-		}else{
+		} else {
 			stopService(serverServiceIntent);
 		}
+	}
+
+	/**
+	 * Returns true if the phone has either wifi or 3G access
+	 */
+	private boolean canStartServer() {
+
+		final ConnectivityManager connMgr = (ConnectivityManager) this
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		final android.net.NetworkInfo wifi =
+
+		connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+		final android.net.NetworkInfo mobile = connMgr
+				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+		return wifi.isAvailable() || mobile.isAvailable();
 	}
 
 }
