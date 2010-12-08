@@ -19,7 +19,7 @@
 		<activity android:name=".EditMode"></activity>
 		<service android:name=".GPSLoggerService" />
 		<activity android:name=".TimeDatePicker"></activity>
-		<activity android:name=".EventDataSerializer">
+		<activity android:name="edu.berkeley.security.eventtracker.eventdata.EventDataSerializer">
 			<intent-filter>
 				<action android:name="edu.berkeley.security.eventtracker.GET_SERIALIZED_EVENT_DATA" />
 				<category android:name="android.intent.category.DEFAULT"></category>
