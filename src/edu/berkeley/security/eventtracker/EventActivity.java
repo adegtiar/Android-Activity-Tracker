@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
@@ -29,10 +30,10 @@ abstract public class EventActivity extends Activity {
 	static final int TRACKING_NOTIFICATION = 1;
 	protected TextView textViewIsTracking;
 	protected EventManager mEventManager;
-	//Variables for Services
+	// Variables for Services
 	protected static Intent gpsServiceIntent;
 	protected static Intent serverServiceIntent;
-	//Variables for preferences
+	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
 
@@ -100,6 +101,7 @@ abstract public class EventActivity extends Activity {
 		super.onResume();
 		refreshState();
 		updateTrackingStatus();
+		updateToolbarGUI();
 	}
 
 	/**
@@ -107,6 +109,12 @@ abstract public class EventActivity extends Activity {
 	 * isTracking() and updateTrackingUI().
 	 */
 	protected void refreshState() {
+	}
+
+	private void updateToolbarGUI() {
+		((ImageView) findViewById(R.id.toolbar_right_option))
+				.setImageResource(ServerActivity.isServerRunning() ? R.drawable.server_on_64
+						: R.drawable.server_off_64);
 	}
 
 	/**
@@ -124,7 +132,7 @@ abstract public class EventActivity extends Activity {
 		Intent settingsIntent = new Intent(this, Settings.class);
 		startActivity(settingsIntent);
 	}
-	
+
 	protected void startServerActivity() {
 		Intent settingsIntent = new Intent(this, ServerActivity.class);
 		startActivity(settingsIntent);
@@ -163,20 +171,17 @@ abstract public class EventActivity extends Activity {
 		if (isTracking && Settings.isGPSEnabled()) {
 			gpsServiceIntent.putExtra("gps", Settings.isGPSEnabled());
 		}
-		if (isTracking){
+		if (isTracking) {
 			startService(gpsServiceIntent);
-		}
-		else{
+		} else {
 			stopService(gpsServiceIntent);
 			disableTrackingNotification();
 		}
 	}
-	
-	protected void startUpService(){
-		
-	}
 
-	
+	protected void startUpService() {
+
+	}
 
 	private void disableTrackingNotification() {
 		String ns = Context.NOTIFICATION_SERVICE;
@@ -216,10 +221,12 @@ abstract public class EventActivity extends Activity {
 	 * @return The layout resource to inflate in onCreate.
 	 */
 	abstract protected int getLayoutResource();
-	
-	static void enableTrackingNotification(Context mContext, EventEntry trackedEvent) {
+
+	static void enableTrackingNotification(Context mContext,
+			EventEntry trackedEvent) {
 		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(ns);
+		NotificationManager mNotificationManager = (NotificationManager) mContext
+				.getSystemService(ns);
 
 		int icon = R.drawable.edit_icon;
 		if (trackedEvent == null)

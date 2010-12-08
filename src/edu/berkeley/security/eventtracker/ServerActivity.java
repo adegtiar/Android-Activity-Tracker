@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
@@ -19,10 +20,14 @@ public class ServerActivity extends EventActivity {
 
 			@Override
 			public void onClick(View view) {
-				boolean isServerRunning = !isServerRunning();
-				updateServerStatus(isServerRunning);
-				serverButton.setText(isServerRunning ? R.string.stopEventServer
-						: R.string.startEventServer);
+				boolean newServerStatus = !isServerRunning();
+				updateServerStatus(newServerStatus);
+				serverButton
+						.setText(newServerStatus ? R.string.stopEventServer
+								: R.string.startEventServer);
+				((ImageView) findViewById(R.id.toolbar_right_option))
+						.setImageResource(newServerStatus ? R.drawable.server_on_64
+								: R.drawable.server_off_64);
 				// what if not able to connect to internet??
 			}
 		});
