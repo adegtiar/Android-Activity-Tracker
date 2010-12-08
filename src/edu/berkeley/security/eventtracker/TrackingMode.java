@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.webserver.WebServerService;
 
 public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
@@ -22,10 +23,15 @@ public class TrackingMode extends AbstractEventEdit {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 
-		serviceIntent = new Intent(this, GPSLoggerService.class);
+		gpsServiceIntent = new Intent(this, GPSLoggerService.class);
+		serverServiceIntent=new Intent(this, WebServerService.class);
 		
+		//Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
+		serverSettings=getSharedPreferences(ServerActivity.PREFERENCE_FILENAME,
+				MODE_PRIVATE);
+		
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 	}

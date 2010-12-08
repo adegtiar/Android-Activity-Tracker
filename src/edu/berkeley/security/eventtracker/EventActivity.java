@@ -29,8 +29,12 @@ abstract public class EventActivity extends Activity {
 	static final int TRACKING_NOTIFICATION = 1;
 	protected TextView textViewIsTracking;
 	protected EventManager mEventManager;
-	protected static Intent serviceIntent;
+	//Variables for Services
+	protected static Intent gpsServiceIntent;
+	protected static Intent serverServiceIntent;
+	//Variables for preferences
 	public static SharedPreferences settings;
+	public static SharedPreferences serverSettings;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -157,13 +161,13 @@ abstract public class EventActivity extends Activity {
 	protected void updateTrackingStatus(boolean isTracking) {
 		updateTrackingUI(isTracking);
 		if (isTracking && Settings.isGPSEnabled()) {
-			serviceIntent.putExtra("gps", Settings.isGPSEnabled());
+			gpsServiceIntent.putExtra("gps", Settings.isGPSEnabled());
 		}
 		if (isTracking){
-			startService(serviceIntent);
+			startService(gpsServiceIntent);
 		}
 		else{
-			stopService(serviceIntent);
+			stopService(gpsServiceIntent);
 			disableTrackingNotification();
 		}
 	}

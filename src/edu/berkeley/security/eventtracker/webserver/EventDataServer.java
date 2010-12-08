@@ -28,8 +28,6 @@ public class EventDataServer extends NanoHTTPD {
 						.getAllRowsSerializedJSONaData(mWebService);
 			} catch (JSONException e) {
 				msg="HI";
-				// TODO Auto-generated catch block
-				
 			} // TODO fix
 		}
 		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, msg);
