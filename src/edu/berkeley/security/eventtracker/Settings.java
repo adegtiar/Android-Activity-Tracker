@@ -50,10 +50,6 @@ public class Settings extends EventActivity {
 				}
 				if( mEventManager.isTracking())
 					startService(serviceIntent);
-				
-				 String zipFileName = "C:/myFolder/myZip.zip";
-				 String directoryToExtractTo = "C:/myFolder/unzipped/";
-				 unzipMyZip(zipFileName, directoryToExtractTo);
 
 				GPSSensitivity.setEnabled(gps.isChecked());
 				GPSUpdateTime.setEnabled(gps.isChecked());
