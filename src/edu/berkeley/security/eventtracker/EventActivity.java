@@ -59,7 +59,7 @@ abstract public class EventActivity extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						startSettingsActivity();
+						startServerActivity();
 					}
 				});
 		findViewById(R.id.toolbar_left_option).setOnClickListener(
@@ -118,6 +118,11 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected void startSettingsActivity() {
 		Intent settingsIntent = new Intent(this, Settings.class);
+		startActivity(settingsIntent);
+	}
+	
+	protected void startServerActivity() {
+		Intent settingsIntent = new Intent(this, ServerActivity.class);
 		startActivity(settingsIntent);
 	}
 

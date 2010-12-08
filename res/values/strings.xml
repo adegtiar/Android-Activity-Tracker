@@ -30,4 +30,7 @@
 <string name="confirmText">Confirm</string>
 <string name="cancelText">Cancel</string>
 <string name="editModeHeader">Editing...</string>
+<string name="webserverViewText">View your events online</string>
+<string name="webserverAddressIntro">Your event data:</string>
+<string name="webserverAddress">http://192.168.0.105:3000 (temporary)</string>
 </resources>

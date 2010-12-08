@@ -19,12 +19,13 @@
 		<activity android:name=".EditMode"></activity>
 		<service android:name=".GPSLoggerService" />
 		<activity android:name=".TimeDatePicker"></activity>
-		<activity android:name="edu.berkeley.security.eventtracker.eventdata.EventDataSerializer">
+		<activity android:name=".eventdata.EventDataSerializer">
 			<intent-filter>
 				<action android:name="edu.berkeley.security.eventtracker.GET_SERIALIZED_EVENT_DATA" />
 				<category android:name="android.intent.category.DEFAULT"></category>
 			</intent-filter>
 		</activity>
-	</application>
+	<activity android:name=".ServerActivity" android:launchMode="singleTask"></activity>
+</application>
 	<uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
 </manifest> 
