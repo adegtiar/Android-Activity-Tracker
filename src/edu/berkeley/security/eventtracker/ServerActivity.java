@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
-	public static final String isServerRunning = "isGPSEnabled";
+	public static final String isServerRunning = "isServerRunning";
 	private Button serverButton;
 
 	@Override
@@ -19,9 +19,11 @@ public class ServerActivity extends EventActivity {
 
 			@Override
 			public void onClick(View view) {
-				//call methods isServerRunning and updateServerStatus
-				//change text of button
-				//what if not able to connect to internet?? 
+				boolean isServerRunning = !isServerRunning();
+				updateServerStatus(isServerRunning);
+				serverButton.setText(isServerRunning ? R.string.stopEventServer
+						: R.string.startEventServer);
+				// what if not able to connect to internet??
 			}
 		});
 	}
@@ -30,7 +32,7 @@ public class ServerActivity extends EventActivity {
 	protected int getLayoutResource() {
 		return R.layout.server;
 	}
-	
+
 	/**
 	 * Returns whether or not the web server is currently running
 	 */
@@ -38,19 +40,21 @@ public class ServerActivity extends EventActivity {
 		return settings.getBoolean(isServerRunning, false);
 
 	}
+
 	/**
-	 * Called whenever a change to the status of the web server has been made
-	 * by clicking on the serverButton. Updates preferences and starts/stops
-	 * the service that begins the web server
+	 * Called whenever a change to the status of the web server has been made by
+	 * clicking on the serverButton. Updates preferences and starts/stops the
+	 * service that begins the web server
+	 * 
 	 * @param serverRunning
 	 */
 	private void updateServerStatus(boolean serverRunning) {
 		SharedPreferences.Editor prefEditor = serverSettings.edit();
 		prefEditor.putBoolean(isServerRunning, serverRunning);
 		prefEditor.commit();
-		if(serverRunning){
+		if (serverRunning) {
 			startService(serverServiceIntent);
-		}else{
+		} else {
 			stopService(serverServiceIntent);
 		}
 	}
