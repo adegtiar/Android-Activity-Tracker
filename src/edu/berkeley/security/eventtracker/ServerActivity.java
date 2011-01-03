@@ -13,6 +13,7 @@ import android.widget.TextView;
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
 	public static final String isServerRunning = "isServerRunning";
+	public static final String ipAddress="ipAddress";
 	private Button serverButton;
 
 	@Override
@@ -50,7 +51,7 @@ public class ServerActivity extends EventActivity {
 		return serverSettings.getBoolean(isServerRunning, false);
 
 	}
-
+	
 	/**
 	 * Called whenever a change to the status of the web server has been made by
 	 * clicking on the serverButton. Updates preferences and starts/stops the
@@ -99,5 +100,12 @@ public class ServerActivity extends EventActivity {
 				.setVisibility(isServerRunning ? View.VISIBLE : View.INVISIBLE);
 		((TextView) findViewById(R.id.serverAddressText))
 				.setVisibility(isServerRunning ? View.VISIBLE : View.INVISIBLE);
+	}
+
+	public static void updateIpAdress(String newIpAddress) {
+		SharedPreferences.Editor prefEditor = serverSettings.edit();
+		prefEditor.putString(ipAddress, newIpAddress);
+		prefEditor.commit();
+		
 	}
 }

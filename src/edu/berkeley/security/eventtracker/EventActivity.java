@@ -1,5 +1,10 @@
 package edu.berkeley.security.eventtracker;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,7 +54,6 @@ abstract public class EventActivity extends Activity {
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
-
 	}
 
 	/**
@@ -102,6 +107,7 @@ abstract public class EventActivity extends Activity {
 		refreshState();
 		updateTrackingStatus();
 		updateToolbarGUI();
+		ServerActivity.updateIpAdress(this.getIpAddress());
 	}
 
 	/**
@@ -249,6 +255,29 @@ abstract public class EventActivity extends Activity {
 				contentIntent);
 		mNotificationManager.notify(EventActivity.TRACKING_NOTIFICATION,
 				notification);
+	}
+
+	
+	/**
+	 * @return the ip address of the android device. 
+	 */
+	public String getIpAddress() {
+		try {
+			for (Enumeration<NetworkInterface> en = NetworkInterface
+					.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf
+						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()) {
+						return inetAddress.getHostAddress().toString();
+					}
+				}
+			}
+		} catch (SocketException ex) {
+			// Log.e(S.TAG, ex.toString());
+		}
+		return null;
 	}
 
 	// GPS
