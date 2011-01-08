@@ -18,10 +18,9 @@ public class EventDataServer extends NanoHTTPD {
 	public static final int PORT = 8080;
 
 	/**
-	 * The address of the remote web server. TODO change this to a persistent
-	 * value.
+	 * The address of the remote web server.
 	 */
-	public static final String remoteServerAddress = "http://192.168.0.198:3000";
+	public static final String remoteServerAddress = "http://eventtracker.dyndns-at-home.com:3000";
 
 	public EventDataServer(WebServerService service) throws IOException {
 		super(PORT);

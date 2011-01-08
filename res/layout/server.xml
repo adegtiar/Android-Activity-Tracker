@@ -3,12 +3,24 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:gravity="center" android:layout_height="fill_parent">
 
-
-
 	<TextView android:id="@+id/webserverTitle" android:textSize="10pt"
-		android:text="@string/webserverViewText" android:layout_margin="10dip" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></TextView>
+		android:text="@string/webserverViewText" android:layout_margin="10dip"
+		android:gravity="center" android:layout_width="match_parent"
+		android:layout_height="wrap_content"></TextView>
 	<Button android:id="@+id/serverButton" android:layout_margin="10dip"
-		android:text="Start Event Server" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></Button>
-	<TextView android:id="@+id/serverText" android:text="@string/webserverAddressIntro"
-		android:layout_margin="10dip" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></TextView>
+		android:text="Start Event Server" android:gravity="center"
+		android:layout_width="match_parent" android:layout_height="wrap_content"></Button>
+	<TextView android:layout_width="match_parent" android:text="@string/webserverAddressIntro"
+		android:layout_margin="10dip" android:layout_height="wrap_content"
+		android:id="@+id/remoteServerIntro" android:gravity="center"></TextView>
+	<TextView android:id="@+id/remoteServerText" android:text="@string/webserverAddress"
+		android:layout_margin="10dip" android:gravity="center"
+		android:layout_width="match_parent" android:layout_height="wrap_content"></TextView>
+	<TextView android:layout_width="match_parent" android:text="@string/localAddressIntro"
+		android:layout_margin="10dip" android:layout_height="wrap_content"
+		android:id="@+id/localAddressIntro" android:gravity="center"></TextView>
+	<TextView android:id="@+id/localAddressText"
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:gravity="center"></TextView>
+
 </LinearLayout>

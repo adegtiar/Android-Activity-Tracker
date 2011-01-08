@@ -24,16 +24,16 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onCreate(savedInstanceState);
 
 		gpsServiceIntent = new Intent(this, GPSLoggerService.class);
-		serverServiceIntent=new Intent(this, WebServerService.class);
-		
-		//Set up preferences
+		serverServiceIntent = new Intent(this, WebServerService.class);
+
+		// Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		serverSettings=getSharedPreferences(ServerActivity.PREFERENCE_FILENAME,
-				MODE_PRIVATE);
-		
-		//starts the web server if it happened to be destroyed
-		if(ServerActivity.isServerRunning()){
+		serverSettings = getSharedPreferences(
+				ServerActivity.PREFERENCE_FILENAME, MODE_PRIVATE);
+
+		// starts the web server if it happened to be destroyed
+		if (ServerActivity.isServerRunning()) {
 			startService(serverServiceIntent);
 		}
 
@@ -210,7 +210,7 @@ public class TrackingMode extends AbstractEventEdit {
 		currentEvent = new EventEntry();
 		updateDatabase(currentEvent);
 	}
-	
+
 	private void updateTrackingNotification() {
 		enableTrackingNotification(this, getCurrentEvent());
 	}

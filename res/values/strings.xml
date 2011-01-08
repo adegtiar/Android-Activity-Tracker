@@ -13,7 +13,8 @@
 	<string name="nextActivity">Next Activity</string>
 	<string name="stopTracking">Stop Tracking</string>
 	<string name="defaultStartTime">&lt; N/A &gt;</string>
-	<string name="previousActivityText">Previous Activity: </string><string name="currentActivityText">Activity in Progress: </string>
+	<string name="previousActivityText">Previous Activity: </string>
+	<string name="currentActivityText">Activity in Progress: </string>
 	<string name="toolbarNotTracking">Not Currently Tracking</string>
 	<string name="toolbarTracking">Now Tracking</string>
 	<string name="previousActivityDefault">None</string>
@@ -25,14 +26,17 @@
 	<string name="eventNotesHint">Additional notes...</string>
 	<string name="eventNameHint">What are you doing now?&quot;</string>
 	<string name="settingsMenuText">Settings</string>
-<string name="defaultDate">12/31/1970 12:00 AM</string>
-<string name="activityInProgressText">Activity in Progress:</string>
-<string name="confirmText">Confirm</string>
-<string name="cancelText">Cancel</string>
-<string name="editModeHeader">Editing...</string>
-<string name="webserverViewText">View your events online</string>
-<string name="webserverAddressIntro">You data is available at:</string>
-<string name="webserverAddress">http://eventtracker.dyndns-at-home.com:3000</string>
-<string name="startEventServer">Start Event Server</string>
-<string name="stopEventServer">Stop Event Server</string>
+	<string name="defaultDate">12/31/1970 12:00 AM</string>
+	<string name="activityInProgressText">Activity in Progress:</string>
+	<string name="confirmText">Confirm</string>
+	<string name="cancelText">Cancel</string>
+	<string name="editModeHeader">Editing...</string>
+	<string name="webserverViewText">View your events online</string>
+	<string name="webserverAddressIntro">You data is available at:</string>
+	<string name="webserverAddress">http://eventtracker.dyndns-at-home.com:3000
+	</string>
+	<string name="startEventServer">Start Event Server</string>
+	<string name="stopEventServer">Stop Event Server</string>
+	<string name="localAddressIntro">The ip address of this device (for debugging):
+	</string>
 </resources>
