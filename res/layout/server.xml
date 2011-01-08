@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical" android:layout_width="fill_parent" android:gravity="center" android:layout_gravity="center" android:layout_height="fill_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:gravity="center" android:layout_height="fill_parent">
 
 
 
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/webserverTitle" android:textSize="10pt" android:text="@string/webserverViewText" android:layout_margin="10dip" android:gravity="center"></TextView><Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/serverButton" android:layout_margin="10dip" android:text="Start Event Server"></Button>
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:id="@+id/serverText" android:text="@string/webserverAddressIntro" android:layout_margin="10dip"></TextView>
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_margin="10dip" android:text="@string/webserverAddress" android:id="@+id/serverAddressText"></TextView>
+	<TextView android:id="@+id/webserverTitle" android:textSize="10pt"
+		android:text="@string/webserverViewText" android:layout_margin="10dip" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></TextView>
+	<Button android:id="@+id/serverButton" android:layout_margin="10dip"
+		android:text="Start Event Server" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></Button>
+	<TextView android:id="@+id/serverText" android:text="@string/webserverAddressIntro"
+		android:layout_margin="10dip" android:gravity="center" android:layout_width="match_parent" android:layout_height="match_parent"></TextView>
 </LinearLayout>
