@@ -1,0 +1,11 @@
+
+Bugs:
+- Changing the orientation reset fields and results in inconsistent data state.
+- Toolbar notifications are always enabled upon exiting the settings view.
+
+Todo
+- Web site needs user model with latest IP address, etc.
+- An application server/activity needs to update the remote web site IP records.
+
+- Security stuff + more (upon sleep and reviewing of notes)
+  
