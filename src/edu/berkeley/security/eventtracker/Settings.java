@@ -82,6 +82,8 @@ public class Settings extends EventActivity {
 
 	private void initializeButtons() {
 		boolean enableGPS = isGPSEnabled();
+		boolean enableNotifications=areNotificationsEnabled();
+		notificationsEnabled.setChecked(enableNotifications);
 		GPSEnabled.setChecked(enableGPS);
 		GPSSensitivity.setValue(settings.getInt(Sensitivity, 0));
 		GPSUpdateTime.setValue(settings.getInt(GPSTime, 1));
