@@ -13,24 +13,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.View.OnClickListener;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
 /**
  * The main activity that all event-related activities extend. It houses a
  * toolbar and a global EventManager.
  */
-abstract public class EventActivity extends Activity {
+abstract public class EventActivity extends Activity implements
+		OnGestureListener {
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	static final int TRACKING_NOTIFICATION = 1;
@@ -42,6 +45,7 @@ abstract public class EventActivity extends Activity {
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
+	GestureDetector mGestureScanner;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ abstract public class EventActivity extends Activity {
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
+		mGestureScanner = new GestureDetector(this);
 	}
 
 	/**
@@ -277,6 +282,46 @@ abstract public class EventActivity extends Activity {
 			// Log.e(S.TAG, ex.toString());
 		}
 		return null;
+	}
+
+	@Override
+	public boolean onDown(MotionEvent arg0) {
+		// do nothing
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		// do nothing
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent arg0) {
+		// do nothing
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
+			float arg3) {
+		// do nothing
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		// do nothing
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		// do nothing
+		return false;
+	}
+
+	public boolean onTouchEvent(MotionEvent me) {
+		return mGestureScanner.onTouchEvent(me);
 	}
 
 	// GPS

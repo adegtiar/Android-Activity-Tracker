@@ -3,6 +3,7 @@ package edu.berkeley.security.eventtracker;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -154,5 +155,17 @@ public class ListEvents extends EventActivity {
 				return false;
 			}
 		}
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		if (velocityX < 0) { // going to left screen
+			this.startTrackingActivity();
+			overridePendingTransition(R.anim.slide_left_in,
+					R.anim.slide_left_out);
+			return true;
+		}
+		return false;
 	}
 }

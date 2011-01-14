@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -288,5 +289,20 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 
 		}
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		if (velocityX < 0) {// going to right screen
+			this.startServerActivity();
+			overridePendingTransition(R.anim.slide_left_in,
+					R.anim.slide_left_out);
+		} else { // going to the left screen
+			this.startListEventsActivity();
+			overridePendingTransition(R.anim.slide_right_in,
+					R.anim.slide_right_out);
+		}
+		return true;
 	}
 }

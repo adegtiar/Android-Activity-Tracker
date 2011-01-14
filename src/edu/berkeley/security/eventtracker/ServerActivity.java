@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -150,5 +151,17 @@ public class ServerActivity extends EventActivity {
 		prefEditor.putString(ipAddress, newIpAddress);
 		prefEditor.commit();
 
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		if (velocityX > 0) {// going to right screen
+			this.startTrackingActivity();
+			overridePendingTransition(R.anim.slide_right_in,
+					R.anim.slide_right_out);
+			return true;
+		}
+		return false;
 	}
 }
