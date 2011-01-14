@@ -22,6 +22,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
 abstract public class AbstractEventEdit extends EventActivity {
+
 	protected static final int previousEventTextID = R.string.previousActivityText;
 	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
 	protected static final int currentEventTextID = R.string.currentActivityText;
@@ -145,6 +146,16 @@ abstract public class AbstractEventEdit extends EventActivity {
 			currentEvent = null;
 			previousEvent = null;
 		}
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// do nothing to not conflict with loading from the DB
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// do nothing - loading from the DB quick enough
 	}
 
 	protected abstract void syncToEventFromUI();

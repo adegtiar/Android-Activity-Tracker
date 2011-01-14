@@ -1,6 +1,5 @@
 
 Bugs:
-- Changing the orientation reset fields and results in inconsistent data state.
 - Toolbar notification does not go away when disabled
 
 Todo
