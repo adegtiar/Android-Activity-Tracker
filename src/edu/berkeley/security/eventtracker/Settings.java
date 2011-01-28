@@ -19,6 +19,8 @@ public class Settings extends EventActivity {
 	public static final String Sensitivity = "Sensitivity";
 	public static final String isGPSEnabled = "isGPSEnabled";
 	public static final String areNotificationsEnabled = "notificationsEnabled";
+	public static final String password = "password";
+	public static final String isPasswordSet = "isPasswordEntered";
 
 	private CheckBox GPSEnabled;
 	private NumberPicker GPSSensitivity;
@@ -126,6 +128,17 @@ public class Settings extends EventActivity {
 	
 	public static boolean areNotificationsEnabled() {
 		return settings.getBoolean(areNotificationsEnabled, true);
+	}
+	public static void setPassword(String passwd){
+		SharedPreferences.Editor prefEditor = settings.edit();
+		prefEditor.putString(password, Encryption.base64(Encryption.hash(passwd)));
+		prefEditor.putBoolean(isPasswordSet, true);
+		prefEditor.commit();
+		
+	}
+	public static boolean isPasswordSet(){
+		return settings.getBoolean(isPasswordSet, false);
+		
 	}
 
 }

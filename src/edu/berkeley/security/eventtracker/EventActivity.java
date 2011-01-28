@@ -1,32 +1,45 @@
 package edu.berkeley.security.eventtracker;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewStub;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 /**
  * The main activity that all event-related activities extend. It houses a
@@ -34,6 +47,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
  */
 abstract public class EventActivity extends Activity implements
 		OnGestureListener {
+    private static final int DIALOG_TEXT_ENTRY = 7;
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	static final int TRACKING_NOTIFICATION = 1;
@@ -56,7 +70,6 @@ abstract public class EventActivity extends Activity implements
 		v.inflate();
 
 		initializeToolbar();
-
 		mEventManager = EventManager.getManager(this);
 		mGestureScanner = new GestureDetector(this);
 	}
@@ -113,6 +126,8 @@ abstract public class EventActivity extends Activity implements
 		updateTrackingStatus();
 		updateToolbarGUI();
 		ServerActivity.updateIpAdress(this.getIpAddress());
+		if(!Settings.isPasswordSet())
+			showDialog(DIALOG_TEXT_ENTRY);
 	}
 
 	/**
@@ -283,6 +298,16 @@ abstract public class EventActivity extends Activity implements
 		}
 		return null;
 	}
+	public void sendData(String data) throws ClientProtocolException, IOException{
+		DefaultHttpClient hc=new DefaultHttpClient();  
+		ResponseHandler <String> res=new BasicResponseHandler();  
+		HttpPost postMethod=new HttpPost("http://192.168.1.123:8080");  
+		
+			postMethod.setEntity(new StringEntity(data));
+	
+			String response=hc.execute(postMethod,res);
+			
+	}
 
 	@Override
 	public boolean onDown(MotionEvent arg0) {
@@ -353,5 +378,43 @@ abstract public class EventActivity extends Activity implements
 	// Log.d("SampleLocationListener onStatusChanged", provider);
 	// }
 	// }
+	
+	/*
+	 * Dialog box for password entry
+	 */
+	@Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+      
+      
+        case DIALOG_TEXT_ENTRY:
+            // This example shows how to add a custom layout to an AlertDialog
+            LayoutInflater factory = LayoutInflater.from(this);
+            final View textEntryView = factory.inflate(R.layout.alert_dialog_text_entry, null);
+            return new AlertDialog.Builder(EventActivity.this)
+                .setIcon(R.drawable.alert_dialog_icon)
+                .setTitle(R.string.alert_dialog_text_entry)
+                .setView(textEntryView)
+                .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    	/* User clicked OK so do some stuff */
+                    	EditText passwdEditText=(EditText) textEntryView.findViewById(R.id.password_edit);
+                    	String password=passwdEditText.getText().toString();
+                    	if(password.length() !=0)
+                    		Settings.setPassword(password);
+                       
+                    }
+                })
+                .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        /* User clicked cancel so do some stuff */
+                    }
+                })
+                .create();
+        }
+        return null;
+    }
+
 
 }

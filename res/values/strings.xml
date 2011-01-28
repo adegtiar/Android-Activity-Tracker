@@ -39,4 +39,9 @@
 	<string name="stopEventServer">Stop Event Server</string>
 	<string name="localAddressIntro">The ip address of this device (for debugging):
 	</string>
+<string name="alert_dialog_cancel">Cancel</string>
+<string name="alert_dialog_ok">OK</string>
+<string name="alert_dialog_password">Password:</string>
+<string name="alert_dialog_text_entry">Enter a password</string>
+<string name="alert_dialog_password_description">This password will be used to access your event data online</string>
 </resources>
