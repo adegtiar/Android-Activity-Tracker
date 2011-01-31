@@ -57,5 +57,19 @@
 		<CheckBox android:id="@+id/notifications_cb" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:checked="true"/>
 	</LinearLayout>
-
+	<TextView android:id="@+id/webSettings"
+		android:layout_below="@+id/notificationsContainer"
+		android:layout_width="wrap_content" android:textStyle="bold"
+		android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+		android:text="Web Settings: " />
+		
+		<LinearLayout android:layout_height="wrap_content"
+		android:id="@+id/WebSettingsContainer" android:layout_below="@+id/webSettings"
+		android:orientation="horizontal" android:layout_width="fill_parent"
+		android:layout_weight="1">
+		<TextView android:id="@+id/synchronizeData" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Synchronize Data with Web Server" />
+		<CheckBox android:id="@+id/synchronizeData_cb" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:checked="false"/>
+	</LinearLayout>
 </RelativeLayout>

@@ -39,6 +39,12 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
+		if(!Settings.isPasswordSet()){
+			Bundle bundle = new Bundle();
+			bundle.putBoolean("Settings", false);
+			showDialog(DIALOG_TEXT_ENTRY, bundle);
+		}
+			
 	}
 
 	@Override

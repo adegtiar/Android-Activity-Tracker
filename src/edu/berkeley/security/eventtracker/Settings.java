@@ -1,18 +1,26 @@
 package edu.berkeley.security.eventtracker;
 
+import java.util.UUID;
+
+import android.app.SearchManager.OnDismissListener;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.network.Encryption;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
  */
-public class Settings extends EventActivity {
+public class Settings extends EventActivity  {
 
 	public static final String PREFERENCE_FILENAME = "SettingPrefs";
 	public static final String GPSTime = "GPSTime";
@@ -21,12 +29,19 @@ public class Settings extends EventActivity {
 	public static final String areNotificationsEnabled = "notificationsEnabled";
 	public static final String password = "password";
 	public static final String isPasswordSet = "isPasswordEntered";
+	public static final String PhoneNumber = "phoneNumber";
+	public static final String UUIDOfDevice = "deviceUUID";
+	private static final String UUIDMostSigBits = "UUIDMostSigBits";
+	private static final String UUIDLeastSigBits = "UUIDLeastSigBits";
+	private static final String isSychronizationEnabled="enableSychronization";
 
-	private CheckBox GPSEnabled;
-	private NumberPicker GPSSensitivity;
-	private NumberPicker GPSUpdateTime;
-
-	private CheckBox notificationsEnabled;
+	
+	private static NumberPicker GPSSensitivity;
+	private static NumberPicker GPSUpdateTime;
+	
+	private static CheckBox GPSEnabled;
+	private static CheckBox notificationsEnabled;
+	private static CheckBox sychronizeDataEnabled;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +49,14 @@ public class Settings extends EventActivity {
 		GPSUpdateTime = (NumberPicker) findViewById(R.id.Picker1);
 		GPSSensitivity = (NumberPicker) findViewById(R.id.Picker2);
 		GPSEnabled = (CheckBox) findViewById(R.id.plain_cb);
-
 		notificationsEnabled = (CheckBox) findViewById(R.id.notifications_cb);
-
+		sychronizeDataEnabled = (CheckBox) findViewById(R.id.synchronizeData_cb);
 		focusOnNothing();
 		initializeButtons();
 
+		setPhoneNumber(); 
+		setDeviceUUID();
+		
 		GPSEnabled.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -69,11 +86,40 @@ public class Settings extends EventActivity {
 						Settings.this.updateTrackingStatus();
 					}
 				});
+		sychronizeDataEnabled.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+		
+				
+				
+				if(!isPasswordSet()){
+					sychronizeDataEnabled.setChecked(false);
+					//TODO make user set a password
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("Settings", true);
+					showDialog(DIALOG_TEXT_ENTRY, bundle);
+
+				}
+				
+				
+			}
+		});
 	}
+
+	
+	public static void updatePasswordSettings(){
+    	if(isPasswordSet()){
+			sychronizeDataEnabled.setChecked(true);
+			Settings.updatePreferences();
+		}	
+	}
+
 
 	@Override
 	protected void onPause() {
-		updatePreferences();
+		Settings.updatePreferences();
 		super.onPause();
 	}
 
@@ -85,16 +131,17 @@ public class Settings extends EventActivity {
 	private void initializeButtons() {
 		boolean enableGPS = isGPSEnabled();
 		boolean enableNotifications=areNotificationsEnabled();
+		boolean enableDataSychronization=isSychronizationEnabled();
 		notificationsEnabled.setChecked(enableNotifications);
 		GPSEnabled.setChecked(enableGPS);
 		GPSSensitivity.setValue(settings.getInt(Sensitivity, 0));
 		GPSUpdateTime.setValue(settings.getInt(GPSTime, 1));
 		GPSSensitivity.setEnabled(enableGPS);
 		GPSUpdateTime.setEnabled(enableGPS);
-
+		sychronizeDataEnabled.setChecked(enableDataSychronization);
 	}
 
-	private void updatePreferences() {
+	private static void updatePreferences() {
 
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putBoolean(isGPSEnabled, GPSEnabled.isChecked());
@@ -102,6 +149,7 @@ public class Settings extends EventActivity {
 		prefEditor.putInt(Sensitivity, GPSSensitivity.getValue());
 		prefEditor.putBoolean(areNotificationsEnabled, notificationsEnabled
 				.isChecked());
+		prefEditor.putBoolean(isSychronizationEnabled, sychronizeDataEnabled.isChecked());
 		prefEditor.commit();
 	}
 
@@ -129,6 +177,16 @@ public class Settings extends EventActivity {
 	public static boolean areNotificationsEnabled() {
 		return settings.getBoolean(areNotificationsEnabled, true);
 	}
+	
+	public static boolean isPasswordSet(){
+		return settings.getBoolean(isPasswordSet, false);
+		
+	}
+	public static boolean isSychronizationEnabled(){
+		return settings.getBoolean(isSychronizationEnabled, false);
+		
+	}
+	
 	public static void setPassword(String passwd){
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putString(password, Encryption.base64(Encryption.hash(passwd)));
@@ -136,9 +194,30 @@ public class Settings extends EventActivity {
 		prefEditor.commit();
 		
 	}
-	public static boolean isPasswordSet(){
-		return settings.getBoolean(isPasswordSet, false);
-		
+	
+	public void setPhoneNumber(){
+		TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		String telephoneNumber=telephonyManager.getLine1Number();
+		SharedPreferences.Editor prefEditor = settings.edit();
+		prefEditor.putString(PhoneNumber, telephoneNumber);
+		prefEditor.commit();
 	}
+	public void setDeviceUUID(){
+		UUID uuid=UUID.randomUUID();
+		SharedPreferences.Editor prefEditor = settings.edit();
+		prefEditor.putLong(UUIDMostSigBits, uuid.getMostSignificantBits());
+		prefEditor.putLong(UUIDLeastSigBits, uuid.getLeastSignificantBits());
+		prefEditor.commit();
+	}
+	public static String getDeviceUUID(){
+		long mostSigBits=settings.getLong(UUIDMostSigBits, 0);
+		long leastSigBits=settings.getLong(UUIDLeastSigBits, 0);
+		return new UUID(mostSigBits, leastSigBits).toString();
+	}
+	public static String getPhoneNumber(){
+		return settings.getString(PhoneNumber, null);
+	}
+	
+
 
 }

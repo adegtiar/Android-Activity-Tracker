@@ -1,4 +1,4 @@
-package edu.berkeley.security.eventtracker;
+package edu.berkeley.security.eventtracker.network;
 
 import java.security.InvalidKeyException;
 import java.security.Key;

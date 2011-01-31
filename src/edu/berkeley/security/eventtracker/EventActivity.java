@@ -40,6 +40,7 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.network.Networking;
 
 /**
  * The main activity that all event-related activities extend. It houses a
@@ -47,7 +48,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
  */
 abstract public class EventActivity extends Activity implements
 		OnGestureListener {
-    private static final int DIALOG_TEXT_ENTRY = 7;
+    protected static final int DIALOG_TEXT_ENTRY = 7;
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	static final int TRACKING_NOTIFICATION = 1;
@@ -68,10 +69,11 @@ abstract public class EventActivity extends Activity implements
 		ViewStub v = (ViewStub) findViewById(R.id.content_view);
 		v.setLayoutResource(getLayoutResource());
 		v.inflate();
-
 		initializeToolbar();
+		
 		mEventManager = EventManager.getManager(this);
 		mGestureScanner = new GestureDetector(this);
+		
 	}
 
 	/**
@@ -126,8 +128,7 @@ abstract public class EventActivity extends Activity implements
 		updateTrackingStatus();
 		updateToolbarGUI();
 		ServerActivity.updateIpAdress(this.getIpAddress());
-		if(!Settings.isPasswordSet())
-			showDialog(DIALOG_TEXT_ENTRY);
+	
 	}
 
 	/**
@@ -298,16 +299,7 @@ abstract public class EventActivity extends Activity implements
 		}
 		return null;
 	}
-	public void sendData(String data) throws ClientProtocolException, IOException{
-		DefaultHttpClient hc=new DefaultHttpClient();  
-		ResponseHandler <String> res=new BasicResponseHandler();  
-		HttpPost postMethod=new HttpPost("http://192.168.1.123:8080");  
-		
-			postMethod.setEntity(new StringEntity(data));
-	
-			String response=hc.execute(postMethod,res);
-			
-	}
+
 
 	@Override
 	public boolean onDown(MotionEvent arg0) {
@@ -383,7 +375,7 @@ abstract public class EventActivity extends Activity implements
 	 * Dialog box for password entry
 	 */
 	@Override
-    protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(int id, final Bundle bundle) {
         switch (id) {
       
       
@@ -396,13 +388,19 @@ abstract public class EventActivity extends Activity implements
                 .setTitle(R.string.alert_dialog_text_entry)
                 .setView(textEntryView)
                 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+               
                     public void onClick(DialogInterface dialog, int whichButton) {
-                    	/* User clicked OK so do some stuff */
+                    	/* User entered a password and clicked OK */
                     	EditText passwdEditText=(EditText) textEntryView.findViewById(R.id.password_edit);
                     	String password=passwdEditText.getText().toString();
                     	if(password.length() !=0)
                     		Settings.setPassword(password);
-                       
+                    	if(bundle.getBoolean("Settings")){
+                    		Settings.updatePasswordSettings();
+                    	}
+                    	Networking.sendRegistration();
+                    	
+                    	
                     }
                 })
                 .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
