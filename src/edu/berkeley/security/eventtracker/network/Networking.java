@@ -10,6 +10,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,9 +33,10 @@ public class Networking {
 		DefaultHttpClient hc=new DefaultHttpClient();  
 		ResponseHandler <String> res=new BasicResponseHandler();  
 		HttpPost postMethod=new HttpPost("http://192.168.0.105:3001/users/init");
-		String phoneNumber=Settings.getPhoneNumber();
-		postMethod.addHeader("PhoneNumber", Settings.getPhoneNumber());
-		postMethod.addHeader("UUIDOfDevice", Settings.getDeviceUUID());
+		HttpParams params=new BasicHttpParams();
+		params.setParameter("PhoneNumber", Settings.getPhoneNumber());
+		params.setParameter("UUIDOfDevice", Settings.getDeviceUUID());
+		postMethod.setParams(params);
 		
 		try {
 			postMethod.setEntity(new StringEntity(""));
@@ -64,8 +67,11 @@ public class Networking {
 		DefaultHttpClient hc=new DefaultHttpClient();  
 		ResponseHandler <String> res=new BasicResponseHandler();  
 		HttpPost postMethod=new HttpPost("http://192.168.0.105:3001/events/upload");
-		postMethod.addHeader("UUIDOfDevice", Settings.getDeviceUUID());
-		postMethod.addHeader("UUIDOfEvent", data.mUUID);
+		HttpParams params=new BasicHttpParams();
+		
+		params.setParameter("UUIDOfDevice", Settings.getDeviceUUID());
+		params.setParameter("UUIDOfEvent", data.mUUID);
+		postMethod.setParams(params);
 		
 		try {
 			postMethod.setEntity(new StringEntity(EventDataSerializer.toJSONObject(data).toString()));
