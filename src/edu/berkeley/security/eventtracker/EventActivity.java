@@ -390,7 +390,7 @@ abstract public class EventActivity extends Activity implements
                     	if(bundle.getBoolean("Settings")){
                     		Settings.updatePasswordSettings();
                     	}
-                    	Networking.sendRegistration();
+                    	
                     	
                     	
                     }

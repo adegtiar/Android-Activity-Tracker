@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Encryption;
+import edu.berkeley.security.eventtracker.network.Networking;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
@@ -52,10 +53,10 @@ public class Settings extends EventActivity  {
 		notificationsEnabled = (CheckBox) findViewById(R.id.notifications_cb);
 		sychronizeDataEnabled = (CheckBox) findViewById(R.id.synchronizeData_cb);
 		focusOnNothing();
+		setPhoneNumber();
+		setDeviceUUID();
 		initializeButtons();
 
-		setPhoneNumber(); 
-		setDeviceUUID();
 		
 		GPSEnabled.setOnClickListener(new OnClickListener() {
 
@@ -108,11 +109,13 @@ public class Settings extends EventActivity  {
 		});
 	}
 
-	
+
 	public static void updatePasswordSettings(){
     	if(isPasswordSet()){
 			sychronizeDataEnabled.setChecked(true);
 			Settings.updatePreferences();
+			Networking.sendRegistration();
+			
 		}	
 	}
 

@@ -30,7 +30,8 @@ public class Networking {
 	public static void sendRegistration(){
 		DefaultHttpClient hc=new DefaultHttpClient();  
 		ResponseHandler <String> res=new BasicResponseHandler();  
-		HttpPost postMethod=new HttpPost("http://192.168.0.108:3000/users/init");
+		HttpPost postMethod=new HttpPost("http://192.168.0.105:3001/users/init");
+		String phoneNumber=Settings.getPhoneNumber();
 		postMethod.addHeader("PhoneNumber", Settings.getPhoneNumber());
 		postMethod.addHeader("UUIDOfDevice", Settings.getDeviceUUID());
 		
@@ -62,7 +63,7 @@ public class Networking {
 	public static void sendData(EventEntry data){
 		DefaultHttpClient hc=new DefaultHttpClient();  
 		ResponseHandler <String> res=new BasicResponseHandler();  
-		HttpPost postMethod=new HttpPost("http://192.168.0.108:3000/events/upload");
+		HttpPost postMethod=new HttpPost("http://192.168.0.105:3001/events/upload");
 		postMethod.addHeader("UUIDOfDevice", Settings.getDeviceUUID());
 		postMethod.addHeader("UUIDOfEvent", data.mUUID);
 		
