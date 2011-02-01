@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.webserver.WebServerService;
 
 public class TrackingMode extends AbstractEventEdit {
@@ -204,6 +205,8 @@ public class TrackingMode extends AbstractEventEdit {
 		updateAutoComplete();
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
+		//send data now
+		Networking.sendData(currentEvent);
 		previousEvent = currentEvent;
 		if (createNewActivity)
 			startNewActivity();
@@ -211,6 +214,8 @@ public class TrackingMode extends AbstractEventEdit {
 			currentEvent = null;
 		updateTrackingStatus();
 		fillViewWithEventInfo();
+		
+	
 	}
 
 	private void startNewActivity() {

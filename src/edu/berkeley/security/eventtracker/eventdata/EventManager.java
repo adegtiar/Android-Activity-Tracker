@@ -3,6 +3,8 @@ package edu.berkeley.security.eventtracker.eventdata;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.berkeley.security.eventtracker.network.Networking;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -65,12 +67,12 @@ public class EventManager {
 	 *         upon error.
 	 */
 	public EventEntry createEvent(String eventName, String notes,
-			long startTime, long endTime) {
+			long startTime, long endTime, String uuid) {
 		long newRowID = mDbHelper.createEvent(eventName, notes, startTime,
-				endTime);
+				endTime, uuid);
 		if (newRowID != -1)
 			return new EventEntry(newRowID, eventName, notes, startTime,
-					endTime, this);
+					endTime, Networking.createUUID(),this);
 		else
 			return null;
 	}
@@ -88,11 +90,11 @@ public class EventManager {
 		event.mManager = this;
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
-					event.mStartTime, event.mEndTime);
+					event.mStartTime, event.mEndTime, event.mUUID);
 			return event.mDbRowID != -1;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
-					event.mNotes, event.mStartTime, event.mEndTime);
+					event.mNotes, event.mStartTime, event.mEndTime, event.mUUID);
 		}
 	}
 

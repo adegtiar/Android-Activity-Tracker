@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import edu.berkeley.security.eventtracker.network.Networking;
+
 import android.database.Cursor;
 
 /**
@@ -16,6 +18,7 @@ public class EventEntry {
 	public String mNotes = "";
 	public long mStartTime;
 	public long mEndTime;
+	public String mUUID="";
 	EventManager mManager;
 
 	/**
@@ -24,7 +27,7 @@ public class EventEntry {
 	public enum ColumnType {
 		NAME(EventDbAdapter.KEY_NAME), NOTES(EventDbAdapter.KEY_NOTES), START_TIME(
 				EventDbAdapter.KEY_START_TIME), END_TIME(
-				EventDbAdapter.KEY_END_TIME), ROWID(EventDbAdapter.KEY_ROWID);
+				EventDbAdapter.KEY_END_TIME),  UUID(EventDbAdapter.KEY_UUID), ROWID(EventDbAdapter.KEY_ROWID);
 		private String columnName;
 
 		private ColumnType(String columnName) {
@@ -45,15 +48,18 @@ public class EventEntry {
 
 	public EventEntry() {
 		mStartTime = System.currentTimeMillis();
+		mUUID= Networking.createUUID();
+		
 	}
 
 	public EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, EventManager manager) {
+			long endTime, String uuid, EventManager manager) {
 		this.mDbRowID = dbRowID;
 		this.mName = name;
 		this.mNotes = notes;
 		this.mStartTime = startTime;
 		this.mEndTime = endTime;
+		this.mUUID=uuid;
 		this.mManager = manager;
 	}
 
@@ -72,9 +78,10 @@ public class EventEntry {
 		long dbRowID = getLong(eventCursor, EventDbAdapter.KEY_ROWID);
 		String name = getString(eventCursor, EventDbAdapter.KEY_NAME);
 		String notes = getString(eventCursor, EventDbAdapter.KEY_NOTES);
+		String uuid=getString(eventCursor, EventDbAdapter.KEY_UUID);
 		long startTime = getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
 		long endTime = getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime, manager);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid, manager);
 	}
 
 	public String toString() {
@@ -100,6 +107,8 @@ public class EventEntry {
 			return getDateString(mStartTime);
 		case END_TIME:
 			return getDateString(mEndTime);
+		case UUID:
+			return mUUID;
 		case ROWID:
 			return Long.toString(mDbRowID);
 		default:

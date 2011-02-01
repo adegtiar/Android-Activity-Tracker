@@ -15,7 +15,9 @@ public abstract class AbstractDbAdapter {
 	protected static final String TABLE_CREATE_EVENTS = "create table eventData (_id integer primary key autoincrement, "
 			+ "eventname text not null, "
 			+ "notes text not null, "
-			+ "startTime Long, " + "endTime Long);";
+			+ "startTime Long, " 
+			+ "endTime Long," 
+			+ "uuid text not null);";
 
 	protected static final String TABLE_CREATE_GPSDATA = "create table gpsData (_id integer primary key autoincrement, "
 			+ "eventRowID long, " + "latitude real, " + "longitude real);";

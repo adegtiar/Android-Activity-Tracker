@@ -19,7 +19,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
+import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.network.Networking;
 
 abstract public class AbstractEventEdit extends EventActivity {
 
@@ -200,6 +202,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
+//		Networking.sendData(event);
 		return mEventManager.updateDatabase(event);
 	}
 

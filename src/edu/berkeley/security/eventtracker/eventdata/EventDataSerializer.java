@@ -87,7 +87,7 @@ public class EventDataSerializer extends Activity {
 		return aData.toString();
 	}
 
-	private JSONObject toJSONObject(EventEntry event) {
+	public static JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();
 		try {
 			json.accumulate("name", event.mName);
@@ -102,7 +102,7 @@ public class EventDataSerializer extends Activity {
 		return json;
 	}
 
-	private JSONArray toJSONArray(List<GPSCoordinates> coordsList) {
+	protected static JSONArray toJSONArray(List<GPSCoordinates> coordsList) {
 		JSONArray gpsArray = new JSONArray();
 		for (GPSCoordinates coords : coordsList)
 			try {
@@ -113,7 +113,7 @@ public class EventDataSerializer extends Activity {
 		return gpsArray;
 	}
 
-	private JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
+	private static JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
 		JSONObject jsonCoords = new JSONObject();
 		jsonCoords.put("latitude", coords.getLongitude());
 		jsonCoords.put("longitude", coords.getLongitude());

@@ -29,6 +29,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public static final String KEY_NOTES = "notes";
 	public static final String KEY_START_TIME = "startTime";
 	public static final String KEY_END_TIME = "endTime";
+	public static final String KEY_UUID = "uuid";
 	public static final String KEY_ROWID = "_id";
 	private static final String DATABASE_TABLE = "eventData";
 
@@ -48,12 +49,13 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * notes, and startTime
 	 */
 	public Long createEvent(String eventName, String notes, long startTime,
-			long endTime) {
+			long endTime, String uuid) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_NAME, eventName);
 		initialValues.put(KEY_NOTES, notes);
 		initialValues.put(KEY_START_TIME, startTime);
 		initialValues.put(KEY_END_TIME, endTime);
+		initialValues.put(KEY_UUID, uuid);
 		return mDb.insert(DATABASE_TABLE, null, initialValues);
 	}
 
@@ -76,7 +78,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 	public Cursor fetchAllEvents() {
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME }, null, null, null,
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID }, null, null, null,
 				null, null);
 	}
 
@@ -90,7 +92,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		String orderBy = "startTime DESC";
 		String limitClause = "20";
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME }, null, null, null,
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID }, null, null, null,
 				null, orderBy, limitClause);
 	}
 
@@ -108,7 +110,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME }, KEY_ROWID + "="
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID }, KEY_ROWID + "="
 				+ rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
@@ -172,12 +174,13 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * @return true if the note was successfully updated, false otherwise.
 	 */
 	public boolean updateEvent(Long rowId, String title, String notes,
-			Long startTime, Long endTime) {
+			Long startTime, Long endTime, String uuid) {
 		ContentValues args = new ContentValues();
 		args.put(KEY_NAME, title);
 		args.put(KEY_NOTES, notes);
 		args.put(KEY_START_TIME, startTime);
 		args.put(KEY_END_TIME, endTime);
+		args.put(KEY_UUID, uuid);
 		return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
 	}
 }

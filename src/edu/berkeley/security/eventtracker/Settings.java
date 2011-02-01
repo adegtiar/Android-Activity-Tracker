@@ -210,6 +210,7 @@ public class Settings extends EventActivity  {
 		prefEditor.commit();
 	}
 	public static String getDeviceUUID(){
+		
 		long mostSigBits=settings.getLong(UUIDMostSigBits, 0);
 		long leastSigBits=settings.getLong(UUIDLeastSigBits, 0);
 		return new UUID(mostSigBits, leastSigBits).toString();
