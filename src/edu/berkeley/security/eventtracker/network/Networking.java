@@ -11,13 +11,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-
 import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -32,13 +28,7 @@ public class Networking {
 	public static void sendRegistration() {
 		DefaultHttpClient hc = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
-		HttpPost postMethod = new HttpPost(
-				"http://192.168.0.107:3000/users/init");
-
-		// HttpParams params=new BasicHttpParams();
-		// params.setParameter("PhoneNumber", Settings.getPhoneNumber());
-		// params.setParameter("UUIDOfDevice", Settings.getDeviceUUID());
-		// postMethod.setParams(params);
+		HttpPost postMethod = new HttpPost("http://192.168.0.105:3001/users/init");
 
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 
@@ -48,6 +38,7 @@ public class Networking {
 				.getDeviceUUID()));
 
 		try {
+			
 			postMethod.setEntity(new UrlEncodedFormEntity(params));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
@@ -80,15 +71,17 @@ public class Networking {
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(
 				"http://192.168.0.105:3001/events/upload");
-		HttpParams params = new BasicHttpParams();
 
-		params.setParameter("UUIDOfDevice", Settings.getDeviceUUID());
-		params.setParameter("UUIDOfEvent", data.mUUID);
-		postMethod.setParams(params);
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
 
+		
+		params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+				.getDeviceUUID()));
+		params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+		params.add(new BasicNameValuePair("EventData",EventDataSerializer.toJSONObject(data).toString() ));
 		try {
-			postMethod.setEntity(new StringEntity(EventDataSerializer
-					.toJSONObject(data).toString()));
+
+			postMethod.setEntity(new UrlEncodedFormEntity(params));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -32,9 +32,8 @@ public class Settings extends EventActivity  {
 	public static final String isPasswordSet = "isPasswordEntered";
 	public static final String PhoneNumber = "phoneNumber";
 	public static final String UUIDOfDevice = "deviceUUID";
-	private static final String UUIDMostSigBits = "UUIDMostSigBits";
-	private static final String UUIDLeastSigBits = "UUIDLeastSigBits";
 	private static final String isSychronizationEnabled="enableSychronization";
+	public static final String Registered="registered"; 
 
 	
 	private static NumberPicker GPSSensitivity;
@@ -92,9 +91,13 @@ public class Settings extends EventActivity  {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-		
-				
-				
+				if(isPasswordSet()){
+					if(!registeredAlready()){
+						Settings.registerWithWebServer();
+						
+					}
+				}
+
 				if(!isPasswordSet()){
 					sychronizeDataEnabled.setChecked(false);
 					//TODO make user set a password
@@ -112,7 +115,7 @@ public class Settings extends EventActivity  {
     	if(isPasswordSet()){
 			sychronizeDataEnabled.setChecked(true);
 			Settings.updatePreferences();
-			Networking.sendRegistration();
+			Settings.registerWithWebServer();
 			
 		}	
 	}
@@ -206,20 +209,24 @@ public class Settings extends EventActivity  {
 	public void setDeviceUUID(){
 		UUID uuid=UUID.randomUUID();
 		SharedPreferences.Editor prefEditor = settings.edit();
-		prefEditor.putLong(UUIDMostSigBits, uuid.getMostSignificantBits());
-		prefEditor.putLong(UUIDLeastSigBits, uuid.getLeastSignificantBits());
+		prefEditor.putString(UUIDOfDevice, uuid.toString());
 		prefEditor.commit();
 	}
+	public static void registerWithWebServer(){
+		SharedPreferences.Editor prefEditor = settings.edit();
+		prefEditor.putBoolean(Registered,true);
+		prefEditor.commit();
+		Networking.sendRegistration();
+	}
 	public static String getDeviceUUID(){
-		
-		long mostSigBits=settings.getLong(UUIDMostSigBits, 0);
-		long leastSigBits=settings.getLong(UUIDLeastSigBits, 0);
-		return new UUID(mostSigBits, leastSigBits).toString();
+		return settings.getString(UUIDOfDevice, "");
 	}
 	public static String getPhoneNumber(){
 		return settings.getString(PhoneNumber, null);
 	}
+	public static boolean registeredAlready(){
+		return settings.getBoolean(Registered, false);
+	}
 	
-
 
 }
