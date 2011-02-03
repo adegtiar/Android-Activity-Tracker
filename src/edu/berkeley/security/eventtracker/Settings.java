@@ -101,9 +101,7 @@ public class Settings extends EventActivity  {
 					Bundle bundle = new Bundle();
 					bundle.putBoolean("Settings", true);
 					showDialog(DIALOG_TEXT_ENTRY, bundle);
-
 				}
-				
 				
 			}
 		});
