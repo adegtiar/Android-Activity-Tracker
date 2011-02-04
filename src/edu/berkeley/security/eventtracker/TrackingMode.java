@@ -14,6 +14,7 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.Synchronizer;
 import edu.berkeley.security.eventtracker.webserver.WebServerService;
 
 public class TrackingMode extends AbstractEventEdit {
@@ -27,7 +28,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 		gpsServiceIntent = new Intent(this, GPSLoggerService.class);
 		serverServiceIntent = new Intent(this, WebServerService.class);
-
+		SynchronizerIntent = new Intent(this, Synchronizer.class);
 		// Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
@@ -40,12 +41,12 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
-		if(!Settings.isPasswordSet()){
+		if (!Settings.isPasswordSet()) {
 			Bundle bundle = new Bundle();
 			bundle.putBoolean("Settings", false);
 			showDialog(DIALOG_TEXT_ENTRY, bundle);
 		}
-			
+
 	}
 
 	@Override
@@ -205,8 +206,8 @@ public class TrackingMode extends AbstractEventEdit {
 		updateAutoComplete();
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
-		//send data now
-		Networking.sendData(currentEvent);
+		// send data now
+		Networking.sendToServer(currentEvent, this);
 		previousEvent = currentEvent;
 		if (createNewActivity)
 			startNewActivity();
@@ -214,8 +215,7 @@ public class TrackingMode extends AbstractEventEdit {
 			currentEvent = null;
 		updateTrackingStatus();
 		fillViewWithEventInfo();
-		
-	
+
 	}
 
 	private void startNewActivity() {

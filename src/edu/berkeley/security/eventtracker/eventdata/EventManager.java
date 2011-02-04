@@ -72,7 +72,7 @@ public class EventManager {
 				endTime, uuid);
 		if (newRowID != -1)
 			return new EventEntry(newRowID, eventName, notes, startTime,
-					endTime, Networking.createUUID(),this);
+					endTime, Networking.createUUID()/*,this*/); //TODO remove
 		else
 			return null;
 	}
@@ -87,7 +87,7 @@ public class EventManager {
 	public boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return false;
-		event.mManager = this;
+//		event.mManager = this; //TODO remove
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID);

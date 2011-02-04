@@ -54,8 +54,8 @@ public class GPSLoggerService extends Service {
 			if (manager != null) {
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					manager.addGPSCoordinates(new GPSCoordinates(loc
-							.getLatitude(), loc.getLongitude()),
+					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude());
+					manager.addGPSCoordinates(GPSCoord,
 							currentEvent.mDbRowID);
 				}
 
@@ -63,8 +63,8 @@ public class GPSLoggerService extends Service {
 				manager = EventManager.getManager(GPSLoggerService.this);
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					manager.addGPSCoordinates(new GPSCoordinates(loc
-							.getLatitude(), loc.getLongitude()),
+					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude());
+					manager.addGPSCoordinates(GPSCoord,
 							currentEvent.mDbRowID);
 					manager.close();
 				}

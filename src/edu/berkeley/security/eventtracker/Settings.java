@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Encryption;
 import edu.berkeley.security.eventtracker.network.Networking;
@@ -42,6 +43,9 @@ public class Settings extends EventActivity  {
 	private static CheckBox GPSEnabled;
 	private static CheckBox notificationsEnabled;
 	private static CheckBox sychronizeDataEnabled;
+
+	
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,14 +95,8 @@ public class Settings extends EventActivity  {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				if(isPasswordSet()){
-					if(!registeredAlready()){
-						Settings.registerWithWebServer();
-						
-					}
-				}
-
-				if(!isPasswordSet()){
+		
+				if(!isPasswordSet()&& isChecked){
 					sychronizeDataEnabled.setChecked(false);
 					//TODO make user set a password
 					Bundle bundle = new Bundle();
@@ -111,22 +109,26 @@ public class Settings extends EventActivity  {
 	}
 
 
-	public static void updatePasswordSettings(){
+	protected static void updatePasswordSettings(){
     	if(isPasswordSet()){
 			sychronizeDataEnabled.setChecked(true);
 			Settings.updatePreferences();
-			Settings.registerWithWebServer();
-			
 		}	
 	}
 
 
 	@Override
 	protected void onPause() {
-		Settings.updatePreferences();
 		super.onPause();
+		Settings.updatePreferences();
+		if(isPasswordSet() && isSychronizationEnabled()){
+			if(!registeredAlready()){
+				//register with the server 
+				registerWithWebServer();
+				Networking.sendToServer(null, this);
+			}
+		}
 	}
-
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.settings;
@@ -165,58 +167,59 @@ public class Settings extends EventActivity  {
 
 	}
 
-	public static boolean isGPSEnabled() {
+	protected  static boolean isGPSEnabled() {
 		return settings.getBoolean(isGPSEnabled, false);
 
 	}
 
-	public static int getGPSSensitivity() {
+	protected  static int getGPSSensitivity() {
 		return settings.getInt(Sensitivity, 0);
 	}
 
-	public static int getGPSUpdateTime() {
+	protected  static int getGPSUpdateTime() {
 		return settings.getInt(GPSTime, 1);
 	}
 	
-	public static boolean areNotificationsEnabled() {
+	protected  static boolean areNotificationsEnabled() {
 		return settings.getBoolean(areNotificationsEnabled, true);
 	}
 	
-	public static boolean isPasswordSet(){
+	protected static boolean isPasswordSet(){
 		return settings.getBoolean(isPasswordSet, false);
 		
 	}
-	public static boolean isSychronizationEnabled(){
+	protected  static boolean isSychronizationEnabled(){
 		return settings.getBoolean(isSychronizationEnabled, false);
 		
 	}
 	
-	public static void setPassword(String passwd){
+	protected  static void setPassword(String passwd){
 		SharedPreferences.Editor prefEditor = settings.edit();
+		String test=Encryption.base64(Encryption.hash(passwd));
 		prefEditor.putString(password, Encryption.base64(Encryption.hash(passwd)));
 		prefEditor.putBoolean(isPasswordSet, true);
 		prefEditor.commit();
 		
 	}
 	
-	public void setPhoneNumber(){
+	protected  void setPhoneNumber(){
 		TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		String telephoneNumber=telephonyManager.getLine1Number();
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putString(PhoneNumber, telephoneNumber);
 		prefEditor.commit();
 	}
-	public void setDeviceUUID(){
+	protected  void setDeviceUUID(){
 		UUID uuid=UUID.randomUUID();
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putString(UUIDOfDevice, uuid.toString());
 		prefEditor.commit();
 	}
-	public static void registerWithWebServer(){
+	protected static void registerWithWebServer(){
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putBoolean(Registered,true);
 		prefEditor.commit();
-		Networking.sendRegistration();
+		
 	}
 	public static String getDeviceUUID(){
 		return settings.getString(UUIDOfDevice, "");
@@ -224,7 +227,7 @@ public class Settings extends EventActivity  {
 	public static String getPhoneNumber(){
 		return settings.getString(PhoneNumber, null);
 	}
-	public static boolean registeredAlready(){
+	protected static boolean registeredAlready(){
 		return settings.getBoolean(Registered, false);
 	}
 	

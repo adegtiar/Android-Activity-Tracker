@@ -33,6 +33,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.Synchronizer;
 
 /**
  * The main activity that all event-related activities extend. It houses a
@@ -45,10 +46,11 @@ abstract public class EventActivity extends Activity implements
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	static final int TRACKING_NOTIFICATION = 1;
 	protected TextView textViewIsTracking;
-	protected EventManager mEventManager;
+	public static EventManager mEventManager; //TODO not sure if this is right.
 	// Variables for Services
 	protected static Intent gpsServiceIntent;
 	protected static Intent serverServiceIntent;
+	public static Intent SynchronizerIntent;
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
@@ -65,6 +67,8 @@ abstract public class EventActivity extends Activity implements
 		
 		mEventManager = EventManager.getManager(this);
 		mGestureScanner = new GestureDetector(this);
+
+
 		
 	}
 
@@ -385,7 +389,6 @@ abstract public class EventActivity extends Activity implements
                     	/* User entered a password and clicked OK */
                     	EditText passwdEditText=(EditText) textEntryView.findViewById(R.id.password_edit);
                     	String password=passwdEditText.getText().toString();
-                    	if(password.length() !=0)
                     		Settings.setPassword(password);
                     	if(bundle.getBoolean("Settings")){
                     		Settings.updatePasswordSettings();
@@ -406,5 +409,6 @@ abstract public class EventActivity extends Activity implements
         return null;
     }
 
+	
 
 }

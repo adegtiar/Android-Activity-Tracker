@@ -28,7 +28,8 @@
 		</activity>
 	<activity android:name=".ServerActivity" android:launchMode="singleTask"></activity>
 <service android:name=".webserver.WebServerService"></service>
-<activity android:name=".network.PasswordDialog"></activity>
+
+<service android:name=".network.Synchronizer"></service>
 </application>
 	<uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
 

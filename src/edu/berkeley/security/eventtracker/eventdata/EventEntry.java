@@ -1,9 +1,11 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.network.Networking;
 
 import android.database.Cursor;
@@ -12,14 +14,15 @@ import android.database.Cursor;
  * A local, in-memory version of a Event database entry. This is pushed and
  * pulled from the database when necessary.
  */
-public class EventEntry {
+public class EventEntry implements Serializable{
+	
+	private static final long serialVersionUID = 1644264527726846951L;
 	public long mDbRowID = -1;
 	public String mName = "";
 	public String mNotes = "";
 	public long mStartTime;
 	public long mEndTime;
 	public String mUUID="";
-	EventManager mManager;
 
 	/**
 	 * An enumeration of column type names in the event table.
@@ -53,14 +56,14 @@ public class EventEntry {
 	}
 
 	public EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, String uuid, EventManager manager) {
+			long endTime, String uuid/*, EventManager manager*/) {
 		this.mDbRowID = dbRowID;
 		this.mName = name;
 		this.mNotes = notes;
 		this.mStartTime = startTime;
 		this.mEndTime = endTime;
 		this.mUUID=uuid;
-		this.mManager = manager;
+//		this.mManager = manager; //TODO uh oh
 	}
 
 	/**
@@ -81,7 +84,7 @@ public class EventEntry {
 		String uuid=getString(eventCursor, EventDbAdapter.KEY_UUID);
 		long startTime = getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
 		long endTime = getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid, manager);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid/*, manager*/);
 	}
 
 	public String toString() {
@@ -151,7 +154,7 @@ public class EventEntry {
 	}
 
 	public List<GPSCoordinates> getGPSCoordinates() {
-		return mManager.getGPSCoordinates(mDbRowID);
+		return EventActivity.mEventManager.getGPSCoordinates(mDbRowID);
 	}
 
 }

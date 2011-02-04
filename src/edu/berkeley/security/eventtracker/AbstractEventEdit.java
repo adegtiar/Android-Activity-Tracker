@@ -202,7 +202,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return true;
-//		Networking.sendData(event);
+		// Networking.sendData(event);
 		return mEventManager.updateDatabase(event);
 	}
 
@@ -272,7 +272,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 				RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-				"Speech recognition demo");
+				"");
 		startActivityForResult(intent, requestCode);
 	}
 

@@ -115,7 +115,7 @@ public class EventDataSerializer extends Activity {
 
 	private static JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
 		JSONObject jsonCoords = new JSONObject();
-		jsonCoords.put("latitude", coords.getLongitude());
+		jsonCoords.put("latitude", coords.getLatitude());
 		jsonCoords.put("longitude", coords.getLongitude());
 		return jsonCoords;
 	}
