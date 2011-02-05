@@ -2,6 +2,7 @@ package edu.berkeley.security.eventtracker.network;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
 public class Synchronizer extends IntentService {
@@ -26,14 +27,16 @@ public class Synchronizer extends IntentService {
 		EventEntry event;
 		
 		event = (EventEntry) bundle.getSerializable("EventData");
-		
-		if(event != null){
-			Networking.sendData((EventEntry) event);
-		}else{
-			Networking.sendRegistration();
+		ServerRequest request=(ServerRequest) bundle.getSerializable("Request");
+		if(request == ServerRequest.SendData){
+			PostRequestResponse response=Networking.sendData((EventEntry) event);
+			//do something about sending data again later
 		}
-		
-		
+		if(request==ServerRequest.Register){
+			PostRequestResponse response=Networking.sendRegistration();
+			if(response==PostRequestResponse.Success){
+				Settings.confirmRegistrationWithWebServer();
+			}
+		}
 	}
-
 }

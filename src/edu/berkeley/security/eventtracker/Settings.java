@@ -18,6 +18,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Encryption;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
@@ -56,8 +57,10 @@ public class Settings extends EventActivity  {
 		notificationsEnabled = (CheckBox) findViewById(R.id.notifications_cb);
 		sychronizeDataEnabled = (CheckBox) findViewById(R.id.synchronizeData_cb);
 		focusOnNothing();
-		setPhoneNumber();
-		setDeviceUUID();
+		if(getDeviceUUID().length()==0){
+			setDeviceUUID();
+		}
+		
 		initializeButtons();
 
 		
@@ -123,9 +126,9 @@ public class Settings extends EventActivity  {
 		Settings.updatePreferences();
 		if(isPasswordSet() && isSychronizationEnabled()){
 			if(!registeredAlready()){
-				//register with the server 
-				registerWithWebServer();
-				Networking.sendToServer(null, this);
+				//attempt to register with the server 
+				Networking.sendToServer(ServerRequest.Register, null, this);
+				
 			}
 		}
 	}
@@ -202,8 +205,8 @@ public class Settings extends EventActivity  {
 		
 	}
 	
-	protected  void setPhoneNumber(){
-		TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+	protected static void setPhoneNumber(Context context){
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 		String telephoneNumber=telephonyManager.getLine1Number();
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putString(PhoneNumber, telephoneNumber);
@@ -215,11 +218,15 @@ public class Settings extends EventActivity  {
 		prefEditor.putString(UUIDOfDevice, uuid.toString());
 		prefEditor.commit();
 	}
-	protected static void registerWithWebServer(){
+	public static void confirmRegistrationWithWebServer(){
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putBoolean(Registered,true);
 		prefEditor.commit();
 		
+		
+	}
+	public static String getPassword(){
+		return settings.getString(password, "");
 	}
 	public static String getDeviceUUID(){
 		return settings.getString(UUIDOfDevice, "");

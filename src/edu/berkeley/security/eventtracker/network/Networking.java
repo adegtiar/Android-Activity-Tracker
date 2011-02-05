@@ -21,23 +21,24 @@ import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
+/**
+ * This is the networking class. We send your packets
+ */
 
+enum PostRequestResponse{Success, Error}
 public class Networking {
 
 	/**
-	 * Sends data to the server.
-	 * For now, if the data is null, this method is a registration request to the server
-	 * otherwise its sending event data
-	 *TODO when we have more than two options, use an enum
 	 * 
-	 * @param data
-	 * @param context
+	 * @param request- the type of post request to send(i.e., register, send data, update some event, delete some event)
+	 * @param data- the event to be send to the server
+	 * @param context- dont't worry about this.  
 	 */
-	public static void sendToServer(EventEntry data, Context context){
-		Intent intent=new Intent(EventActivity.SynchronizerIntent);
-		Intent test=new Intent(context, Synchronizer.class);
-		test.putExtra("EventData", data);
-		context.startService(test);
+	public static void sendToServer(ServerRequest request, EventEntry data, Context context){
+		Intent intent=new Intent(context, Synchronizer.class);
+		intent.putExtra("EventData", data);
+		intent.putExtra("Request", request);
+		context.startService(intent);
 	}
 	
 	/**
@@ -45,7 +46,7 @@ public class Networking {
 	 * that registers the user's phone with the web server TODO this should
 	 * happen in a separate thread
 	 */
-	public static void sendRegistration() {
+	public static PostRequestResponse sendRegistration() {
 		DefaultHttpClient hc = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(
@@ -57,7 +58,7 @@ public class Networking {
 				.getPhoneNumber()));
 		params.add(new BasicNameValuePair("UUIDOfDevice", Settings
 				.getDeviceUUID()));
-
+		params.add(new BasicNameValuePair("HashedPasswd", Settings.getPassword()));
 		try {
 
 			postMethod.setEntity(new UrlEncodedFormEntity(params));
@@ -69,12 +70,11 @@ public class Networking {
 		try {
 			String response = hc.execute(postMethod, res);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return PostRequestResponse.Error;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return PostRequestResponse.Error;
 		}
+		return PostRequestResponse.Success;
 
 	}
 
@@ -87,7 +87,7 @@ public class Networking {
 	 *            TODO: If User doesn't get a response, add to some data
 	 *            structure. Try sending it every time app starts??
 	 */
-	public static void sendData(EventEntry data) {
+	public static PostRequestResponse sendData(EventEntry data) {
 		DefaultHttpClient hc = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(
@@ -111,12 +111,14 @@ public class Networking {
 		try {
 			String response = hc.execute(postMethod, res);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//
+			return PostRequestResponse.Error;
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			return PostRequestResponse.Error;
 		}
+		return PostRequestResponse.Success;
 
 	}
 

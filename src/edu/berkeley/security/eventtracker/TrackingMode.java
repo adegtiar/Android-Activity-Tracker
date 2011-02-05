@@ -14,6 +14,7 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
 import edu.berkeley.security.eventtracker.webserver.WebServerService;
 
@@ -41,10 +42,15 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
-		if (!Settings.isPasswordSet()) {
-			Bundle bundle = new Bundle();
-			bundle.putBoolean("Settings", false);
-			showDialog(DIALOG_TEXT_ENTRY, bundle);
+//		if (!Settings.isPasswordSet()) {
+//			Bundle bundle = new Bundle();
+//			bundle.putBoolean("Settings", false);
+//			showDialog(DIALOG_TEXT_ENTRY, bundle);
+//		}
+		if(!Settings.registeredAlready() && Settings.isSychronizationEnabled()){
+			//attempt to register with the server 
+			Networking.sendToServer(ServerRequest.Register, null, this);
+				
 		}
 
 	}
@@ -206,8 +212,14 @@ public class TrackingMode extends AbstractEventEdit {
 		updateAutoComplete();
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
-		// send data now
-		Networking.sendToServer(currentEvent, this);
+		
+		//check to see if allowed to send data
+		if(Settings.isSychronizationEnabled()){
+			//attempt to send data now
+			Networking.sendToServer(ServerRequest.SendData,currentEvent, this);
+		}
+		
+		
 		previousEvent = currentEvent;
 		if (createNewActivity)
 			startNewActivity();
