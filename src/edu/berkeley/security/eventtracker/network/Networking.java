@@ -25,81 +25,40 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
  * This is the networking class. We send your packets
  */
 
-enum PostRequestResponse{Success, Error}
+enum PostRequestResponse {
+	Success, Error
+}
+
 public class Networking {
 
 	/**
-	 * 
-	 * @param request- the type of post request to send(i.e., register, send data, update some event, delete some event)
-	 * @param data- the event to be send to the server
-	 * @param context- dont't worry about this.  
+	 * Sends intents to a service that sends the actual post requests
+	 * Only does this if permission to sychronize with web server is given
+	 * @param request
+	 *            - the type of post request to send(i.e., register, send data,
+	 *            update some event, delete some event)
+	 * @param data
+	 *            - the event to be send to the server
+	 * @param context
+	 *            - dont't worry about this.
 	 */
-	public static void sendToServer(ServerRequest request, EventEntry data, Context context){
-		Intent intent=new Intent(context, Synchronizer.class);
-		intent.putExtra("EventData", data);
-		intent.putExtra("Request", request);
-		context.startService(intent);
+	public static void sendToServer(ServerRequest request, EventEntry data,
+			Context context) {
+		// check to see if allowed to send data
+		if (Settings.isSychronizationEnabled()) {
+			Intent intent = new Intent(context, Synchronizer.class);
+			intent.putExtra("EventData", data);
+			intent.putExtra("Request", request);
+			context.startService(intent);
+		}
 	}
 	
-	/**
-	 * Called when the user first enters their password Sends the post request
-	 * that registers the user's phone with the web server TODO this should
-	 * happen in a separate thread
-	 */
-	public static PostRequestResponse sendRegistration() {
+	public static PostRequestResponse sendPostRequest(EventEntry data, ServerRequest request){
 		DefaultHttpClient hc = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
-		HttpPost postMethod = new HttpPost(
-				"http://eventtracker.dyndns-at-home.com:3001/users/init");
-
-		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		HttpPost postMethod = new HttpPost(request.getURL());
 		
-		params.add(new BasicNameValuePair("PhoneNumber", Settings
-				.getPhoneNumber()));
-		params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-				.getDeviceUUID()));
-		params.add(new BasicNameValuePair("HashedPasswd", Settings.getPassword()));
-		try {
-
-			postMethod.setEntity(new UrlEncodedFormEntity(params));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			String response = hc.execute(postMethod, res);
-		} catch (ClientProtocolException e) {
-			return PostRequestResponse.Error;
-		} catch (IOException e) {
-			return PostRequestResponse.Error;
-		}
-		return PostRequestResponse.Success;
-
-	}
-
-	/**
-	 * Makes a post request to the web server
-	 * 
-	 * @param data
-	 *            - a JSON object to be sent
-	 * 
-	 *            TODO: If User doesn't get a response, add to some data
-	 *            structure. Try sending it every time app starts??
-	 */
-	public static PostRequestResponse sendData(EventEntry data) {
-		DefaultHttpClient hc = new DefaultHttpClient();
-		ResponseHandler<String> res = new BasicResponseHandler();
-		HttpPost postMethod = new HttpPost(
-				"http://eventtracker.dyndns-at-home.com:3001/events/upload");
-
-		List<NameValuePair> params = new LinkedList<NameValuePair>();
-
-		params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-				.getDeviceUUID()));
-		params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
-		params.add(new BasicNameValuePair("EventData", EventDataSerializer
-				.toJSONObject(data).toString()));
+		List<NameValuePair> params = getPostParams(request, data);
 		try {
 
 			postMethod.setEntity(new UrlEncodedFormEntity(params));
@@ -113,14 +72,48 @@ public class Networking {
 		} catch (ClientProtocolException e) {
 			//
 			return PostRequestResponse.Error;
-			
+
 		} catch (IOException e) {
-			
+
 			return PostRequestResponse.Error;
 		}
 		return PostRequestResponse.Success;
-
 	}
+	
+
+	private static List<NameValuePair> getPostParams(ServerRequest request, EventEntry data) {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		if(request==ServerRequest.REGISTER){
+			params.add(new BasicNameValuePair("PhoneNumber", Settings
+					.getPhoneNumber()));
+			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+					.getDeviceUUID()));
+			params.add(new BasicNameValuePair("HashedPasswd", Settings
+					.getPassword()));
+		}
+		if(request==ServerRequest.SENDDATA){
+			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+					.getDeviceUUID()));
+			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+			params.add(new BasicNameValuePair("EventData", EventDataSerializer
+					.toJSONObject(data).toString()));
+		}
+		if(request==ServerRequest.UPDATE){
+			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+					.getDeviceUUID()));
+			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+			params.add(new BasicNameValuePair("EventData", EventDataSerializer
+					.toJSONObject(data).toString()));
+		}
+		if(request==ServerRequest.DELETE){
+			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+					.getDeviceUUID()));
+			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+		}
+		return params;
+	}
+
+
 
 	public static String createUUID() {
 		return UUID.randomUUID().toString();

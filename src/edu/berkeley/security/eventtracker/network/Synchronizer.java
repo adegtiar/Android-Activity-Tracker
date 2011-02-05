@@ -28,15 +28,21 @@ public class Synchronizer extends IntentService {
 		
 		event = (EventEntry) bundle.getSerializable("EventData");
 		ServerRequest request=(ServerRequest) bundle.getSerializable("Request");
-		if(request == ServerRequest.SendData){
-			PostRequestResponse response=Networking.sendData((EventEntry) event);
+		if(request == ServerRequest.SENDDATA){
+			PostRequestResponse response=Networking.sendPostRequest((EventEntry) event, ServerRequest.SENDDATA);
 			//do something about sending data again later
 		}
-		if(request==ServerRequest.Register){
-			PostRequestResponse response=Networking.sendRegistration();
+		if(request==ServerRequest.REGISTER){
+			PostRequestResponse response=Networking.sendPostRequest(null, ServerRequest.REGISTER);
 			if(response==PostRequestResponse.Success){
 				Settings.confirmRegistrationWithWebServer();
 			}
+		}
+		if(request==ServerRequest.UPDATE){
+			PostRequestResponse response=Networking.sendPostRequest((EventEntry) event, ServerRequest.UPDATE);
+		}
+		if(request==ServerRequest.DELETE){
+			PostRequestResponse response=Networking.sendPostRequest(null, ServerRequest.DELETE);
 		}
 	}
 }

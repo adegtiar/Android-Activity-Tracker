@@ -127,7 +127,7 @@ public class Settings extends EventActivity  {
 		if(isPasswordSet() && isSychronizationEnabled()){
 			if(!registeredAlready()){
 				//attempt to register with the server 
-				Networking.sendToServer(ServerRequest.Register, null, this);
+				Networking.sendToServer(ServerRequest.REGISTER, null, this);
 				
 			}
 		}
@@ -191,7 +191,7 @@ public class Settings extends EventActivity  {
 		return settings.getBoolean(isPasswordSet, false);
 		
 	}
-	protected  static boolean isSychronizationEnabled(){
+	public static boolean isSychronizationEnabled(){
 		return settings.getBoolean(isSychronizationEnabled, false);
 		
 	}

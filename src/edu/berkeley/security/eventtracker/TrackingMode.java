@@ -47,9 +47,10 @@ public class TrackingMode extends AbstractEventEdit {
 //			bundle.putBoolean("Settings", false);
 //			showDialog(DIALOG_TEXT_ENTRY, bundle);
 //		}
+		Settings.setPhoneNumber(this);
 		if(!Settings.registeredAlready() && Settings.isSychronizationEnabled()){
 			//attempt to register with the server 
-			Networking.sendToServer(ServerRequest.Register, null, this);
+			Networking.sendToServer(ServerRequest.REGISTER, null, this);
 				
 		}
 
@@ -213,12 +214,8 @@ public class TrackingMode extends AbstractEventEdit {
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
 		
-		//check to see if allowed to send data
-		if(Settings.isSychronizationEnabled()){
-			//attempt to send data now
-			Networking.sendToServer(ServerRequest.SendData,currentEvent, this);
-		}
-		
+		//attempt to send data now
+		Networking.sendToServer(ServerRequest.SENDDATA,currentEvent, this);
 		
 		previousEvent = currentEvent;
 		if (createNewActivity)

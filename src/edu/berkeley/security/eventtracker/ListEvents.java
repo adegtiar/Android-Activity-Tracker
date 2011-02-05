@@ -117,6 +117,7 @@ public class ListEvents extends EventActivity {
 		@Override
 		public void onClick(View v) {
 			mEventManager.deleteEvent(rowId);
+			//TODO delete stuff goes here!!
 			mEventsCursor.requery();
 			if (isInProgress) {
 				updateTrackingStatus(false);

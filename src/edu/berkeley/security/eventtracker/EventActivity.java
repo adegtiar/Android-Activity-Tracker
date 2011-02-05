@@ -67,7 +67,6 @@ abstract public class EventActivity extends Activity implements
 		
 		mEventManager = EventManager.getManager(this);
 		mGestureScanner = new GestureDetector(this);
-		Settings.setPhoneNumber(this);
 
 		
 	}
