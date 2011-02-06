@@ -30,7 +30,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public static final String KEY_START_TIME = "startTime";
 	public static final String KEY_END_TIME = "endTime";
 	public static final String KEY_UUID = "uuid";
-	public static final String KEY_RECEIVED_AT_SERVER="receivedAtServer";
+	public static final String KEY_RECEIVED_AT_SERVER = "receivedAtServer";
 	public static final String KEY_ROWID = "_id";
 	private static final String DATABASE_TABLE = "eventData";
 
@@ -50,14 +50,14 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * notes, and startTime
 	 */
 	public Long createEvent(String eventName, String notes, long startTime,
-			long endTime, String uuid, int receivedAtServer) {
+			long endTime, String uuid, boolean receivedAtServer) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_NAME, eventName);
 		initialValues.put(KEY_NOTES, notes);
 		initialValues.put(KEY_START_TIME, startTime);
 		initialValues.put(KEY_END_TIME, endTime);
 		initialValues.put(KEY_UUID, uuid);
-		initialValues.put(KEY_RECEIVED_AT_SERVER, receivedAtServer);
+		initialValues.put(KEY_RECEIVED_AT_SERVER, receivedAtServer ? 1 : 0);
 		return mDb.insert(DATABASE_TABLE, null, initialValues);
 	}
 
@@ -80,23 +80,24 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 	public Cursor fetchAllEvents() {
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID, KEY_RECEIVED_AT_SERVER }, null, null, null,
-				null, null);
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID,
+				KEY_RECEIVED_AT_SERVER }, null, null, null, null, null);
 	}
-	
+
 	/**
-	 * Return a Cursor over the list of all events in the database that are not yet on the web server
+	 * Return a Cursor over the list of all events in the database that are not
+	 * yet on the web server
+	 * 
 	 * @return Cursor over all events
 	 */
 	public Cursor fetchPhoneOnlyEvents() {
-	
-		return mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID, KEY_RECEIVED_AT_SERVER }, KEY_RECEIVED_AT_SERVER + "="
-				+ 0, null, null, null, null, null);
+
+		return mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID,
+				KEY_NAME, KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID,
+				KEY_RECEIVED_AT_SERVER }, KEY_RECEIVED_AT_SERVER + "=" + 0,
+				null, null, null, null, null);
 	}
 
-	
-	
 	/**
 	 * Return a Cursor over the list of event that correspond to today. Sorted
 	 * by end Time
@@ -107,8 +108,9 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		String orderBy = "startTime DESC";
 		String limitClause = "20";
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID, KEY_RECEIVED_AT_SERVER}, null, null, null,
-				null, orderBy, limitClause);
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID,
+				KEY_RECEIVED_AT_SERVER }, null, null, null, null, orderBy,
+				limitClause);
 	}
 
 	/**
@@ -125,8 +127,9 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NAME,
-				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID, KEY_RECEIVED_AT_SERVER }, KEY_ROWID + "="
-				+ rowId, null, null, null, null, null);
+				KEY_NOTES, KEY_START_TIME, KEY_END_TIME, KEY_UUID,
+				KEY_RECEIVED_AT_SERVER }, KEY_ROWID + "=" + rowId, null, null,
+				null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -188,17 +191,17 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * 
 	 * @return true if the note was successfully updated, false otherwise.
 	 */
-	
+
 	public boolean updateEvent(Long rowId, String title, String notes,
-			Long startTime, Long endTime, String uuid, int recievedAtServer) {
+			Long startTime, Long endTime, String uuid, boolean recievedAtServer) {
 		ContentValues args = new ContentValues();
 		args.put(KEY_NAME, title);
 		args.put(KEY_NOTES, notes);
 		args.put(KEY_START_TIME, startTime);
 		args.put(KEY_END_TIME, endTime);
 		args.put(KEY_UUID, uuid);
-		args.put(KEY_RECEIVED_AT_SERVER, recievedAtServer);
+		args.put(KEY_RECEIVED_AT_SERVER, recievedAtServer ? 1 : 0);
 		return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
 	}
-	
+
 }

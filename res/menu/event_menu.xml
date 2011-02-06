@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:id="@+id/settings_option" android:title="@string/settingsMenuText" android:icon="@drawable/settings_icon"></item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/settings_option" android:title="@string/settingsMenuText"
+		android:icon="@drawable/settings_icon"></item>
+		<item android:id="@+id/debug_option" android:title="@string/debugMenuText"
+		android:icon="@drawable/settings_icon"></item>
 </menu>

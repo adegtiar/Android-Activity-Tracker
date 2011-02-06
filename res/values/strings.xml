@@ -26,6 +26,7 @@
 	<string name="eventNotesHint">Additional notes...</string>
 	<string name="eventNameHint">What are you doing now?&quot;</string>
 	<string name="settingsMenuText">Settings</string>
+	<string name="debugMenuText">Debugging</string>
 	<string name="defaultDate">12/31/1970 12:00 AM</string>
 	<string name="activityInProgressText">Activity in Progress:</string>
 	<string name="confirmText">Confirm</string>

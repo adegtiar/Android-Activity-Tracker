@@ -3,8 +3,6 @@ package edu.berkeley.security.eventtracker.eventdata;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.berkeley.security.eventtracker.network.Networking;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -52,6 +50,9 @@ public class EventManager {
 		return this;
 	}
 
+	/**
+	 * Closes the database and shuts down the GPS service.
+	 */
 	public void close() {
 		mDbHelper.close();
 		mGPSHelper.close();
@@ -61,18 +62,21 @@ public class EventManager {
 	 * Create a new entry in the database corresponding to the given eventName,
 	 * notes, and startTime
 	 * 
+	 * @param name
+	 *            the name of the event.
+	 * @param notes
+	 *            the notes associated with the event.
+	 * @param startTime
+	 *            the long start time of the event.
+	 * @param endTime
+	 *            the long end time of the event.
 	 * @return a new EventEntry corresponding to the database entry, or null
 	 *         upon error.
 	 */
-	public EventEntry createEvent(String eventName, String notes,
-			long startTime, long endTime, String uuid, int receivedAtServer) {
-		long newRowID = mDbHelper.createEvent(eventName, notes, startTime,
-				endTime, uuid, receivedAtServer);
-		if (newRowID != -1)
-			return new EventEntry(newRowID, eventName, notes, startTime,
-					endTime, Networking.createUUID(), 0); // TODO remove
-		else
-			return null;
+	public EventEntry createEvent(String name, String notes, long startTime,
+			long endTime) {
+		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime);
+		return updateDatabase(newEntry) ? newEntry : null;
 	}
 
 	/**
@@ -89,12 +93,12 @@ public class EventManager {
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID,
-					event.mRecievedAtServer);
+					event.mReceivedAtServer);
 			return event.mDbRowID != -1;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
-					event.mUUID, event.mRecievedAtServer);
+					event.mUUID, event.mReceivedAtServer);
 		}
 	}
 
@@ -184,8 +188,8 @@ public class EventManager {
 	}
 
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
-		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(), coord
-				.getLongitude());
+		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(),
+				coord.getLongitude());
 
 	}
 
@@ -193,8 +197,8 @@ public class EventManager {
 	 * Delete all of the GPSEntrys with the given eventRowID
 	 * 
 	 * @param eventRowID
-	 *            id of gpsEntrys to delete
-	 * @return true if deleted, false otherwise
+	 *            id of gpsEntrys to delete.
+	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteGPSEntries(long eventRowID) {
 		Cursor c = mGPSHelper.getGPSCoordinates(eventRowID);
@@ -209,4 +213,21 @@ public class EventManager {
 		return true;
 	}
 
+	/**
+	 * Deletes all events and GPS entries in the database. TODO make more
+	 * efficient.
+	 * 
+	 * @return the number of events deleted.
+	 */
+	public int deleteAllEntries() {
+		EventCursor cursor = fetchAllEvents();
+		int nDeleted = 0;
+		while (cursor.moveToNext()) {
+			long rowId = cursor.getEvent().mDbRowID;
+			deleteGPSEntries(rowId);
+			deleteEvent(rowId);
+			nDeleted++;
+		}
+		return nDeleted;
+	}
 }

@@ -32,7 +32,7 @@ public class Synchronizer extends IntentService {
 		if(request == ServerRequest.SENDDATA){
 			PostRequestResponse response=Networking.sendPostRequest((EventEntry) event, request);
 			if(response==PostRequestResponse.Success){
-				event.mRecievedAtServer=1;
+				event.mReceivedAtServer=true;
 				manager.updateDatabase(event);
 			}
 		}

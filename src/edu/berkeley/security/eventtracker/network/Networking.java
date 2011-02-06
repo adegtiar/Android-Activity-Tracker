@@ -31,25 +31,27 @@ enum PostRequestResponse {
 }
 
 public class Networking {
-	
-	public static void sendAllEvents(Context context){
+
+	public static void sendAllEvents(Context context) {
 		if (Settings.isSychronizationEnabled()) {
-			 EventCursor theCursor=EventActivity.mEventManager.fetchPhoneOnlyEvents();
-			 //send them all! LEAVE NO EVENT BEHIND
-				EventEntry nextEvent;
-				while (theCursor.moveToNext()) {
-					nextEvent = theCursor.getEvent();
-					if(nextEvent != null){
-						Networking.sendToServer(ServerRequest.SENDDATA, nextEvent, context);
+			EventCursor theCursor = EventActivity.mEventManager
+					.fetchPhoneOnlyEvents();
+			// send them all! LEAVE NO EVENT BEHIND
+			EventEntry nextEvent;
+			while (theCursor.moveToNext()) {
+				nextEvent = theCursor.getEvent();
+				if (nextEvent != null) {
+					Networking.sendToServer(ServerRequest.SENDDATA, nextEvent,
+							context);
 				}
 			}
 		}
 	}
-	
-	
+
 	/**
-	 * Sends intents to a service that sends the actual post requests
-	 * Only does this if permission to sychronize with web server is given
+	 * Sends intents to a service that sends the actual post requests Only does
+	 * this if permission to sychronize with web server is given
+	 * 
 	 * @param request
 	 *            - the type of post request to send(i.e., register, send data,
 	 *            update some event, delete some event)
@@ -68,12 +70,13 @@ public class Networking {
 			context.startService(intent);
 		}
 	}
-	
-	public static PostRequestResponse sendPostRequest(EventEntry data, ServerRequest request){
+
+	public static PostRequestResponse sendPostRequest(EventEntry data,
+			ServerRequest request) {
 		DefaultHttpClient hc = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(request.getURL());
-		
+
 		List<NameValuePair> params = getPostParams(request, data);
 		try {
 
@@ -95,11 +98,11 @@ public class Networking {
 		}
 		return PostRequestResponse.Success;
 	}
-	
 
-	private static List<NameValuePair> getPostParams(ServerRequest request, EventEntry data) {
+	private static List<NameValuePair> getPostParams(ServerRequest request,
+			EventEntry data) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
-		if(request==ServerRequest.REGISTER){
+		if (request == ServerRequest.REGISTER) {
 			params.add(new BasicNameValuePair("PhoneNumber", Settings
 					.getPhoneNumber()));
 			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
@@ -107,32 +110,29 @@ public class Networking {
 			params.add(new BasicNameValuePair("HashedPasswd", Settings
 					.getPassword()));
 		}
-		if(request==ServerRequest.SENDDATA){
+		if (request == ServerRequest.SENDDATA) {
 			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
 					.getDeviceUUID()));
 			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
 			params.add(new BasicNameValuePair("EventData", EventDataSerializer
 					.toJSONObject(data).toString()));
 		}
-		if(request==ServerRequest.UPDATE){
+		if (request == ServerRequest.UPDATE) {
 			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
 					.getDeviceUUID()));
 			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
 			params.add(new BasicNameValuePair("EventData", EventDataSerializer
 					.toJSONObject(data).toString()));
 		}
-		if(request==ServerRequest.DELETE){
-			
-			
-				params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-						.getDeviceUUID()));
-				params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
-			
+		if (request == ServerRequest.DELETE) {
+
+			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+					.getDeviceUUID()));
+			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+
 		}
 		return params;
 	}
-
-
 
 	public static String createUUID() {
 		return UUID.randomUUID().toString();

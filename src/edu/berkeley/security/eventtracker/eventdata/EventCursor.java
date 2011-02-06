@@ -35,4 +35,9 @@ public class EventCursor extends CursorWrapper {
 	public EventEntry getEvent() {
 		return EventEntry.fromCursor(this, mManager);
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(getEvent());
+	}
 }

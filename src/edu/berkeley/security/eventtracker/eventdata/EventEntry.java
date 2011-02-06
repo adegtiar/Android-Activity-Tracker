@@ -23,7 +23,7 @@ public class EventEntry implements Serializable {
 	public long mStartTime;
 	public long mEndTime;
 	public String mUUID = "";
-	public int mRecievedAtServer=0;
+	public boolean mReceivedAtServer = false;
 
 	/**
 	 * An enumeration of column type names in the event table.
@@ -32,7 +32,8 @@ public class EventEntry implements Serializable {
 		NAME(EventDbAdapter.KEY_NAME), NOTES(EventDbAdapter.KEY_NOTES), START_TIME(
 				EventDbAdapter.KEY_START_TIME), END_TIME(
 				EventDbAdapter.KEY_END_TIME), UUID(EventDbAdapter.KEY_UUID), RECEIVED_AT_SERVER(
-				EventDbAdapter.KEY_RECEIVED_AT_SERVER), ROWID(EventDbAdapter.KEY_ROWID);
+				EventDbAdapter.KEY_RECEIVED_AT_SERVER), ROWID(
+				EventDbAdapter.KEY_ROWID);
 		private String columnName;
 
 		private ColumnType(String columnName) {
@@ -51,21 +52,65 @@ public class EventEntry implements Serializable {
 		}
 	};
 
+	/**
+	 * Creates a new EventEntry with a startTime of now and a new UUID. This is
+	 * not yet written to the database.
+	 */
 	public EventEntry() {
 		mStartTime = System.currentTimeMillis();
 		mUUID = Networking.createUUID();
-
 	}
 
-	public EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, String uuid, int recievedAtServer) {
+	/**
+	 * Creates an EventEntry with a new UUID. This is not yet written to the
+	 * database.
+	 * 
+	 * @param name
+	 *            the name of the event.
+	 * @param notes
+	 *            the notes associated with the event.
+	 * @param startTime
+	 *            the long start time of the event.
+	 * @param endTime
+	 *            the long end time of the event.
+	 */
+	public EventEntry(String name, String notes, long startTime, long endTime) {
+		this.mName = name;
+		this.mNotes = notes;
+		this.mStartTime = startTime;
+		this.mEndTime = endTime;
+		this.mUUID = Networking.createUUID();
+	}
+
+	/**
+	 * Creates a new EventEntry. Only call after creating the event in the
+	 * database.
+	 * 
+	 * @param dbRowID
+	 *            the row id of the new EventEntry.
+	 * 
+	 * @param name
+	 *            the name of the event.
+	 * @param notes
+	 *            the notes associated with the event.
+	 * @param startTime
+	 *            the long start time of the event.
+	 * @param endTime
+	 *            the long end time of the event.
+	 * @param uuid
+	 *            the UUID of the EventEntry.
+	 * @param receivedAtServer
+	 *            whether or not the event has been received at the server.
+	 */
+	EventEntry(long dbRowID, String name, String notes, long startTime,
+			long endTime, String uuid, boolean receivedAtServer) {
 		this.mDbRowID = dbRowID;
 		this.mName = name;
 		this.mNotes = notes;
 		this.mStartTime = startTime;
 		this.mEndTime = endTime;
 		this.mUUID = uuid;
-		this.mRecievedAtServer = recievedAtServer;
+		this.mReceivedAtServer = receivedAtServer;
 	}
 
 	/**
@@ -84,18 +129,15 @@ public class EventEntry implements Serializable {
 		String name = getString(eventCursor, EventDbAdapter.KEY_NAME);
 		String notes = getString(eventCursor, EventDbAdapter.KEY_NOTES);
 		String uuid = getString(eventCursor, EventDbAdapter.KEY_UUID);
-		int recievedAtServer= getInt(eventCursor,EventDbAdapter.KEY_RECEIVED_AT_SERVER);
+		int recievedAtServer = getInt(eventCursor,
+				EventDbAdapter.KEY_RECEIVED_AT_SERVER);
 		long startTime = getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
 		long endTime = getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid,  recievedAtServer);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid,
+				recievedAtServer == 0 ? false : true);
 	}
 
-
-
-	private static int getInt(Cursor cursor, String columnName){
-		return cursor.getInt(cursor.getColumnIndex(columnName));
-	}
-
+	@Override
 	public String toString() {
 		return "{" + mDbRowID + " : " + mName + ", ("
 				+ formatColumn(ColumnType.START_TIME) + "->"
@@ -122,7 +164,7 @@ public class EventEntry implements Serializable {
 		case UUID:
 			return mUUID;
 		case RECEIVED_AT_SERVER:
-			return Integer.toString(mRecievedAtServer);
+			return String.valueOf(mReceivedAtServer);
 		case ROWID:
 			return Long.toString(mDbRowID);
 		default:
@@ -141,15 +183,31 @@ public class EventEntry implements Serializable {
 	}
 
 	/**
+	 * Gets the value of the long column with the given columnName.
+	 * 
 	 * @param cursor
-	 *            A cursor at a particular row.
+	 *            a cursor at a particular row.
 	 * @param columnName
-	 *            The name of the column in the DB.
-	 * @return The Long at the column with the given name, or null it doesn't
+	 *            the name of the column in the DB.
+	 * @return the long at the column with the given name, or 0 it doesn't
 	 *         exist.
 	 */
 	private static long getLong(Cursor cursor, String columnName) {
 		return cursor.getLong(cursor.getColumnIndex(columnName));
+	}
+
+	/**
+	 * Gets the value of the integer column with the given columnName.
+	 * 
+	 * @param cursor
+	 *            a cursor at a particular row.
+	 * @param columnName
+	 *            the name of the column in the DB.
+	 * @return the integer at the column with the given name, or 0 it doesn't
+	 *         exist.
+	 */
+	private static int getInt(Cursor cursor, String columnName) {
+		return cursor.getInt(cursor.getColumnIndex(columnName));
 	}
 
 	/**
@@ -163,9 +221,13 @@ public class EventEntry implements Serializable {
 	private static String getString(Cursor cursor, String columnName) {
 		return cursor.getString(cursor.getColumnIndex(columnName));
 	}
-	
 
-	
+	/**
+	 * Queries the databae for the list of GPSCoordinates associated with this
+	 * event.
+	 * 
+	 * @return a list of GPSCoordinates.
+	 */
 	public List<GPSCoordinates> getGPSCoordinates() {
 		return EventActivity.mEventManager.getGPSCoordinates(mDbRowID);
 	}

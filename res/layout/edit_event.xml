@@ -55,7 +55,7 @@
 					android:text="@string/startTime" android:id="@+id/startTimeLabel"
 					android:focusable="true" />
 				<Button android:id="@+id/startTimeButton"
-					android:layout_height="40px" android:layout_gravity="center"
+					android:layout_height="40dip" android:layout_gravity="center"
 					android:layout_width="wrap_content" android:text="@string/defaultDate" />
 			</LinearLayout>
 			<LinearLayout android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
 					android:focusable="true" android:id="@+id/endTimeLabel"
 					android:text="@string/endTime" />
 				<Button android:id="@+id/endTimeButton"
-					android:layout_height="40px" android:layout_gravity="center"
+					android:layout_height="40dip" android:layout_gravity="center"
 					android:layout_width="wrap_content" android:text="@string/defaultDate" />
 			</LinearLayout>
 

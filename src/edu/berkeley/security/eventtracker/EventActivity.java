@@ -111,6 +111,9 @@ abstract public class EventActivity extends Activity implements
 		case R.id.settings_option:
 			startSettingsActivity();
 			return true;
+		case R.id.debug_option:
+			startDebuggingActivity();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -156,22 +159,27 @@ abstract public class EventActivity extends Activity implements
 	}
 
 	protected void startServerActivity() {
-		Intent settingsIntent = new Intent(this, ServerActivity.class);
-		startActivity(settingsIntent);
+		Intent serverIntent = new Intent(this, ServerActivity.class);
+		startActivity(serverIntent);
+	}
+	
+	protected void startDebuggingActivity() {
+		Intent debuggingIntent = new Intent(this, Debugging.class);
+		startActivity(debuggingIntent);
 	}
 
 	/**
 	 * Launches the AbstractEventEdit activity.
 	 */
 	protected void startTrackingActivity() {
-		Intent settingsIntent = new Intent(this, TrackingMode.class);
-		startActivity(settingsIntent);
+		Intent trackingIntent = new Intent(this, TrackingMode.class);
+		startActivity(trackingIntent);
 	}
 
 	protected void startEditEventActivity(long rowId) {
-		Intent settingsIntent = new Intent(this, EditMode.class);
-		settingsIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
-		startActivity(settingsIntent);
+		Intent editIntent = new Intent(this, EditMode.class);
+		editIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
+		startActivity(editIntent);
 	}
 
 	/**
