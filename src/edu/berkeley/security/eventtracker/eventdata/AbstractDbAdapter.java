@@ -17,7 +17,9 @@ public abstract class AbstractDbAdapter {
 			+ "notes text not null, "
 			+ "startTime Long, " 
 			+ "endTime Long," 
-			+ "uuid text not null);";
+			+ "uuid text not null,"
+			+ "receivedAtServer INTEGER not null DEFAULT 0);";
+			
 
 	protected static final String TABLE_CREATE_GPSDATA = "create table gpsData (_id integer primary key autoincrement, "
 			+ "eventRowID long, " + "latitude real, " + "longitude real);";

@@ -35,12 +35,9 @@ public class Settings extends EventActivity  {
 	public static final String PhoneNumber = "phoneNumber";
 	public static final String UUIDOfDevice = "deviceUUID";
 	private static final String isSychronizationEnabled="enableSychronization";
-	public static final String Registered="registered"; 
-
-	
+	public static final String Registered="registered";
 	private static NumberPicker GPSSensitivity;
 	private static NumberPicker GPSUpdateTime;
-	
 	private static CheckBox GPSEnabled;
 	private static CheckBox notificationsEnabled;
 	private static CheckBox sychronizeDataEnabled;

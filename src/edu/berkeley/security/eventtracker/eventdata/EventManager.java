@@ -20,11 +20,9 @@ public class EventManager {
 
 	private EventManager(Context context) {
 		mDbHelper = new EventDbAdapter(context);
-		mGPSHelper= new GPSDbAdapter(context);
+		mGPSHelper = new GPSDbAdapter(context);
 	}
 
-	
-	
 	/**
 	 * Returns an instance of an EventManager. Only one may be active at a time.
 	 * 
@@ -37,11 +35,11 @@ public class EventManager {
 			mEventManager = new EventManager(context).open();
 		return mEventManager;
 	}
-	
+
 	public static EventManager getManager() {
 		return mEventManager;
 	}
-	
+
 	/**
 	 * Opens the database.
 	 * 
@@ -67,12 +65,12 @@ public class EventManager {
 	 *         upon error.
 	 */
 	public EventEntry createEvent(String eventName, String notes,
-			long startTime, long endTime, String uuid) {
+			long startTime, long endTime, String uuid, int receivedAtServer) {
 		long newRowID = mDbHelper.createEvent(eventName, notes, startTime,
-				endTime, uuid);
+				endTime, uuid, receivedAtServer);
 		if (newRowID != -1)
 			return new EventEntry(newRowID, eventName, notes, startTime,
-					endTime, Networking.createUUID()/*,this*/); //TODO remove
+					endTime, Networking.createUUID(), 0); // TODO remove
 		else
 			return null;
 	}
@@ -87,14 +85,16 @@ public class EventManager {
 	public boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return false;
-//		event.mManager = this; //TODO remove
+		// event.mManager = this; //TODO remove
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
-					event.mStartTime, event.mEndTime, event.mUUID);
+					event.mStartTime, event.mEndTime, event.mUUID,
+					event.mRecievedAtServer);
 			return event.mDbRowID != -1;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
-					event.mNotes, event.mStartTime, event.mEndTime, event.mUUID);
+					event.mNotes, event.mStartTime, event.mEndTime,
+					event.mUUID, event.mRecievedAtServer);
 		}
 	}
 
@@ -121,6 +121,14 @@ public class EventManager {
 	 */
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
+	}
+
+	/**
+	 * @return An iterator over the list of all events in the database that are
+	 *         not yet on the web server
+	 */
+	public EventCursor fetchPhoneOnlyEvents() {
+		return new EventCursor(mDbHelper.fetchPhoneOnlyEvents(), this);
 	}
 
 	/**
@@ -164,7 +172,7 @@ public class EventManager {
 	}
 
 	public EventEntry getCurrentEvent() {
-		
+
 		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(),
 				this);
 		if (!events.moveToFirst())
@@ -178,10 +186,9 @@ public class EventManager {
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
 		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(), coord
 				.getLongitude());
-		
 
 	}
-	
+
 	/**
 	 * Delete all of the GPSEntrys with the given eventRowID
 	 * 
@@ -190,16 +197,16 @@ public class EventManager {
 	 * @return true if deleted, false otherwise
 	 */
 	public boolean deleteGPSEntries(long eventRowID) {
-		Cursor c=mGPSHelper.getGPSCoordinates(eventRowID);
-		
+		Cursor c = mGPSHelper.getGPSCoordinates(eventRowID);
+
 		if (c.getCount() > 0) {
 			while (c.moveToNext()) {
-				long rowID=c.getColumnIndex(GPSDbAdapter.KEY_ROWID);
+				long rowID = c.getColumnIndex(GPSDbAdapter.KEY_ROWID);
 				mGPSHelper.deleteEntry(rowID);
 			}
 		}
 		c.close();
 		return true;
 	}
-	
+
 }

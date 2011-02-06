@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
+import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
@@ -30,7 +31,22 @@ enum PostRequestResponse {
 }
 
 public class Networking {
-
+	
+	public static void sendAllEvents(Context context){
+		if (Settings.isSychronizationEnabled()) {
+			 EventCursor theCursor=EventActivity.mEventManager.fetchPhoneOnlyEvents();
+			 //send them all! LEAVE NO EVENT BEHIND
+				EventEntry nextEvent;
+				while (theCursor.moveToNext()) {
+					nextEvent = theCursor.getEvent();
+					if(nextEvent != null){
+						Networking.sendToServer(ServerRequest.SENDDATA, nextEvent, context);
+				}
+			}
+		}
+	}
+	
+	
 	/**
 	 * Sends intents to a service that sends the actual post requests
 	 * Only does this if permission to sychronize with web server is given
@@ -106,9 +122,12 @@ public class Networking {
 					.toJSONObject(data).toString()));
 		}
 		if(request==ServerRequest.DELETE){
-			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-					.getDeviceUUID()));
-			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+			
+			
+				params.add(new BasicNameValuePair("UUIDOfDevice", Settings
+						.getDeviceUUID()));
+				params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
+			
 		}
 		return params;
 	}

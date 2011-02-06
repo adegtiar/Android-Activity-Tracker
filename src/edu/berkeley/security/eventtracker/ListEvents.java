@@ -16,6 +16,8 @@ import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
  * Handles the event list view that displays all events from most recent to
@@ -118,6 +120,7 @@ public class ListEvents extends EventActivity {
 		public void onClick(View v) {
 			mEventManager.deleteEvent(rowId);
 			//TODO delete stuff goes here!!
+//			Networking.sendToServer(ServerRequest.DELETE, mEventManager.fetchEvent(rowId), ListEvents.this);
 			mEventsCursor.requery();
 			if (isInProgress) {
 				updateTrackingStatus(false);

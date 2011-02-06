@@ -53,6 +53,9 @@ public class TrackingMode extends AbstractEventEdit {
 			Networking.sendToServer(ServerRequest.REGISTER, null, this);
 				
 		}
+		//Attempts to send all the requests that are suppose to be sent but for some reason 
+		//did not make it to the web server 
+		Networking.sendAllEvents(this);
 
 	}
 
@@ -148,6 +151,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 		@Override
 		public void afterTextChanged(Editable s) {
+			
 			myProgressTimer.spin();
 			if (currentEvent != null) {
 				currentEvent.mName = s.toString();

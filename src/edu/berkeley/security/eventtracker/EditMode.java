@@ -76,8 +76,8 @@ public class EditMode extends AbstractEventEdit {
 			public void onClick(View v) {
 				saveToDB = true;
 				//propagate the update to the web server(if given permission by user)
-//				Networking.sendToServer(ServerRequest.UPDATE, editingEvent, EditMode.this);
-//TODO uncomment this out when ready to update
+				Networking.sendToServer(ServerRequest.UPDATE, editingEvent, EditMode.this);
+
 				finish();
 			}
 		});
