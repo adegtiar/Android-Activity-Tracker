@@ -13,13 +13,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 public class Debugging extends Activity {
 	private static final String TEST_DATA_PATH = "debug/event_test_data.txt";
 	private static final String datePattern = "MM/dd/yyyy hh:mma";
 	private static SimpleDateFormat dateFormatter;
 	private static Calendar localCalendar;
+	private TextView debugStatus;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,15 +32,18 @@ public class Debugging extends Activity {
 		setContentView(R.layout.debugging);
 		dateFormatter = new SimpleDateFormat(datePattern);
 		localCalendar = Calendar.getInstance();
+		debugStatus = ((TextView) findViewById(R.id.debuggingStatusText));
 		((Button) findViewById(R.id.eventDataButton))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						try {
+							debugStatus.setText("importing events...");
 							importTestEvents();
+							debugStatus.setText("importing events... Done");
 						} catch (Exception e) {
-							throw new RuntimeException(e);
+							debugStatus.setText("Error importing events: " + e);
 						}
 					}
 				});
@@ -46,7 +53,45 @@ public class Debugging extends Activity {
 
 					@Override
 					public void onClick(View v) {
+						debugStatus.setText("clearing events...");
 						EventManager.getManager().deleteAllEntries();
+						debugStatus.setText("clearing events... Done");
+					}
+				});
+		((Button) findViewById(R.id.tryRegisterButton))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Networking.registerIfNeeded(Debugging.this);
+						debugStatus.setText("Registration attempted.");
+					}
+				});
+		((Button) findViewById(R.id.forceRegisterButton))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						debugStatus.setText("Registration forced.");
+						Debugging.this.forceRegister();
+					}
+				});
+		((Button) findViewById(R.id.sendAllEventsButton))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						debugStatus.setText("Trying to send all events.");
+						Networking.sendAllEvents(Debugging.this);
+					}
+				});
+		((Button) findViewById(R.id.resetPasswordButton))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						debugStatus
+								.setText("Password reset not yet implemented. Plz implement me, Kyle.");
 					}
 				});
 	}
@@ -72,6 +117,10 @@ public class Debugging extends Activity {
 	private long parseDate(String dateTime) throws ParseException {
 		localCalendar.setTime(dateFormatter.parse(dateTime));
 		return localCalendar.getTimeInMillis();
+	}
+
+	private void forceRegister() {
+		Networking.sendToServer(ServerRequest.REGISTER, null, this);
 	}
 
 }

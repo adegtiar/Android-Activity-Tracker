@@ -2,10 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<TextView android:text="Debug Menu" android:id="@+id/TextView01"
+	<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="Debug Menu"></TextView>
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/LinearLayout02">
+		<Button android:id="@+id/eventDataButton" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Insert Test Data"></Button>
+		<Button android:id="@+id/clearDatabaseButton"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="Clear Database"></Button>
+	</LinearLayout>
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/LinearLayout01">
+		<Button android:id="@+id/tryRegisterButton"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="Try registering"></Button>
+		<Button android:id="@+id/forceRegisterButton"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="Force registration"></Button>
+	</LinearLayout>
+	<LinearLayout android:id="@+id/LinearLayout03"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<Button android:id="@+id/sendAllEventsButton"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="Send unsent events"></Button>
+		<Button android:id="@+id/resetPasswordButton"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="Reset Password"></Button>
+	</LinearLayout>
+
+
+	<TextView android:text="" android:id="@+id/debuggingStatusText"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	<Button android:layout_height="wrap_content" android:text="Insert Test Data"
-		android:id="@+id/eventDataButton" android:layout_width="wrap_content"></Button>
-	<Button android:text="Clear Database" android:id="@+id/clearDatabaseButton"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>

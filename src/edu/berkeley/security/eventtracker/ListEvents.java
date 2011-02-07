@@ -7,17 +7,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
-import edu.berkeley.security.eventtracker.network.Networking;
-import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
  * Handles the event list view that displays all events from most recent to
@@ -119,8 +117,9 @@ public class ListEvents extends EventActivity {
 		@Override
 		public void onClick(View v) {
 			mEventManager.deleteEvent(rowId);
-			//TODO delete stuff goes here!!
-//			Networking.sendToServer(ServerRequest.DELETE, mEventManager.fetchEvent(rowId), ListEvents.this);
+			// TODO delete stuff goes here!!
+			// Networking.sendToServer(ServerRequest.DELETE,
+			// mEventManager.fetchEvent(rowId), ListEvents.this);
 			mEventsCursor.requery();
 			if (isInProgress) {
 				updateTrackingStatus(false);
@@ -162,12 +161,16 @@ public class ListEvents extends EventActivity {
 	}
 
 	@Override
+	protected void startTrackingActivity() {
+		super.startTrackingActivity();
+		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
+	}
+
+	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 		if (velocityX < 0) { // going to left screen
-			this.startTrackingActivity();
-			overridePendingTransition(R.anim.slide_left_in,
-					R.anim.slide_left_out);
+			startTrackingActivity();
 			return true;
 		}
 		return false;

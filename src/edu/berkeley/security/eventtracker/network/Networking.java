@@ -2,6 +2,10 @@ package edu.berkeley.security.eventtracker.network;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +18,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+
 import android.content.Context;
 import android.content.Intent;
 import edu.berkeley.security.eventtracker.EventActivity;
@@ -45,6 +50,13 @@ public class Networking {
 							context);
 				}
 			}
+		}
+	}
+
+	public static void registerIfNeeded(Context context) {
+		if (!Settings.registeredAlready() && Settings.isSychronizationEnabled()) {
+			// attempt to register with the server
+			Networking.sendToServer(ServerRequest.REGISTER, null, context);
 		}
 	}
 
@@ -137,5 +149,27 @@ public class Networking {
 	public static String createUUID() {
 		return UUID.randomUUID().toString();
 
+	}
+
+	/**
+	 * @return the ip address of the android device.
+	 */
+	public static String getIpAddress() {
+		try {
+			for (Enumeration<NetworkInterface> en = NetworkInterface
+					.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf
+						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()) {
+						return inetAddress.getHostAddress().toString();
+					}
+				}
+			}
+		} catch (SocketException ex) {
+			// Log.e(S.TAG, ex.toString());
+		}
+		return null;
 	}
 }

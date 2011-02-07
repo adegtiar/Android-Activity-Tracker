@@ -154,12 +154,16 @@ public class ServerActivity extends EventActivity {
 	}
 
 	@Override
+	protected void startTrackingActivity() {
+		super.startTrackingActivity();
+		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+	}
+
+	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 		if (velocityX > 0) {// going to right screen
-			this.startTrackingActivity();
-			overridePendingTransition(R.anim.slide_right_in,
-					R.anim.slide_right_out);
+			startTrackingActivity();
 			return true;
 		}
 		return false;

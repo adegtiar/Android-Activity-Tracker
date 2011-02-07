@@ -42,19 +42,16 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
-//		if (!Settings.isPasswordSet()) {
-//			Bundle bundle = new Bundle();
-//			bundle.putBoolean("Settings", false);
-//			showDialog(DIALOG_TEXT_ENTRY, bundle);
-//		}
+		// if (!Settings.isPasswordSet()) {
+		// Bundle bundle = new Bundle();
+		// bundle.putBoolean("Settings", false);
+		// showDialog(DIALOG_TEXT_ENTRY, bundle);
+		// }
 		Settings.setPhoneNumber(this);
-		if(!Settings.registeredAlready() && Settings.isSychronizationEnabled()){
-			//attempt to register with the server 
-			Networking.sendToServer(ServerRequest.REGISTER, null, this);
-				
-		}
-		//Attempts to send all the requests that are suppose to be sent but for some reason 
-		//did not make it to the web server 
+		Networking.registerIfNeeded(this);
+		// Attempts to send all the requests that are suppose to be sent but for
+		// some reason
+		// did not make it to the web server
 		Networking.sendAllEvents(this);
 
 	}
@@ -151,7 +148,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			
+
 			myProgressTimer.spin();
 			if (currentEvent != null) {
 				currentEvent.mName = s.toString();
@@ -217,10 +214,10 @@ public class TrackingMode extends AbstractEventEdit {
 		updateAutoComplete();
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
-		
-		//attempt to send data now
-		Networking.sendToServer(ServerRequest.SENDDATA,currentEvent, this);
-		
+
+		// attempt to send data now
+		Networking.sendToServer(ServerRequest.SENDDATA, currentEvent, this);
+
 		previousEvent = currentEvent;
 		if (createNewActivity)
 			startNewActivity();
@@ -316,16 +313,24 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	@Override
+	protected void startServerActivity() {
+		super.startServerActivity();
+		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
+	}
+
+	@Override
+	protected void startListEventsActivity() {
+		super.startListEventsActivity();
+		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+	}
+
+	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 		if (velocityX < 0) {// going to right screen
-			this.startServerActivity();
-			overridePendingTransition(R.anim.slide_left_in,
-					R.anim.slide_left_out);
+			startServerActivity();
 		} else { // going to the left screen
-			this.startListEventsActivity();
-			overridePendingTransition(R.anim.slide_right_in,
-					R.anim.slide_right_out);
+			startListEventsActivity();
 		}
 		return true;
 	}
