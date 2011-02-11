@@ -6,7 +6,7 @@ public enum ServerRequest {
 	UPDATE("events/upload"), // TODO fix this
 	DELETE("events/delete"); // TODO fix this
 	private String mUrl;
-	private static final String SERVER_ROOT = "http://192.168.0.107:3000/";
+	private static final String SERVER_ROOT = "http://10.10.64.40:3001/";
 
 	private ServerRequest(String url) {
 		this.mUrl = SERVER_ROOT + url;

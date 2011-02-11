@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 
 abstract public class AbstractEventEdit extends EventActivity {
@@ -45,6 +47,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
+	protected Button viewMapButton;
+
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
 
@@ -64,11 +68,39 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	/**
-	 * Initializes the NextActivity and StopTracking buttons.
+	 * Initializes the NextActivity and StopTracking buttons. Also, now it initalizes the viewMap Button
 	 */
 	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
+		viewMapButton = (Button) findViewById(R.id.viewMapButton);
+		viewMapButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					 Context test=AbstractEventEdit.this;
+//					Intent myIntent = new Intent();
+////					 
+//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
+//					 
+//					Bundle infoToPass = new Bundle();
+//					 
+//					
+//					 
+//					EditMode.this.startActivity(passInfo);
+//					 
+					Intent myIntent = new Intent(AbstractEventEdit.this, HelloGoogleMaps.class);
+					int a=4;
+					int b=5;
+					startActivity(myIntent);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
 	}
 
 	/**
@@ -128,10 +160,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeAutoComplete();
 		fillViewWithEventInfo();
 		focusOnNothing();
+	
 	}
 
 	@Override
 	protected void refreshState() {
+	
 		EventCursor events = mEventManager.fetchSortedEvents();
 		if (events.moveToNext()) {
 			EventEntry event = events.getEvent();
@@ -271,8 +305,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 				RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-		intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-				"");
+		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "");
 		startActivityForResult(intent, requestCode);
 	}
 

@@ -72,6 +72,15 @@
 
 		</LinearLayout>
 
+
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/viewMapContainer"
+		android:orientation="horizontal">
+		<Button android:id="@+id/viewMapButton"
+		android:layout_height="55dip" android:layout_gravity="center"
+		android:layout_width="wrap_content" android:text="@string/viewMap" />
+	</LinearLayout>
+
 		<LinearLayout android:id="@+id/ActivityButtons"
 			android:layout_width="fill_parent" android:layout_margin="10dip"
 			android:layout_gravity="center" android:gravity="center"

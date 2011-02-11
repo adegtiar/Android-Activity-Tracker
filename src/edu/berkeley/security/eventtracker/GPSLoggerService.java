@@ -3,6 +3,7 @@ package edu.berkeley.security.eventtracker;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,7 +21,7 @@ public class GPSLoggerService extends Service {
 
 	private static long minTimeMillis;
 	private static long minDistanceMeters;
-	private static float minAccuracyMeters = 35;
+	private static float minAccuracyMeters = 50;
 	private EventManager manager;
 	private EventEntry currentEvent;
 
@@ -33,7 +34,15 @@ public class GPSLoggerService extends Service {
 
 		minTimeMillis = Settings.getGPSUpdateTime() * 60000;
 		minDistanceMeters = Settings.getGPSSensitivity();
-		// TODO later
+		
+//		
+//		Criteria criteria = new Criteria(); 
+//		criteria.setAccuracy(Criteria.ACCURACY_FINE); 
+//		criteria.setPowerRequirement(Criteria.NO_REQUIREMENT); 
+//		String bestProvider = lm.getBestProvider(criteria, true); 
+
+		
+		
 		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMillis,
 				minDistanceMeters, locationListener);
 
@@ -49,7 +58,11 @@ public class GPSLoggerService extends Service {
 			if (loc == null) {
 				return;
 			}
-
+			double test=loc.getAccuracy();
+			if((!loc.hasAccuracy() || loc.getAccuracy() > minAccuracyMeters)){
+				return;
+			}
+			
 			manager = EventManager.getManager();
 			if (manager != null) {
 				currentEvent = manager.getCurrentEvent();

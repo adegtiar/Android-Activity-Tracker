@@ -104,6 +104,7 @@ public class TrackingMode extends AbstractEventEdit {
 		super.updateTrackingUI(isTracking);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
+		viewMapButton.setEnabled(isTracking);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
@@ -28,6 +30,7 @@ public class EditMode extends AbstractEventEdit {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent i = this.getIntent();
+		
 		long rowId = i.getLongExtra(ColumnType.ROWID.getColumnName(), -1);
 		editingEvent = mEventManager.fetchEvent(rowId);
 		if (editingEvent == null)
@@ -90,13 +93,14 @@ public class EditMode extends AbstractEventEdit {
 				finish();
 			}
 		});
+		
 	}
 
 	@Override
 	protected void initializeTimesUI() {
 		startTimeButton = (Button) findViewById(R.id.startTimeButton);
 		endTimeButton = (Button) findViewById(R.id.endTimeButton);
-
+		
 		startTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);

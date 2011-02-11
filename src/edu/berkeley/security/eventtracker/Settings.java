@@ -132,7 +132,7 @@ public class Settings extends EventActivity {
 		boolean enableDataSychronization = isSychronizationEnabled();
 		notificationsEnabled.setChecked(enableNotifications);
 		GPSEnabled.setChecked(enableGPS);
-		GPSSensitivity.setValue(settings.getInt(Sensitivity, 0));
+		GPSSensitivity.setValue(settings.getInt(Sensitivity, 20));
 		GPSUpdateTime.setValue(settings.getInt(GPSTime, 1));
 		GPSSensitivity.setEnabled(enableGPS);
 		GPSUpdateTime.setEnabled(enableGPS);
