@@ -43,7 +43,7 @@ public class GPSLoggerService extends Service {
 
 		
 		
-		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMillis,
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMillis,
 				minDistanceMeters, locationListener);
 
 	}
@@ -59,15 +59,15 @@ public class GPSLoggerService extends Service {
 				return;
 			}
 			double test=loc.getAccuracy();
-			if((!loc.hasAccuracy() || loc.getAccuracy() > minAccuracyMeters)){
-				return;
-			}
+//			if((!loc.hasAccuracy() || loc.getAccuracy() > minAccuracyMeters)){
+//				return;
+//			}
 			
 			manager = EventManager.getManager();
 			if (manager != null) {
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude());
+					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude(),System.currentTimeMillis());
 					manager.addGPSCoordinates(GPSCoord,
 							currentEvent.mDbRowID);
 				}
@@ -76,7 +76,7 @@ public class GPSLoggerService extends Service {
 				manager = EventManager.getManager(GPSLoggerService.this);
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude());
+					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude(),System.currentTimeMillis());
 					manager.addGPSCoordinates(GPSCoord,
 							currentEvent.mDbRowID);
 					manager.close();

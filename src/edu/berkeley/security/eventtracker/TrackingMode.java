@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
@@ -152,7 +154,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 			myProgressTimer.spin();
 			if (currentEvent != null) {
-				currentEvent.mName = s.toString();
+//				currentEvent.mName = s.toString(); //TODO temp fix. not sure if this will work
 				updateTrackingNotification();
 			}
 			if (s.length() != 0 && currentEvent == null) {
@@ -199,6 +201,33 @@ public class TrackingMode extends AbstractEventEdit {
 				finishCurrentActivity(false);
 				focusOnNothing();
 
+			}
+		});
+		viewMapButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					 Context test=TrackingMode.this;
+				
+//					Intent myIntent = new Intent();
+////					 
+//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
+//					 
+//					Bundle infoToPass = new Bundle();
+//					 
+//					
+//					 
+//					EditMode.this.startActivity(passInfo);
+//					 
+					 EventEntry current=currentEvent;
+					Intent myIntent = new Intent(TrackingMode.this, HelloGoogleMaps.class);
+					myIntent.putExtra("EventData", currentEvent);
+					startActivity(myIntent);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}

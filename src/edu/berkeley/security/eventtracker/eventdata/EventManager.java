@@ -158,7 +158,15 @@ public class EventManager {
 
 	public List<GPSCoordinates> getGPSCoordinates(Long rowID) {
 		ArrayList<GPSCoordinates> toBeReturned = new ArrayList<GPSCoordinates>();
-		Cursor c = mGPSHelper.getGPSCoordinates(rowID);
+		
+		Cursor c = null;
+		try {
+			c = mGPSHelper.getGPSCoordinates(rowID);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int a =4;
 
 		if (c.getCount() > 0) {
 			while (c.moveToNext()) {
@@ -166,7 +174,8 @@ public class EventManager {
 						.getColumnIndex((GPSDbAdapter.KEY_LATITUDE)));
 				double longitude = c.getDouble(c
 						.getColumnIndex((GPSDbAdapter.KEY_LONGITUDE)));
-				toBeReturned.add(new GPSCoordinates(latitude, longitude));
+				long time=c.getLong(c.getColumnIndex((GPSDbAdapter.KEY_GPSTIME)));
+				toBeReturned.add(new GPSCoordinates(latitude, longitude, time));
 
 			}
 		}
@@ -189,7 +198,7 @@ public class EventManager {
 
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
 		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(),
-				coord.getLongitude());
+				coord.getLongitude(), coord.getTime());
 
 	}
 

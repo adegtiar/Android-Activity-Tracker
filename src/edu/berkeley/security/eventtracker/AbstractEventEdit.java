@@ -74,32 +74,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
 		viewMapButton = (Button) findViewById(R.id.viewMapButton);
-		viewMapButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				try {
-					 Context test=AbstractEventEdit.this;
-//					Intent myIntent = new Intent();
-////					 
-//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
-//					 
-//					Bundle infoToPass = new Bundle();
-//					 
-//					
-//					 
-//					EditMode.this.startActivity(passInfo);
-//					 
-					Intent myIntent = new Intent(AbstractEventEdit.this, HelloGoogleMaps.class);
-					int a=4;
-					int b=5;
-					startActivity(myIntent);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
+		
 		
 	}
 

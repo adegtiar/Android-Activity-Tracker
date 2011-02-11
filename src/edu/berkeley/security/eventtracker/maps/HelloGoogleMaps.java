@@ -1,6 +1,8 @@
 package edu.berkeley.security.eventtracker.maps;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,7 +34,6 @@ public class HelloGoogleMaps extends MapActivity {
 	   
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.maps);
-			
 			 mapView = (MyMapView) findViewById(R.id.mapview);
 			 mapOverlays = mapView.getOverlays();
 	   
@@ -42,45 +43,17 @@ public class HelloGoogleMaps extends MapActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		generateGPSDATA();
-		 mapView.setMapBoundsToPois(geopointList, .10, .10);
-//	    String coordinates[] = {"40.747778", "-73.985556"};
-//       double lat = Double.parseDouble(coordinates[0]);
-//       double lng = Double.parseDouble(coordinates[1]);
-//
-//       GeoPoint point = new GeoPoint(
-//           (int) (lat * 1E6), 
-//           (int) (lng * 1E6));
-		 
-
-//		Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-//		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
-////		GeoPoint point = new GeoPoint(19240000,-99120000);
-//		OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!", "I'm in Mexico City!");
-//		itemizedoverlay.addOverlay(overlayitem);
-//		mapOverlays.add(itemizedoverlay);
-//       mc.animateTo(point);
-//       mc.setZoom(17); 
-//       mapView.invalidate(); 
-	}
-
-
-	@Override
-	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
-	    MapView mapView = (MapView) findViewById(R.id.mapview); 
-	    mapView.setBuiltInZoomControls(true);
-		return false;
-	}
-	private void generateGPSDATA(){
-		EventEntry entry=EventActivity.mEventManager.getCurrentEvent();
-		gpsList=new ArrayList<GPSCoordinates>();
-		gpsList=entry.getGPSCoordinates();
-		if(gpsList.size()==0){
-			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-			  dialog.setMessage("No data available yet");
-			  dialog.show();
-		}
+		
+		
+			EventEntry entry = (EventEntry) this.getIntent().getExtras().getSerializable("EventData");
+			gpsList=new ArrayList<GPSCoordinates>();
+			gpsList=entry.getGPSCoordinates();
+			if(gpsList.size()==0){
+				AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+				  dialog.setMessage("No data available yet");
+				  dialog.show();
+			}
+		
 		geopointList=new ArrayList<GeoPoint>();
 		for(GPSCoordinates gps:gpsList){
 			 GeoPoint point = new GeoPoint(
@@ -89,10 +62,22 @@ public class HelloGoogleMaps extends MapActivity {
 			 geopointList.add(point);
 			Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker); 
 			HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this); 
-			OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!", "I'm in Mexico City!");
+			OverlayItem overlayitem = new OverlayItem(point, entry.mName,new SimpleDateFormat().format(new Date(gps.getTime())));
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);
 		}
 		
+		
+		
+	    mapView.setMapBoundsToPois(geopointList, .10, .10);
+	 }
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		// TODO Auto-generated method stub
+	    MapView mapView = (MapView) findViewById(R.id.mapview); 
+	    mapView.setBuiltInZoomControls(true);
+		return false;
 	}
+	
 }

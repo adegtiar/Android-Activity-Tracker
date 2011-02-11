@@ -93,7 +93,34 @@ public class EditMode extends AbstractEventEdit {
 				finish();
 			}
 		});
-		
+		viewMapButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					
+				
+//					Intent myIntent = new Intent();
+////					 
+//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
+//					 
+//					Bundle infoToPass = new Bundle();
+//					 
+//					
+//					 
+//					EditMode.this.startActivity(passInfo);
+//					 
+					Intent myIntent = new Intent(EditMode.this, HelloGoogleMaps.class);
+					myIntent.putExtra("EventData", editingEvent);
+					int a=4;
+					int b=5;
+					startActivity(myIntent);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
