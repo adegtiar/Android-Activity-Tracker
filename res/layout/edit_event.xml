@@ -68,18 +68,18 @@
 				<Button android:id="@+id/endTimeButton"
 					android:layout_height="40dip" android:layout_gravity="center"
 					android:layout_width="wrap_content" android:text="@string/defaultDate" />
+
+				
 			</LinearLayout>
+			<ImageView android:id="@+id/viewMapButton" android:src="@drawable/maps_on"
+				android:layout_height="wrap_content" android:scaleType="center"
+				android:layout_width="wrap_content"
+				android:text="@string/viewMap" />
 
 		</LinearLayout>
 
 
-	<LinearLayout android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/viewMapContainer"
-		android:orientation="horizontal">
-		<Button android:id="@+id/viewMapButton"
-		android:layout_height="55dip" android:layout_gravity="center"
-		android:layout_width="wrap_content" android:text="@string/viewMap" />
-	</LinearLayout>
+
 
 		<LinearLayout android:id="@+id/ActivityButtons"
 			android:layout_width="fill_parent" android:layout_margin="10dip"

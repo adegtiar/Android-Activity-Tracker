@@ -55,16 +55,27 @@ public class HelloGoogleMaps extends MapActivity {
 			}
 		
 		geopointList=new ArrayList<GeoPoint>();
+		int index=0;
 		for(GPSCoordinates gps:gpsList){
+			
 			 GeoPoint point = new GeoPoint(
 			            (int) (gps.getLatitude() * 1E6), 
 			            (int) (gps.getLongitude() * 1E6));
 			 geopointList.add(point);
-			Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker); 
+			
+			int icon;
+			if(index==0)
+				icon=R.drawable.green_flag1;
+			else if(index==gpsList.size()-1)
+				icon=R.drawable.red_flag;
+			else
+				icon=R.drawable.androidmarker;
+			Drawable drawable=this.getResources().getDrawable(icon); 
 			HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this); 
 			OverlayItem overlayitem = new OverlayItem(point, entry.mName,new SimpleDateFormat().format(new Date(gps.getTime())));
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);
+			index++;
 		}
 		
 		

@@ -47,8 +47,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
-	protected Button viewMapButton;
-
+	
+	protected ImageView viewMapButton;
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
 
@@ -73,7 +73,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
-		viewMapButton = (Button) findViewById(R.id.viewMapButton);
+		viewMapButton = (ImageView) findViewById(R.id.viewMapButton);
 		
 		
 	}
