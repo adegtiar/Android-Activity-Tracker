@@ -117,6 +117,7 @@ public class EventDataSerializer extends Activity {
 		JSONObject jsonCoords = new JSONObject();
 		jsonCoords.put("latitude", coords.getLatitude());
 		jsonCoords.put("longitude", coords.getLongitude());
+		jsonCoords.put("time", coords.getTime());
 		return jsonCoords;
 	}
 
