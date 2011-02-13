@@ -5,6 +5,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 
 public abstract class AbstractDbAdapter {
 
@@ -12,14 +13,21 @@ public abstract class AbstractDbAdapter {
 	protected DatabaseHelper mDbHelper;
 	protected SQLiteDatabase mDb;
 
-	protected static final String TABLE_CREATE_EVENTS = "create table eventData (_id integer primary key autoincrement, "
-			+ "eventname text not null, "
-			+ "notes text not null, "
-			+ "startTime Long not null, "
-			+ "endTime Long not null, "
-			+ "updateTime Long not null, "
-			+ "uuid text not null, "
-			+ "receivedAtServer INTEGER not null DEFAULT 0);";
+	protected static final String TABLE_CREATE_EVENTS;
+
+	static { // initialize dynamic String that creates the events table.
+		StringBuilder createEventsBuilder = new StringBuilder();
+		createEventsBuilder.append("create table eventData (");
+		boolean isFirst = true;
+		for (EventKey dbKey : EventKey.values()) {
+			if (!isFirst)
+				createEventsBuilder.append(",");
+			isFirst = false;
+			createEventsBuilder.append(dbKey.getRowCreateString());
+		}
+		createEventsBuilder.append(");");
+		TABLE_CREATE_EVENTS = createEventsBuilder.toString();
+	}
 
 	protected static final String TABLE_CREATE_GPSDATA = "create table gpsData (_id integer primary key autoincrement, "
 			+ "eventRowID long,"

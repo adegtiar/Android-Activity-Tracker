@@ -99,16 +99,27 @@ public class EventManager {
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
-					event.mUUID, event.mReceivedAtServer);
+					event.mUUID, event.mDeleted, event.mReceivedAtServer);
 		}
+	}
+
+	/**
+	 * Mark the event with the given rowId as deleted.
+	 * 
+	 * @param rowId
+	 *            id of note to mark as deleted.
+	 * @return true if deleted, false otherwise.
+	 */
+	public boolean markEventDeleted(long rowId) {
+		return mDbHelper.markDeleted(rowId);
 	}
 
 	/**
 	 * Delete the event with the given rowId
 	 * 
 	 * @param rowId
-	 *            id of note to delete
-	 * @return true if deleted, false otherwise
+	 *            id of note to delete.
+	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(long rowId) {
 		return mDbHelper.deleteEvent(rowId);
@@ -119,6 +130,10 @@ public class EventManager {
 	 */
 	public EventCursor fetchAllEvents() {
 		return new EventCursor(mDbHelper.fetchAllEvents(), this);
+	}
+
+	public EventCursor fetchUndeletedEvents() {
+		return new EventCursor(mDbHelper.fetchUndeletedEvents(), this);
 	}
 
 	/**
@@ -203,7 +218,7 @@ public class EventManager {
 	}
 
 	/**
-	 * Delete all of the GPSEntrys with the given eventRowID
+	 * Delete all of the GPSEntrys with the given eventRowID.
 	 * 
 	 * @param eventRowID
 	 *            id of gpsEntrys to delete.
@@ -223,8 +238,8 @@ public class EventManager {
 	}
 
 	/**
-	 * Deletes all events and GPS entries in the database. TODO make more
-	 * efficient.
+	 * Deletes all events and GPS entries in the database.
+	 * TODO make more efficient.
 	 * 
 	 * @return the number of events deleted.
 	 */

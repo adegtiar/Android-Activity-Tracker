@@ -30,7 +30,7 @@ public class EditMode extends AbstractEventEdit {
 		super.onCreate(savedInstanceState);
 		Intent i = this.getIntent();
 
-		long rowId = i.getLongExtra(EventKey.ROWID.columnName(), -1);
+		long rowId = i.getLongExtra(EventKey.ROW_ID.columnName(), -1);
 		editingEvent = mEventManager.fetchEvent(rowId);
 		if (editingEvent == null)
 			this.finish();

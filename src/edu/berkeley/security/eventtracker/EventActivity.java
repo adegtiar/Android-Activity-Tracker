@@ -172,7 +172,7 @@ abstract public class EventActivity extends Activity implements
 
 	protected void startEditEventActivity(long rowId) {
 		Intent editIntent = new Intent(this, EditMode.class);
-		editIntent.putExtra(EventKey.ROWID.columnName(), rowId);
+		editIntent.putExtra(EventKey.ROW_ID.columnName(), rowId);
 		startActivity(editIntent);
 	}
 

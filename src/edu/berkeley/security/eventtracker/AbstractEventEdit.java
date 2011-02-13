@@ -231,7 +231,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		mActivityNames.clear();
 		adapterNotes.clear();
 		mActivityNotes.clear();
-		EventCursor allEventsCursor = mEventManager.fetchAllEvents();
+		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
 		EventEntry nextEvent;
 		while (allEventsCursor.moveToNext()) {
 			nextEvent = allEventsCursor.getEvent();

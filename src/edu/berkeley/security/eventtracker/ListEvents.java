@@ -27,7 +27,7 @@ public class ListEvents extends EventActivity {
 	 */
 	private String[] from = new String[] { EventKey.NAME.columnName(),
 			EventKey.START_TIME.columnName(), EventKey.END_TIME.columnName(),
-			EventKey.ROWID.columnName() };
+			EventKey.ROW_ID.columnName() };
 
 	/**
 	 * An array that specifies the layout elements we want to map event fields
@@ -115,7 +115,7 @@ public class ListEvents extends EventActivity {
 
 		@Override
 		public void onClick(View v) {
-			mEventManager.deleteEvent(rowId);
+			mEventManager.markEventDeleted(rowId);
 			// TODO delete stuff goes here!!
 			// Networking.sendToServer(ServerRequest.DELETE,
 			// mEventManager.fetchEvent(rowId), ListEvents.this);
@@ -138,7 +138,7 @@ public class ListEvents extends EventActivity {
 			EventCursor eCursor = new EventCursor(cursor, mEventManager);
 			EventKey colType = eCursor.getColumnType(columnIndex);
 			switch (colType) {
-			case ROWID:
+			case ROW_ID:
 				// Initializing the delete button
 				long rowId = cursor.getLong(columnIndex);
 				boolean isInProgress = cursor.getLong(cursor

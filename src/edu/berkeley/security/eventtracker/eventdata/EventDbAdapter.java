@@ -30,18 +30,36 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * An enumeration of column key names in the event table.
 	 */
 	public enum EventKey {
-		ROWID("_id"), NAME("eventname"), NOTES("notes"), START_TIME("startTime"), END_TIME(
-				"endTime"), UPDATE_TIME("updateTime"), UUID("uuid"), RECEIVED_AT_SERVER(
-				"receivedAtServer");
+		ROW_ID("_id", ColumnType.INTEGER, "primary key autoincrement"), NAME(
+				"eventname", ColumnType.TEXT), NOTES("notes", ColumnType.TEXT), START_TIME(
+				"startTime", ColumnType.LONG), END_TIME("endTime",
+				ColumnType.LONG), UPDATE_TIME("updateTime", ColumnType.LONG), UUID(
+				"uuid", ColumnType.TEXT), IS_DELETED("isDeleted",
+				ColumnType.INTEGER, "DEFAULT 0"), RECEIVED_AT_SERVER(
+				"receivedAtServer", ColumnType.INTEGER, "DEFAULT 0");
 
 		private String mColumnName;
+		private ColumnType mColType;
+		private String mExtraCreateText;
 
-		private EventKey(String columnName) {
+		private EventKey(String columnName, ColumnType type) {
 			mColumnName = columnName;
+			mColType = type;
+			mExtraCreateText = " not null";
+		}
+
+		private EventKey(String columnName, ColumnType type, String extraOptions) {
+			mColumnName = columnName;
+			mColType = type;
+			mExtraCreateText = " not null " + extraOptions;
 		}
 
 		public String columnName() {
 			return mColumnName;
+		}
+
+		public String getRowCreateString() {
+			return mColumnName + " " + mColType + mExtraCreateText;
 		}
 
 		public static String[] columnNames() {
@@ -60,6 +78,10 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		}
 	}
 
+	private enum ColumnType {
+		INTEGER, TEXT, LONG;
+	};
+
 	private static final String DATABASE_TABLE = "eventData";
 
 	/**
@@ -75,7 +97,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 
 	/**
 	 * Create a new entry in the database corresponding to the given eventName,
-	 * notes, and startTime
+	 * notes, and startTime.
 	 */
 	public Long createEvent(String eventName, String notes, long startTime,
 			long endTime, String uuid, boolean receivedAtServer) {
@@ -93,22 +115,28 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	}
 
 	/**
-	 * Delete the activity with the given rowId
+	 * Delete the activity with the given rowId.
 	 * 
 	 * @param rowId
-	 *            id of note to delete
-	 * @return true if deleted, false otherwise
+	 *            id of note to delete.
+	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(Long rowId) {
-
-		return mDb.delete(DATABASE_TABLE, EventKey.ROWID.columnName() + "="
+		return mDb.delete(DATABASE_TABLE, EventKey.ROW_ID.columnName() + "="
 				+ rowId, null) > 0;
 	}
 
+	public boolean markDeleted(long rowId) {
+		ContentValues args = new ContentValues();
+		args.put(EventKey.IS_DELETED.columnName(), 1);
+		return mDb.update(DATABASE_TABLE, args, EventKey.ROW_ID.columnName()
+				+ "=" + rowId, null) > 0;
+	}
+
 	/**
-	 * Return a Cursor over the list of all events in the database
+	 * Return a Cursor over the list of all events in the database.
 	 * 
-	 * @return Cursor over all notes
+	 * @return Cursor over all notes.
 	 */
 	public Cursor fetchAllEvents() {
 		return mDb.query(DATABASE_TABLE, EventKey.columnNames(), null, null,
@@ -116,29 +144,41 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	}
 
 	/**
-	 * Return a Cursor over the list of all events in the database that are not
-	 * yet on the web server
+	 * Return a Cursor over the list of all events in the database.
 	 * 
-	 * @return Cursor over all events
+	 * @return Cursor over all notes.
 	 */
-	public Cursor fetchPhoneOnlyEvents() {
-
-		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(),
-				EventKey.RECEIVED_AT_SERVER.columnName() + "=" + 0, null, null,
-				null, null, null);
+	public Cursor fetchUndeletedEvents() {
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.IS_DELETED.columnName() + " = 0", null, null, null,
+				null);
 	}
 
 	/**
 	 * Return a Cursor over the list of event that correspond to today. Sorted
 	 * by end Time.
 	 * 
-	 * @return Cursor
+	 * @return Cursor.
 	 */
 	public Cursor fetchSortedEvents() {
 		String orderBy = EventKey.START_TIME.columnName() + " DESC";
 		String limitClause = "20";
-		return mDb.query(DATABASE_TABLE, EventKey.columnNames(), null, null,
-				null, null, orderBy, limitClause);
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.IS_DELETED.columnName() + " = 0", null, null, null,
+				orderBy, limitClause);
+	}
+
+	/**
+	 * Return a Cursor over the list of all events in the database that are not
+	 * yet on the web server.
+	 * 
+	 * @return Cursor over all events.
+	 */
+	public Cursor fetchPhoneOnlyEvents() {
+
+		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.RECEIVED_AT_SERVER.columnName() + "=" + 0, null, null,
+				null, null, null);
 	}
 
 	/**
@@ -153,50 +193,11 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public Cursor fetchEvent(long rowId) throws SQLException {
 
 		Cursor mCursor = mDb.query(true, DATABASE_TABLE,
-				EventKey.columnNames(), EventKey.ROWID.columnName() + "="
+				EventKey.columnNames(), EventKey.ROW_ID.columnName() + "="
 						+ rowId, null, null, null, null, null);
 		if (mCursor != null)
 			mCursor.moveToFirst();
 		return mCursor;
-	}
-
-	public ArrayList<String> getEvents() {
-		ArrayList<String> toReturn = new ArrayList<String>();
-		Cursor cursor = this.fetchAllEvents();
-		if (cursor == null) {
-			return null;
-		}
-		if (cursor.getCount() > 0) {
-			while (cursor.moveToNext()) {
-				String activity = cursor.getString(cursor
-						.getColumnIndex(EventKey.NAME.columnName()));
-				if (!toReturn.contains(activity))
-					toReturn.add(activity);
-			}
-		}
-
-		cursor.close();
-		return toReturn;
-	}
-
-	public ArrayList<String> getNotes() {
-		ArrayList<String> toReturn = new ArrayList<String>();
-		Cursor cursor = this.fetchAllEvents();
-		if (cursor == null) {
-			return null;
-		}
-		if (cursor.getCount() > 0) {
-
-			while (cursor.moveToNext()) {
-				String notes = cursor.getString(cursor
-						.getColumnIndex(EventKey.NOTES.columnName()));
-				if (!toReturn.contains(notes))
-					toReturn.add(notes);
-			}
-		}
-
-		cursor.close();
-		return toReturn;
 	}
 
 	/**
@@ -217,7 +218,8 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 
 	public boolean updateEvent(Long rowId, String title, String notes,
-			Long startTime, Long endTime, String uuid, boolean recievedAtServer) {
+			Long startTime, Long endTime, String uuid, boolean isDeleted,
+			boolean recievedAtServer) {
 		ContentValues args = new ContentValues();
 		args.put(EventKey.NAME.columnName(), title);
 		args.put(EventKey.NOTES.columnName(), notes);
@@ -226,9 +228,10 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		args.put(EventKey.UPDATE_TIME.columnName(), Calendar.getInstance()
 				.getTimeInMillis());
 		args.put(EventKey.UUID.columnName(), uuid);
+		args.put(EventKey.IS_DELETED.columnName(), isDeleted ? 1 : 0);
 		args.put(EventKey.RECEIVED_AT_SERVER.columnName(), recievedAtServer ? 1
 				: 0);
-		return mDb.update(DATABASE_TABLE, args, EventKey.ROWID.columnName()
+		return mDb.update(DATABASE_TABLE, args, EventKey.ROW_ID.columnName()
 				+ "=" + rowId, null) > 0;
 	}
 

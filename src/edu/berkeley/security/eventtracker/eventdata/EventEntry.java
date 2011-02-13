@@ -25,6 +25,7 @@ public class EventEntry implements Serializable {
 	public long mUpdateTime;
 	public String mUUID = "";
 	public boolean mReceivedAtServer = false;
+	public boolean mDeleted = false;
 
 	/**
 	 * Creates a new EventEntry with a startTime of now and a new UUID. This is
@@ -76,7 +77,8 @@ public class EventEntry implements Serializable {
 	 *            whether or not the event has been received at the server.
 	 */
 	EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, long updateTime, String uuid, boolean receivedAtServer) {
+			long endTime, long updateTime, String uuid, boolean isDeleted,
+			boolean receivedAtServer) {
 		mDbRowID = dbRowID;
 		mName = name;
 		mNotes = notes;
@@ -84,6 +86,7 @@ public class EventEntry implements Serializable {
 		mEndTime = endTime;
 		mUpdateTime = updateTime;
 		mUUID = uuid;
+		mDeleted = isDeleted;
 		mReceivedAtServer = receivedAtServer;
 	}
 
@@ -99,16 +102,18 @@ public class EventEntry implements Serializable {
 		if (eventCursor == null || eventCursor.isClosed()
 				|| eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
 			return null;
-		long dbRowID = getLong(eventCursor, EventKey.ROWID);
+		long dbRowID = getLong(eventCursor, EventKey.ROW_ID);
 		String name = getString(eventCursor, EventKey.NAME);
 		String notes = getString(eventCursor, EventKey.NOTES);
 		long startTime = getLong(eventCursor, EventKey.START_TIME);
 		long endTime = getLong(eventCursor, EventKey.END_TIME);
 		long updateTime = getLong(eventCursor, EventKey.UPDATE_TIME);
 		String uuid = getString(eventCursor, EventKey.UUID);
-		int recievedAtServer = getInt(eventCursor, EventKey.RECEIVED_AT_SERVER);
+		boolean recievedAtServer = getBoolean(eventCursor,
+				EventKey.RECEIVED_AT_SERVER);
+		boolean isDeleted = getBoolean(eventCursor, EventKey.IS_DELETED);
 		return new EventEntry(dbRowID, name, notes, startTime, endTime,
-				updateTime, uuid, recievedAtServer == 0 ? false : true);
+				updateTime, uuid, isDeleted, recievedAtServer);
 	}
 
 	@Override
@@ -139,9 +144,11 @@ public class EventEntry implements Serializable {
 			return getDateString(mUpdateTime);
 		case UUID:
 			return mUUID;
+		case IS_DELETED:
+			return String.valueOf(mDeleted);
 		case RECEIVED_AT_SERVER:
 			return String.valueOf(mReceivedAtServer);
-		case ROWID:
+		case ROW_ID:
 			return String.valueOf(mDbRowID);
 		default:
 			throw new IllegalArgumentException("Unknown ColumnType: " + colType);
@@ -196,6 +203,20 @@ public class EventEntry implements Serializable {
 	 */
 	private static String getString(Cursor cursor, EventKey columnType) {
 		return cursor.getString(cursor.getColumnIndex(columnType.columnName()));
+	}
+
+	/**
+	 * 
+	 * @param cursor
+	 *            A cursor at a particular row.
+	 * @param columnName
+	 *            The name of the column in the DB.
+	 * @return The boolean at the column with the given name.
+	 */
+	private static boolean getBoolean(Cursor cursor, EventKey columnType) {
+		long dbValue = cursor.getInt(cursor.getColumnIndex(columnType
+				.columnName()));
+		return dbValue == 0 ? false : true;
 	}
 
 	/**
