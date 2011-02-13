@@ -5,7 +5,7 @@ public class GPSCoordinates {
 	public GPSCoordinates(double latitude, double longitude, long time) {
 		this.mLongitude = longitude;
 		this.mLatitude = latitude;
-		this.mTime=time;
+		this.mTime = time;
 	}
 
 	public double getLatitude() {
@@ -15,15 +15,18 @@ public class GPSCoordinates {
 	public double getLongitude() {
 		return mLongitude;
 	}
-	public long getTime(){
+
+	public long getTime() {
 		return mTime;
 	}
+
 	private long mTime;
 	private double mLatitude;
 	private double mLongitude;
-	
+
 	@Override
 	public String toString() {
-		return "(Latitude: " +Double.toString(mLatitude) + "Longitude: " + Double.toString(mLongitude) +")";
+		return "(Latitude: " + Double.toString(mLatitude) + "Longitude: "
+				+ Double.toString(mLongitude) + ")";
 	}
 }

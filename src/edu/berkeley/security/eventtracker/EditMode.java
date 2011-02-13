@@ -1,13 +1,12 @@
 package edu.berkeley.security.eventtracker;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
@@ -30,8 +29,8 @@ public class EditMode extends AbstractEventEdit {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent i = this.getIntent();
-		
-		long rowId = i.getLongExtra(ColumnType.ROWID.getColumnName(), -1);
+
+		long rowId = i.getLongExtra(EventKey.ROWID.columnName(), -1);
 		editingEvent = mEventManager.fetchEvent(rowId);
 		if (editingEvent == null)
 			this.finish();
@@ -78,8 +77,10 @@ public class EditMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				saveToDB = true;
-				//propagate the update to the web server(if given permission by user)
-				Networking.sendToServer(ServerRequest.UPDATE, editingEvent, EditMode.this);
+				// propagate the update to the web server(if given permission by
+				// user)
+				Networking.sendToServer(ServerRequest.UPDATE, editingEvent,
+						EditMode.this);
 
 				finish();
 			}
@@ -98,22 +99,21 @@ public class EditMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				try {
-					
-				
-//					Intent myIntent = new Intent();
-////					 
-//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
-//					 
-//					Bundle infoToPass = new Bundle();
-//					 
-//					
-//					 
-//					EditMode.this.startActivity(passInfo);
-//					 
-					Intent myIntent = new Intent(EditMode.this, HelloGoogleMaps.class);
+
+					// Intent myIntent = new Intent();
+					// //
+					// myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode",
+					// "edu.berkeley.security.eventtracker.maps");
+					//
+					// Bundle infoToPass = new Bundle();
+					//
+					//
+					//
+					// EditMode.this.startActivity(passInfo);
+					//
+					Intent myIntent = new Intent(EditMode.this,
+							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", editingEvent);
-					int a=4;
-					int b=5;
 					startActivity(myIntent);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -127,19 +127,19 @@ public class EditMode extends AbstractEventEdit {
 	protected void initializeTimesUI() {
 		startTimeButton = (Button) findViewById(R.id.startTimeButton);
 		endTimeButton = (Button) findViewById(R.id.endTimeButton);
-		
+
 		startTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
 				i.putExtra("Time", editingEvent.mStartTime);
-				startActivityForResult(i, ColumnType.START_TIME.ordinal());
+				startActivityForResult(i, EventKey.START_TIME.ordinal());
 			}
 		});
 		endTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
 				i.putExtra("Time", editingEvent.mEndTime);
-				startActivityForResult(i, ColumnType.END_TIME.ordinal());
+				startActivityForResult(i, EventKey.END_TIME.ordinal());
 			}
 		});
 	}
@@ -148,16 +148,16 @@ public class EditMode extends AbstractEventEdit {
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		if (requestCode != ColumnType.START_TIME.ordinal()
-				&& requestCode != ColumnType.END_TIME.ordinal())
+		if (requestCode != EventKey.START_TIME.ordinal()
+				&& requestCode != EventKey.END_TIME.ordinal())
 			return;
-		if(intent==null){
+		if (intent == null) {
 			return;
 		}
 		Bundle extras = intent.getExtras();
 		Long time = extras.getLong("Time");
 		if (time != null) {
-			ColumnType type = ColumnType.values()[requestCode];
+			EventKey type = EventKey.values()[requestCode];
 			switch (type) {
 			case START_TIME:
 				editingEvent.mStartTime = time;
@@ -189,9 +189,8 @@ public class EditMode extends AbstractEventEdit {
 	protected void fillViewWithEventInfo() {
 		editTextEventName.setText(editingEvent.mName);
 		editTextEventNotes.setText(editingEvent.mNotes);
-		startTimeButton.setText(editingEvent
-				.formatColumn(ColumnType.START_TIME));
-		endTimeButton.setText(editingEvent.formatColumn(ColumnType.END_TIME));
+		startTimeButton.setText(editingEvent.formatColumn(EventKey.START_TIME));
+		endTimeButton.setText(editingEvent.formatColumn(EventKey.END_TIME));
 	}
 
 	@Override

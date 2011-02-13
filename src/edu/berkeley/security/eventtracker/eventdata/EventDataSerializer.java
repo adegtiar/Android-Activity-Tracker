@@ -10,9 +10,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 
 public class EventDataSerializer extends Activity {
+	private static final EventKey[] keysToSerialize = new EventKey[] {
+			EventKey.NAME, EventKey.NOTES, EventKey.START_TIME,
+			EventKey.END_TIME, EventKey.UPDATE_TIME };
 
 	/*
 	 * (non-Javadoc)
@@ -61,7 +64,8 @@ public class EventDataSerializer extends Activity {
 	/**
 	 * Serializes all rows in the <tt>EventManager</tt> into a JSON array.
 	 * 
-	 * @param dbContext the <tt>Context</tt> to use for the <tt>EventManager</tt>.
+	 * @param dbContext
+	 *            the <tt>Context</tt> to use for the <tt>EventManager</tt>.
 	 * @return the <tt>String</tt> JSON output.
 	 * @throws JSONException
 	 */
@@ -76,26 +80,25 @@ public class EventDataSerializer extends Activity {
 		while (cursor.moveToNext()) {
 			EventEntry event = cursor.getEvent();
 			JSONArray eventRowArray = new JSONArray();
-			eventRowArray.put(event.formatColumn(ColumnType.NAME));
-			eventRowArray.put(event.formatColumn(ColumnType.START_TIME));
-			eventRowArray.put(event.formatColumn(ColumnType.END_TIME));
-			eventRowArray.put(event.formatColumn(ColumnType.NOTES));
+
+			for (EventKey key : keysToSerialize)
+				eventRowArray.put(event.formatColumn(key));
 			aDataValue.put(eventRowArray);
 		}
 		aData.put("aaData", aDataValue);
-		
+
 		return aData.toString();
 	}
 
 	public static JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();
 		try {
-			json.accumulate("name", event.mName);
-			json.accumulate("notes", event.mNotes);
-			json.accumulate("startTime", event.mStartTime);
-			json.accumulate("endTime", event.mEndTime);
-			json.accumulate("gpsCoordinates", toJSONArray(event
-					.getGPSCoordinates()));
+			json.accumulate(EventKey.NAME.columnName(), event.mName);
+			json.accumulate(EventKey.NOTES.columnName(), event.mNotes);
+			json.accumulate(EventKey.START_TIME.columnName(), event.mStartTime);
+			json.accumulate(EventKey.END_TIME.columnName(), event.mEndTime);
+			json.accumulate("gpsCoordinates",
+					toJSONArray(event.getGPSCoordinates()));
 		} catch (JSONException e) {
 			json = null;
 		}
@@ -113,7 +116,8 @@ public class EventDataSerializer extends Activity {
 		return gpsArray;
 	}
 
-	private static JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
+	private static JSONObject toJSONObject(GPSCoordinates coords)
+			throws JSONException {
 		JSONObject jsonCoords = new JSONObject();
 		jsonCoords.put("latitude", coords.getLatitude());
 		jsonCoords.put("longitude", coords.getLongitude());

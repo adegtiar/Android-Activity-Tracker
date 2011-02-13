@@ -13,9 +13,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
-import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 
 /**
  * Handles the event list view that displays all events from most recent to
@@ -26,9 +25,9 @@ public class ListEvents extends EventActivity {
 	 * An array that specifies the fields we want to display in the list (only
 	 * TITLE)
 	 */
-	private String[] from = new String[] { EventDbAdapter.KEY_NAME,
-			EventDbAdapter.KEY_START_TIME, EventDbAdapter.KEY_END_TIME,
-			EventDbAdapter.KEY_ROWID };
+	private String[] from = new String[] { EventKey.NAME.columnName(),
+			EventKey.START_TIME.columnName(), EventKey.END_TIME.columnName(),
+			EventKey.ROWID.columnName() };
 
 	/**
 	 * An array that specifies the layout elements we want to map event fields
@@ -137,13 +136,13 @@ public class ListEvents extends EventActivity {
 		public boolean setViewValue(View view, final Cursor cursor,
 				int columnIndex) {
 			EventCursor eCursor = new EventCursor(cursor, mEventManager);
-			ColumnType colType = eCursor.getColumnType(columnIndex);
+			EventKey colType = eCursor.getColumnType(columnIndex);
 			switch (colType) {
 			case ROWID:
 				// Initializing the delete button
 				long rowId = cursor.getLong(columnIndex);
 				boolean isInProgress = cursor.getLong(cursor
-						.getColumnIndex(EventDbAdapter.KEY_END_TIME)) == 0;
+						.getColumnIndex(EventKey.END_TIME.columnName())) == 0;
 				view.setOnClickListener(new DeleteRowListener(rowId,
 						isInProgress));
 				return true;

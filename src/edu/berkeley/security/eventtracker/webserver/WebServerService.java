@@ -1,17 +1,6 @@
 package edu.berkeley.security.eventtracker.webserver;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,9 +8,9 @@ import android.os.Binder;
 import android.os.IBinder;
 
 /**
- * A Service which is started when the user wants to start the web server
- * This service creates a httpServer.  When this Service is stopped, the httpServer 
- * is stopped as well 
+ * A Service which is started when the user wants to start the web server This
+ * service creates a httpServer. When this Service is stopped, the httpServer is
+ * stopped as well
  */
 public class WebServerService extends Service {
 
@@ -59,5 +48,6 @@ public class WebServerService extends Service {
 			return WebServerService.this;
 		}
 	}
+
 	EventDataServer httpServer;
 }

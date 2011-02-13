@@ -12,8 +12,8 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
@@ -87,7 +87,7 @@ public class TrackingMode extends AbstractEventEdit {
 			editTextEventName.setText(currentEvent.mName);
 			editTextEventNotes.setText(currentEvent.mNotes);
 			textViewStartTime.setText(currentEvent
-					.formatColumn(ColumnType.START_TIME));
+					.formatColumn(EventKey.START_TIME));
 		} else {
 			editTextEventName.setText("");
 			editTextEventNotes.setText("");
@@ -106,7 +106,7 @@ public class TrackingMode extends AbstractEventEdit {
 		super.updateTrackingUI(isTracking);
 		nextActivityButton.setEnabled(isTracking);
 		stopTrackingButton.setEnabled(isTracking);
-		int image=isTracking?R.drawable.maps_on:R.drawable.maps_off;
+		int image = isTracking ? R.drawable.maps_on : R.drawable.maps_off;
 		viewMapButton.setImageResource(image);
 	}
 
@@ -155,7 +155,8 @@ public class TrackingMode extends AbstractEventEdit {
 
 			myProgressTimer.spin();
 			if (currentEvent != null) {
-//				currentEvent.mName = s.toString(); //TODO temp fix. not sure if this will work
+				// currentEvent.mName = s.toString(); //TODO temp fix. not sure
+				// if this will work
 				updateTrackingNotification();
 			}
 			if (s.length() != 0 && currentEvent == null) {
@@ -179,7 +180,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 	private void updateStartTimeUI() {
 		textViewStartTime.setText(currentEvent
-				.formatColumn(ColumnType.START_TIME));
+				.formatColumn(EventKey.START_TIME));
 	}
 
 	@Override
@@ -209,20 +210,22 @@ public class TrackingMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				try {
-					 Context test=TrackingMode.this;
-				
-//					Intent myIntent = new Intent();
-////					 
-//					myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode", "edu.berkeley.security.eventtracker.maps");
-//					 
-//					Bundle infoToPass = new Bundle();
-//					 
-//					
-//					 
-//					EditMode.this.startActivity(passInfo);
-//					 
-					 EventEntry current=currentEvent;
-					Intent myIntent = new Intent(TrackingMode.this, HelloGoogleMaps.class);
+					Context test = TrackingMode.this;
+
+					// Intent myIntent = new Intent();
+					// //
+					// myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode",
+					// "edu.berkeley.security.eventtracker.maps");
+					//
+					// Bundle infoToPass = new Bundle();
+					//
+					//
+					//
+					// EditMode.this.startActivity(passInfo);
+					//
+					EventEntry current = currentEvent;
+					Intent myIntent = new Intent(TrackingMode.this,
+							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
 				} catch (Exception e) {

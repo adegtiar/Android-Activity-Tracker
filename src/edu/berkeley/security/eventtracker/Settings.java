@@ -78,7 +78,7 @@ public class Settings extends EventActivity {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
-						Settings.this.updatePreferences();
+						Settings.updatePreferences();
 						Settings.this.updateTrackingStatus();
 					}
 				});

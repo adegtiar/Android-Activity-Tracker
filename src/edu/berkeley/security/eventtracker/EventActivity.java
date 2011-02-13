@@ -24,8 +24,8 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.network.Networking;
 
@@ -172,7 +172,7 @@ abstract public class EventActivity extends Activity implements
 
 	protected void startEditEventActivity(long rowId) {
 		Intent editIntent = new Intent(this, EditMode.class);
-		editIntent.putExtra(ColumnType.ROWID.getColumnName(), rowId);
+		editIntent.putExtra(EventKey.ROWID.columnName(), rowId);
 		startActivity(editIntent);
 	}
 

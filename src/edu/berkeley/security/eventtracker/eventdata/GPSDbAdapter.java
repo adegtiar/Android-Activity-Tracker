@@ -44,16 +44,15 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 
 	public long createGPSEntry(Long eventRowID, Double latitude,
 			Double longitude, Long time) {
-		
-		
-			ContentValues initialValues = new ContentValues();
-			initialValues.put(KEY_EVENT_ROWID, eventRowID);
-			initialValues.put(KEY_LATITUDE, latitude);
-			initialValues.put(KEY_LONGITUDE, longitude);
-			initialValues.put(KEY_GPSTIME, time);
-			long toBeReturned=mDb.insert(DATABASE_TABLE, null, initialValues);
-			return toBeReturned;
-		
+
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_EVENT_ROWID, eventRowID);
+		initialValues.put(KEY_LATITUDE, latitude);
+		initialValues.put(KEY_LONGITUDE, longitude);
+		initialValues.put(KEY_GPSTIME, time);
+		long toBeReturned = mDb.insert(DATABASE_TABLE, null, initialValues);
+		return toBeReturned;
+
 	}
 
 	/**
@@ -82,8 +81,8 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 		Cursor mCursor =
 
 		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID,
-				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME }, KEY_ROWID + "="
-				+ rowId, null, null, null, null, null);
+				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME },
+				KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -91,7 +90,7 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 	}
 
 	public boolean updateGPSEntry(long rowId, long eventRowID,
-							double longitude, double latitude, Long time) {
+			double longitude, double latitude, Long time) {
 		ContentValues args = new ContentValues();
 		args.put(KEY_EVENT_ROWID, eventRowID);
 		args.put(KEY_LONGITUDE, longitude);
@@ -105,8 +104,8 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 		// String selection="SELECT * FROM "+ DATABASE_TABLE+ " WHERE "
 		// +KEY_EVENT_ROWID +"=" + eventRowID;
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID,
-				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME }, KEY_EVENT_ROWID
-				+ "=" + eventRowID, null, null, null, null);
+				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME },
+				KEY_EVENT_ROWID + "=" + eventRowID, null, null, null, null);
 
 	}
 

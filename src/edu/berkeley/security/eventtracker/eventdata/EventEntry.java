@@ -5,10 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import edu.berkeley.security.eventtracker.EventActivity;
-import edu.berkeley.security.eventtracker.network.Networking;
-
 import android.database.Cursor;
+import edu.berkeley.security.eventtracker.EventActivity;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
+import edu.berkeley.security.eventtracker.network.Networking;
 
 /**
  * A local, in-memory version of a Event database entry. This is pushed and
@@ -22,42 +22,16 @@ public class EventEntry implements Serializable {
 	public String mNotes = "";
 	public long mStartTime;
 	public long mEndTime;
+	public long mUpdateTime;
 	public String mUUID = "";
 	public boolean mReceivedAtServer = false;
-
-	/**
-	 * An enumeration of column type names in the event table.
-	 */
-	public enum ColumnType {
-		NAME(EventDbAdapter.KEY_NAME), NOTES(EventDbAdapter.KEY_NOTES), START_TIME(
-				EventDbAdapter.KEY_START_TIME), END_TIME(
-				EventDbAdapter.KEY_END_TIME), UUID(EventDbAdapter.KEY_UUID), RECEIVED_AT_SERVER(
-				EventDbAdapter.KEY_RECEIVED_AT_SERVER), ROWID(
-				EventDbAdapter.KEY_ROWID);
-		private String columnName;
-
-		private ColumnType(String columnName) {
-			this.columnName = columnName;
-		}
-
-		static ColumnType fromColumnName(String columnName) {
-			for (ColumnType colType : ColumnType.values())
-				if (colType.columnName.equals(columnName))
-					return colType;
-			return null;
-		}
-
-		public String getColumnName() {
-			return columnName;
-		}
-	};
 
 	/**
 	 * Creates a new EventEntry with a startTime of now and a new UUID. This is
 	 * not yet written to the database.
 	 */
 	public EventEntry() {
-		mStartTime = System.currentTimeMillis();
+		mUpdateTime = mStartTime = System.currentTimeMillis();
 		mUUID = Networking.createUUID();
 	}
 
@@ -75,11 +49,11 @@ public class EventEntry implements Serializable {
 	 *            the long end time of the event.
 	 */
 	public EventEntry(String name, String notes, long startTime, long endTime) {
-		this.mName = name;
-		this.mNotes = notes;
-		this.mStartTime = startTime;
-		this.mEndTime = endTime;
-		this.mUUID = Networking.createUUID();
+		mName = name;
+		mNotes = notes;
+		mUpdateTime = mStartTime = startTime;
+		mEndTime = endTime;
+		mUUID = Networking.createUUID();
 	}
 
 	/**
@@ -88,7 +62,6 @@ public class EventEntry implements Serializable {
 	 * 
 	 * @param dbRowID
 	 *            the row id of the new EventEntry.
-	 * 
 	 * @param name
 	 *            the name of the event.
 	 * @param notes
@@ -103,14 +76,15 @@ public class EventEntry implements Serializable {
 	 *            whether or not the event has been received at the server.
 	 */
 	EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, String uuid, boolean receivedAtServer) {
-		this.mDbRowID = dbRowID;
-		this.mName = name;
-		this.mNotes = notes;
-		this.mStartTime = startTime;
-		this.mEndTime = endTime;
-		this.mUUID = uuid;
-		this.mReceivedAtServer = receivedAtServer;
+			long endTime, long updateTime, String uuid, boolean receivedAtServer) {
+		mDbRowID = dbRowID;
+		mName = name;
+		mNotes = notes;
+		mStartTime = startTime;
+		mEndTime = endTime;
+		mUpdateTime = updateTime;
+		mUUID = uuid;
+		mReceivedAtServer = receivedAtServer;
 	}
 
 	/**
@@ -125,23 +99,23 @@ public class EventEntry implements Serializable {
 		if (eventCursor == null || eventCursor.isClosed()
 				|| eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
 			return null;
-		long dbRowID = getLong(eventCursor, EventDbAdapter.KEY_ROWID);
-		String name = getString(eventCursor, EventDbAdapter.KEY_NAME);
-		String notes = getString(eventCursor, EventDbAdapter.KEY_NOTES);
-		String uuid = getString(eventCursor, EventDbAdapter.KEY_UUID);
-		int recievedAtServer = getInt(eventCursor,
-				EventDbAdapter.KEY_RECEIVED_AT_SERVER);
-		long startTime = getLong(eventCursor, EventDbAdapter.KEY_START_TIME);
-		long endTime = getLong(eventCursor, EventDbAdapter.KEY_END_TIME);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime, uuid,
-				recievedAtServer == 0 ? false : true);
+		long dbRowID = getLong(eventCursor, EventKey.ROWID);
+		String name = getString(eventCursor, EventKey.NAME);
+		String notes = getString(eventCursor, EventKey.NOTES);
+		long startTime = getLong(eventCursor, EventKey.START_TIME);
+		long endTime = getLong(eventCursor, EventKey.END_TIME);
+		long updateTime = getLong(eventCursor, EventKey.UPDATE_TIME);
+		String uuid = getString(eventCursor, EventKey.UUID);
+		int recievedAtServer = getInt(eventCursor, EventKey.RECEIVED_AT_SERVER);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime,
+				updateTime, uuid, recievedAtServer == 0 ? false : true);
 	}
 
 	@Override
 	public String toString() {
 		return "{" + mDbRowID + " : " + mName + ", ("
-				+ formatColumn(ColumnType.START_TIME) + "->"
-				+ formatColumn(ColumnType.END_TIME) + ")}";
+				+ formatColumn(EventKey.START_TIME) + "->"
+				+ formatColumn(EventKey.END_TIME) + ")}";
 	}
 
 	/**
@@ -151,7 +125,7 @@ public class EventEntry implements Serializable {
 	 *            The column to format.
 	 * @return A String depicting the column value.
 	 */
-	public String formatColumn(ColumnType colType) {
+	public String formatColumn(EventKey colType) {
 		switch (colType) {
 		case NAME:
 			return mName;
@@ -161,12 +135,14 @@ public class EventEntry implements Serializable {
 			return getDateString(mStartTime);
 		case END_TIME:
 			return getDateString(mEndTime);
+		case UPDATE_TIME:
+			return getDateString(mUpdateTime);
 		case UUID:
 			return mUUID;
 		case RECEIVED_AT_SERVER:
 			return String.valueOf(mReceivedAtServer);
 		case ROWID:
-			return Long.toString(mDbRowID);
+			return String.valueOf(mDbRowID);
 		default:
 			throw new IllegalArgumentException("Unknown ColumnType: " + colType);
 		}
@@ -192,8 +168,8 @@ public class EventEntry implements Serializable {
 	 * @return the long at the column with the given name, or 0 it doesn't
 	 *         exist.
 	 */
-	private static long getLong(Cursor cursor, String columnName) {
-		return cursor.getLong(cursor.getColumnIndex(columnName));
+	private static long getLong(Cursor cursor, EventKey columnType) {
+		return cursor.getLong(cursor.getColumnIndex(columnType.columnName()));
 	}
 
 	/**
@@ -206,8 +182,8 @@ public class EventEntry implements Serializable {
 	 * @return the integer at the column with the given name, or 0 it doesn't
 	 *         exist.
 	 */
-	private static int getInt(Cursor cursor, String columnName) {
-		return cursor.getInt(cursor.getColumnIndex(columnName));
+	private static int getInt(Cursor cursor, EventKey columnType) {
+		return cursor.getInt(cursor.getColumnIndex(columnType.columnName()));
 	}
 
 	/**
@@ -218,8 +194,8 @@ public class EventEntry implements Serializable {
 	 *            The name of the column in the DB.
 	 * @return The String at the column with the given name.
 	 */
-	private static String getString(Cursor cursor, String columnName) {
-		return cursor.getString(cursor.getColumnIndex(columnName));
+	private static String getString(Cursor cursor, EventKey columnType) {
+		return cursor.getString(cursor.getColumnIndex(columnType.columnName()));
 	}
 
 	/**

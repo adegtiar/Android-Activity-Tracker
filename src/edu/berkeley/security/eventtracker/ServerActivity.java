@@ -1,10 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
-import edu.berkeley.security.eventtracker.webserver.EventDataServer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.webserver.EventDataServer;
 
 public class ServerActivity extends EventActivity {
 	public static final String PREFERENCE_FILENAME = "ServerPrefs";
@@ -129,21 +128,6 @@ public class ServerActivity extends EventActivity {
 		}
 		((TextView) findViewById(R.id.localAddressText))
 				.setText(localServerText);
-	}
-
-	/**
-	 * Uses the WifiManager to retrieve a String representation of the device's
-	 * IP address. Note: not useful for getting the public inet address (3g?).
-	 * 
-	 * @return the String IPv4 address of the device.
-	 */
-	private String getWifiInetAddress() {
-		WifiManager wifi_manager = (WifiManager) this
-				.getSystemService(Context.WIFI_SERVICE);
-		int wifi_address = wifi_manager.getConnectionInfo().getIpAddress();
-		return String.format("%d.%d.%d.%d", (wifi_address & 0xff),
-				(wifi_address >> 8 & 0xff), (wifi_address >> 16 & 0xff),
-				(wifi_address >> 24 & 0xff));
 	}
 
 	public static void updateIpAdress(String newIpAddress) {

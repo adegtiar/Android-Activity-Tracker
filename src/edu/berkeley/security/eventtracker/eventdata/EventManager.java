@@ -6,6 +6,8 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.util.Log;
+import edu.berkeley.security.eventtracker.EventActivity;
 
 /**
  * Manages the event data back-end and acts as a wrapper around a database
@@ -89,7 +91,6 @@ public class EventManager {
 	public boolean updateDatabase(EventEntry event) {
 		if (event == null)
 			return false;
-		// event.mManager = this; //TODO remove
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID,
@@ -158,28 +159,27 @@ public class EventManager {
 
 	public List<GPSCoordinates> getGPSCoordinates(Long rowID) {
 		ArrayList<GPSCoordinates> toBeReturned = new ArrayList<GPSCoordinates>();
-		
-		Cursor c = null;
-		try {
-			c = mGPSHelper.getGPSCoordinates(rowID);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int a =4;
 
-		if (c.getCount() > 0) {
-			while (c.moveToNext()) {
-				double latitude = c.getDouble(c
+		Cursor cursor = null;
+		try {
+			cursor = mGPSHelper.getGPSCoordinates(rowID);
+		} catch (Exception e) {
+			Log.e(EventActivity.LOG_TAG, "Failed to get GPS coordinates.", e);
+		}
+
+		if (cursor.getCount() > 0) {
+			while (cursor.moveToNext()) {
+				double latitude = cursor.getDouble(cursor
 						.getColumnIndex((GPSDbAdapter.KEY_LATITUDE)));
-				double longitude = c.getDouble(c
+				double longitude = cursor.getDouble(cursor
 						.getColumnIndex((GPSDbAdapter.KEY_LONGITUDE)));
-				long time=c.getLong(c.getColumnIndex((GPSDbAdapter.KEY_GPSTIME)));
+				long time = cursor.getLong(cursor
+						.getColumnIndex((GPSDbAdapter.KEY_GPSTIME)));
 				toBeReturned.add(new GPSCoordinates(latitude, longitude, time));
 
 			}
 		}
-		c.close();
+		cursor.close();
 		return toBeReturned;
 
 	}

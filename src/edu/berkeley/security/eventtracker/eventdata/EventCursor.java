@@ -2,7 +2,7 @@ package edu.berkeley.security.eventtracker.eventdata;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import edu.berkeley.security.eventtracker.eventdata.EventEntry.ColumnType;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 
 /**
  * A cursor that maps rows of a database to EventEntry objects.
@@ -18,15 +18,15 @@ public class EventCursor extends CursorWrapper {
 	/**
 	 * @return The ColumnType at the given index.
 	 */
-	public ColumnType getColumnType(int columnIndex) {
-		return ColumnType.fromColumnName(getColumnName(columnIndex));
+	public EventKey getColumnType(int columnIndex) {
+		return EventKey.fromColumnName(getColumnName(columnIndex));
 	}
 
 	/**
 	 * @return The index of the given ColumnType.
 	 */
-	public int getColumnIndex(ColumnType colType) {
-		return getColumnIndex(colType.getColumnName());
+	public int getColumnIndex(EventKey colType) {
+		return getColumnIndex(colType.columnName());
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class EventCursor extends CursorWrapper {
 	public EventEntry getEvent() {
 		return EventEntry.fromCursor(this, mManager);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(getEvent());

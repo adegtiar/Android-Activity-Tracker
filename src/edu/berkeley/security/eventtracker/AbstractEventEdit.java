@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -20,10 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
-import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
-import edu.berkeley.security.eventtracker.network.Networking;
 
 abstract public class AbstractEventEdit extends EventActivity {
 
@@ -47,7 +43,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
-	
+
 	protected ImageView viewMapButton;
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
@@ -68,14 +64,14 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	/**
-	 * Initializes the NextActivity and StopTracking buttons. Also, now it initalizes the viewMap Button
+	 * Initializes the NextActivity and StopTracking buttons. Also, now it
+	 * initalizes the viewMap Button
 	 */
 	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
 		viewMapButton = (ImageView) findViewById(R.id.viewMapButton);
-		
-		
+
 	}
 
 	/**
@@ -135,12 +131,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeAutoComplete();
 		fillViewWithEventInfo();
 		focusOnNothing();
-	
+
 	}
 
 	@Override
 	protected void refreshState() {
-	
+
 		EventCursor events = mEventManager.fetchSortedEvents();
 		if (events.moveToNext()) {
 			EventEntry event = events.getEvent();
