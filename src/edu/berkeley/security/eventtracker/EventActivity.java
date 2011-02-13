@@ -35,6 +35,7 @@ import edu.berkeley.security.eventtracker.network.Networking;
  */
 abstract public class EventActivity extends Activity implements
 		OnGestureListener {
+	public static final String LOG_TAG = "ActivityTracker";
 	protected static final int DIALOG_TEXT_ENTRY = 7;
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;

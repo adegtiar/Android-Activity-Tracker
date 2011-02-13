@@ -1,4 +1,5 @@
 package edu.berkeley.security.eventtracker.network;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,12 +8,15 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
 public class Synchronizer extends IntentService {
+	public static final String EVENT_DATA_EXTRA = "EventData";
+	public static final String REQUEST_EXTRA = "Request";
+
 	private EventManager manager;
+
 	public Synchronizer() {
 		super("Synchronizer");
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -21,33 +25,33 @@ public class Synchronizer extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		
+
 		manager = EventManager.getManager();
-		Bundle bundle=intent.getExtras();
-		
-		EventEntry event;
-		
-		event = (EventEntry) bundle.getSerializable("EventData");
-		ServerRequest request=(ServerRequest) bundle.getSerializable("Request");
-		if(request == ServerRequest.SENDDATA){
-			PostRequestResponse response=Networking.sendPostRequest((EventEntry) event, request);
-			if(response==PostRequestResponse.Success){
-				event.mReceivedAtServer=true;
+		Bundle bundle = intent.getExtras();
+
+		EventEntry event = (EventEntry) bundle
+				.getSerializable(EVENT_DATA_EXTRA);
+		ServerRequest request = (ServerRequest) bundle
+				.getSerializable(REQUEST_EXTRA);
+
+		PostRequestResponse response;
+		switch (request) {
+		case SENDDATA:
+			response = Networking.sendPostRequest(event, request);
+			if (response == PostRequestResponse.Success) {
+				event.mReceivedAtServer = true;
 				manager.updateDatabase(event);
 			}
-		}
-		
-		if(request==ServerRequest.REGISTER){
-			PostRequestResponse response=Networking.sendPostRequest(null, ServerRequest.REGISTER);
-			if(response==PostRequestResponse.Success){
+			break;
+		case REGISTER:
+			response = Networking.sendPostRequest(ServerRequest.REGISTER);
+			if (response == PostRequestResponse.Success)
 				Settings.confirmRegistrationWithWebServer();
-			}
-		}
-		if(request==ServerRequest.UPDATE){
-			PostRequestResponse response=Networking.sendPostRequest((EventEntry) event, ServerRequest.UPDATE);
-		}
-		if(request==ServerRequest.DELETE){
-			PostRequestResponse response=Networking.sendPostRequest(event, ServerRequest.DELETE);
+			break;
+		case UPDATE:
+		case DELETE:
+			response = Networking.sendPostRequest(event, request);
+			break;
 		}
 	}
 }

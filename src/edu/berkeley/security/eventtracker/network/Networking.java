@@ -21,6 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
@@ -28,7 +29,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
 /**
- * This is the networking class. We send your packets
+ * This is the networking class. Sends requests to the server.
  */
 
 enum PostRequestResponse {
@@ -36,6 +37,11 @@ enum PostRequestResponse {
 }
 
 public class Networking {
+	public static final String PHONE_NUMBER_PARAM = "PhoneNumber";
+	public static final String DEVICE_UUID_PARAM = "UUIDOfDevice";
+	public static final String HASHED_PASSWORD_PARAM = "HashedPasswd";
+	public static final String EVENT_UUID_PARAM = "UUIDOfEvent";
+	public static final String EVENT_DATA_PARAM = "EventData";
 
 	public static void sendAllEvents(Context context) {
 		if (Settings.isSychronizationEnabled()) {
@@ -53,6 +59,13 @@ public class Networking {
 		}
 	}
 
+	/**
+	 * Attempts to register with the remote server if preferences permit and the
+	 * device has not yet been registered.
+	 * 
+	 * @param context
+	 *            the context from which to send the request.
+	 */
 	public static void registerIfNeeded(Context context) {
 		if (!Settings.registeredAlready() && Settings.isSychronizationEnabled()) {
 			// attempt to register with the server
@@ -77,82 +90,105 @@ public class Networking {
 		// check to see if allowed to send data
 		if (Settings.isSychronizationEnabled()) {
 			Intent intent = new Intent(context, Synchronizer.class);
-			intent.putExtra("EventData", data);
-			intent.putExtra("Request", request);
+			intent.putExtra(Synchronizer.EVENT_DATA_EXTRA, data);
+			intent.putExtra(Synchronizer.REQUEST_EXTRA, request);
 			context.startService(intent);
 		}
 	}
 
+	/**
+	 * Sends a post request with the given event entry and request type.
+	 * 
+	 * @param data
+	 *            the event to send. <tt>null</tt> if request does not require
+	 *            an event.
+	 * @param request
+	 *            the type of request to send.
+	 * @return the response to the request.
+	 */
 	public static PostRequestResponse sendPostRequest(EventEntry data,
 			ServerRequest request) {
-		DefaultHttpClient hc = new DefaultHttpClient();
+		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(request.getURL());
 
 		List<NameValuePair> params = getPostParams(request, data);
 		try {
-
 			postMethod.setEntity(new UrlEncodedFormEntity(params));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(EventActivity.LOG_TAG, "Failed setting params.", e);
 		}
 
 		try {
-			String response = hc.execute(postMethod, res);
+			String response = httpclient.execute(postMethod, res);
 		} catch (ClientProtocolException e) {
-			//
+			Log.e(EventActivity.LOG_TAG, "Failed sending post.", e);
 			return PostRequestResponse.Error;
-
 		} catch (IOException e) {
-
+			Log.e(EventActivity.LOG_TAG, "Failed sending post.", e);
 			return PostRequestResponse.Error;
 		}
 		return PostRequestResponse.Success;
 	}
 
+	/**
+	 * Sends a post request of the given request type without an event.
+	 * 
+	 * @param request
+	 *            the type of request to send. Should not require an event.
+	 * @return the response to the request.
+	 */
+	public static PostRequestResponse sendPostRequest(ServerRequest request) {
+		return sendPostRequest(null, request);
+	}
+
+	/**
+	 * Returns the parameters associated with the particular request. These
+	 * params can be used to set the content of a post request.
+	 * 
+	 * @param request
+	 *            the type of request to get the parameters of.
+	 * @param data
+	 *            the event data of the request (null if not used).
+	 * @return a List of parameters to send.
+	 */
 	private static List<NameValuePair> getPostParams(ServerRequest request,
 			EventEntry data) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
-		if (request == ServerRequest.REGISTER) {
-			params.add(new BasicNameValuePair("PhoneNumber", Settings
+		switch (request) {
+		case REGISTER:
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-					.getDeviceUUID()));
-			params.add(new BasicNameValuePair("HashedPasswd", Settings
+			params.add(new BasicNameValuePair(HASHED_PASSWORD_PARAM, Settings
 					.getPassword()));
+			break;
+		case SENDDATA:
+		case UPDATE:
+			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
+			params.add(new BasicNameValuePair(EVENT_DATA_PARAM,
+					EventDataSerializer.toJSONObject(data).toString()));
+			break;
+		case DELETE:
+			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
+			break;
 		}
-		if (request == ServerRequest.SENDDATA) {
-			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-					.getDeviceUUID()));
-			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
-			params.add(new BasicNameValuePair("EventData", EventDataSerializer
-					.toJSONObject(data).toString()));
-		}
-		if (request == ServerRequest.UPDATE) {
-			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-					.getDeviceUUID()));
-			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
-			params.add(new BasicNameValuePair("EventData", EventDataSerializer
-					.toJSONObject(data).toString()));
-		}
-		if (request == ServerRequest.DELETE) {
-
-			params.add(new BasicNameValuePair("UUIDOfDevice", Settings
-					.getDeviceUUID()));
-			params.add(new BasicNameValuePair("UUIDOfEvent", data.mUUID));
-
-		}
+		params.add(new BasicNameValuePair(DEVICE_UUID_PARAM, Settings
+				.getDeviceUUID()));
 		return params;
 	}
 
+	/**
+	 * Generates a new random UUID.
+	 * 
+	 * @return the new String UUID.
+	 */
 	public static String createUUID() {
 		return UUID.randomUUID().toString();
 
 	}
 
 	/**
-	 * @return the ip address of the android device.
+	 * @return the IP address of the device.
 	 */
 	public static String getIpAddress() {
 		try {
@@ -168,7 +204,7 @@ public class Networking {
 				}
 			}
 		} catch (SocketException ex) {
-			// Log.e(S.TAG, ex.toString());
+			Log.e(EventActivity.LOG_TAG, "Failed getting the IP address.", ex);
 		}
 		return null;
 	}
