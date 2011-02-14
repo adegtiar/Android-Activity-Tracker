@@ -3,10 +3,6 @@ package edu.berkeley.security.eventtracker.webserver;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.json.JSONException;
-
-import edu.berkeley.security.eventtracker.eventdata.EventDataSerializer;
-
 /**
  * An example of subclassing NanoHTTPD to make a custom HTTP server.
  */
@@ -33,14 +29,14 @@ public class EventDataServer extends NanoHTTPD {
 		if (parms.getProperty("data") == null) {
 			msg = base_msg;
 		} else {
-			try {
-				msg = EventDataSerializer
-						.getAllRowsSerializedJSONaData(mWebService);
-			} catch (JSONException e) {
-				msg = "HI";
-			} // TODO fix
+//			try {
+//				msg = EventDataSerializer
+//						.getAllRowsSerializedJSONaData(mWebService);
+//			} catch (JSONException e) {
+//				msg = "HI";
+//			} // TODO  uncomment if this is ever used again...
 		}
-		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, msg);
+		return new NanoHTTPD.Response(HTTP_OK, MIME_HTML, ""); // msg not ""
 	}
 
 	WebServerService mWebService;

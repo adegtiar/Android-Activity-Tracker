@@ -16,7 +16,6 @@
 
 package edu.berkeley.security.eventtracker.eventdata;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.content.ContentValues;
@@ -31,7 +30,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 	public enum EventKey {
 		ROW_ID("_id", ColumnType.INTEGER, "primary key autoincrement"), NAME(
-				"eventname", ColumnType.TEXT), NOTES("notes", ColumnType.TEXT), START_TIME(
+				"name", ColumnType.TEXT), NOTES("notes", ColumnType.TEXT), START_TIME(
 				"startTime", ColumnType.LONG), END_TIME("endTime",
 				ColumnType.LONG), UPDATE_TIME("updateTime", ColumnType.LONG), UUID(
 				"uuid", ColumnType.TEXT), IS_DELETED("isDeleted",
@@ -164,7 +163,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		String orderBy = EventKey.START_TIME.columnName() + " DESC";
 		String limitClause = "20";
 		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
-				EventKey.IS_DELETED.columnName() + " = 0", null, null, null,
+				EventKey.IS_DELETED.columnName() + "=0", null, null, null,
 				orderBy, limitClause);
 	}
 
@@ -175,9 +174,8 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * @return Cursor over all events.
 	 */
 	public Cursor fetchPhoneOnlyEvents() {
-
 		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(),
-				EventKey.RECEIVED_AT_SERVER.columnName() + "=" + 0, null, null,
+				EventKey.RECEIVED_AT_SERVER.columnName() + "=0", null, null,
 				null, null, null);
 	}
 

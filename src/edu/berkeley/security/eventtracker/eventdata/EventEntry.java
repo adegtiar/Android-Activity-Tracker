@@ -132,26 +132,37 @@ public class EventEntry implements Serializable {
 	 */
 	public String formatColumn(EventKey colType) {
 		switch (colType) {
+		case START_TIME:
+		case END_TIME:
+		case UPDATE_TIME:
+			return getDateString((Long) getValue(colType));
+		default:
+			return String.valueOf(getValue(colType));
+		}
+	}
+
+	public Object getValue(EventKey colKey) {
+		switch (colKey) {
 		case NAME:
 			return mName;
 		case NOTES:
 			return mNotes;
 		case START_TIME:
-			return getDateString(mStartTime);
+			return mStartTime;
 		case END_TIME:
-			return getDateString(mEndTime);
+			return mEndTime;
 		case UPDATE_TIME:
-			return getDateString(mUpdateTime);
+			return mUpdateTime;
 		case UUID:
 			return mUUID;
 		case IS_DELETED:
-			return String.valueOf(mDeleted);
+			return mDeleted;
 		case RECEIVED_AT_SERVER:
-			return String.valueOf(mReceivedAtServer);
+			return mReceivedAtServer;
 		case ROW_ID:
-			return String.valueOf(mDbRowID);
+			return mDbRowID;
 		default:
-			throw new IllegalArgumentException("Unknown ColumnType: " + colType);
+			throw new IllegalArgumentException("Unknown ColumnType: " + colKey);
 		}
 	}
 

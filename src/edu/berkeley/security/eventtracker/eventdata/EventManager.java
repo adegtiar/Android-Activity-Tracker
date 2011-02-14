@@ -126,7 +126,7 @@ public class EventManager {
 	}
 
 	/**
-	 * @return An Iterator over all events in the database.
+	 * @return an Iterator over all events in the database.
 	 */
 	public EventCursor fetchAllEvents() {
 		return new EventCursor(mDbHelper.fetchAllEvents(), this);
@@ -137,14 +137,14 @@ public class EventManager {
 	}
 
 	/**
-	 * @return An iterator over all events in descending endTime order.
+	 * @return an iterator over all events in descending endTime order.
 	 */
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
 	}
 
 	/**
-	 * @return An iterator over the list of all events in the database that are
+	 * @return an iterator over the list of all events in the database that are
 	 *         not yet on the web server
 	 */
 	public EventCursor fetchPhoneOnlyEvents() {
@@ -155,10 +155,10 @@ public class EventManager {
 	 * Return a Cursor positioned at the note that matches the given rowId
 	 * 
 	 * @param rowId
-	 *            id of note to retrieve
-	 * @return Cursor positioned to matching note, if found
+	 *            id of note to retrieve.
+	 * @return Cursor positioned to matching note, if found.
 	 * @throws SQLException
-	 *             if note could not be found/retrieved
+	 *             if note could not be found/retrieved.
 	 */
 	public EventEntry fetchEvent(long rowId) throws SQLException {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId), this);
@@ -199,8 +199,11 @@ public class EventManager {
 
 	}
 
+	/**
+	 * Retrieves the event that is currently in progress.
+	 * @return the current event.
+	 */
 	public EventEntry getCurrentEvent() {
-
 		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(),
 				this);
 		if (!events.moveToFirst())
@@ -208,7 +211,6 @@ public class EventManager {
 		// if end time is 0(initial value), we are still tracking.
 		EventEntry currentEvent = events.getEvent();
 		return currentEvent.mEndTime == 0 ? currentEvent : null;
-
 	}
 
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
@@ -225,21 +227,21 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteGPSEntries(long eventRowID) {
-		Cursor c = mGPSHelper.getGPSCoordinates(eventRowID);
+		Cursor cursor = mGPSHelper.getGPSCoordinates(eventRowID);
 
-		if (c.getCount() > 0) {
-			while (c.moveToNext()) {
-				long rowID = c.getColumnIndex(GPSDbAdapter.KEY_ROWID);
+		if (cursor.getCount() > 0) {
+			while (cursor.moveToNext()) {
+				long rowID = cursor.getColumnIndex(GPSDbAdapter.KEY_ROWID);
 				mGPSHelper.deleteEntry(rowID);
 			}
 		}
-		c.close();
+		cursor.close();
 		return true;
 	}
 
 	/**
-	 * Deletes all events and GPS entries in the database.
-	 * TODO make more efficient.
+	 * Deletes all events and GPS entries in the database. TODO make more
+	 * efficient.
 	 * 
 	 * @return the number of events deleted.
 	 */
