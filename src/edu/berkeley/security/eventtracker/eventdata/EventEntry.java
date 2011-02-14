@@ -240,4 +240,15 @@ public class EventEntry implements Serializable {
 		return EventActivity.mEventManager.getGPSCoordinates(mDbRowID);
 	}
 
+	/**
+	 * Checks if this event has been updated more recently than the timestamp.
+	 * 
+	 * @param timestamp
+	 *            the String timestamp to compare with.
+	 * @return whether or not the event is newer than the timestamp.
+	 */
+	public boolean newerThan(String timestamp) {
+		return false; // TODO implement
+	}
+
 }

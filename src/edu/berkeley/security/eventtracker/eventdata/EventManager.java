@@ -165,6 +165,14 @@ public class EventManager {
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
 
+	public EventEntry findOrCreateByUUID(String uuid) {
+		EventCursor events = new EventCursor(mDbHelper.fetchEvent(uuid), this);
+		EventEntry event = events.getCount() > 0 ? events.getEvent()
+				: new EventEntry();
+		event.mUUID = uuid;
+		return event;
+	}
+
 	/**
 	 * @return true if we are still tracking an activity, otherwise false.
 	 */
@@ -201,6 +209,7 @@ public class EventManager {
 
 	/**
 	 * Retrieves the event that is currently in progress.
+	 * 
 	 * @return the current event.
 	 */
 	public EventEntry getCurrentEvent() {

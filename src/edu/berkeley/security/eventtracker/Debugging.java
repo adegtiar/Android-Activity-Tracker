@@ -85,13 +85,13 @@ public class Debugging extends Activity {
 						Networking.sendAllEvents(Debugging.this);
 					}
 				});
-		((Button) findViewById(R.id.resetPasswordButton))
+		((Button) findViewById(R.id.pollServerButton))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						debugStatus
-								.setText("Password reset not yet implemented. Plz implement me, Kyle.");
+						debugStatus.setText("Polling server for Events.");
+						Networking.pollServerIfAllowed(Debugging.this);
 					}
 				});
 	}

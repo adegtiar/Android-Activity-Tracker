@@ -198,6 +198,15 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		return mCursor;
 	}
 
+	public Cursor fetchEvent(String uuid) throws SQLException {
+		Cursor mCursor = mDb.query(true, DATABASE_TABLE,
+				EventKey.columnNames(), EventKey.UUID.columnName() + "=?",
+				new String[] { uuid }, null, null, null, null);
+		if (mCursor != null)
+			mCursor.moveToFirst();
+		return mCursor;
+	}
+
 	/**
 	 * Update the event using the details provided.
 	 * 

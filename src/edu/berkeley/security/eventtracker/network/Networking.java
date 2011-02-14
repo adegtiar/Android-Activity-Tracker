@@ -32,13 +32,10 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
  * This is the networking class. Sends requests to the server.
  */
 
-enum PostRequestResponse {
-	Success, Error
-}
-
 public class Networking {
 	public static final String PHONE_NUMBER_PARAM = "PhoneNumber";
 	public static final String DEVICE_UUID_PARAM = "UUIDOfDevice";
+	public static final String POLL_TIME_PARAM = "PollTime";
 	public static final String HASHED_PASSWORD_PARAM = "HashedPasswd";
 	public static final String EVENT_UUID_PARAM = "UUIDOfEvent";
 	public static final String EVENT_DATA_PARAM = "EventData";
@@ -74,8 +71,21 @@ public class Networking {
 	}
 
 	/**
+	 * Attempts to poll the server for data, if preferences permit.
+	 * 
+	 * @param context
+	 *            the context from which to send the request.
+	 */
+	public static void pollServerIfAllowed(Context context) {
+		if (Settings.isSychronizationEnabled()) {
+			// poll the server for event data
+			Networking.sendToServer(ServerRequest.POLL, null, context);
+		}
+	}
+
+	/**
 	 * Sends intents to a service that sends the actual post requests Only does
-	 * this if permission to sychronize with web server is given
+	 * this if permission to synchronize with web server is given
 	 * 
 	 * @param request
 	 *            - the type of post request to send(i.e., register, send data,
@@ -118,17 +128,18 @@ public class Networking {
 		} catch (UnsupportedEncodingException e) {
 			Log.e(EventActivity.LOG_TAG, "Failed setting params.", e);
 		}
-
+		PostRequestResponse response;
 		try {
-			String response = httpclient.execute(postMethod, res);
+			response = new PostRequestResponse(httpclient.execute(postMethod,
+					res), true);
 		} catch (ClientProtocolException e) {
 			Log.e(EventActivity.LOG_TAG, "Failed sending post.", e);
-			return PostRequestResponse.Error;
+			response = PostRequestResponse.errorResponse();
 		} catch (IOException e) {
 			Log.e(EventActivity.LOG_TAG, "Failed sending post.", e);
-			return PostRequestResponse.Error;
+			response = PostRequestResponse.errorResponse();
 		}
-		return PostRequestResponse.Success;
+		return response;
 	}
 
 	/**
@@ -170,6 +181,11 @@ public class Networking {
 			break;
 		case DELETE:
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
+			break;
+		case POLL:
+			String pollTime = Settings.getPollTime();
+			if (pollTime != null)
+				params.add(new BasicNameValuePair(POLL_TIME_PARAM, pollTime));
 			break;
 		}
 		params.add(new BasicNameValuePair(DEVICE_UUID_PARAM, Settings

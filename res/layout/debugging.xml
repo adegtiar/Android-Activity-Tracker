@@ -26,9 +26,9 @@
 		<Button android:id="@+id/sendAllEventsButton"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="Send unsent events"></Button>
-		<Button android:id="@+id/resetPasswordButton"
+		<Button android:id="@+id/pollServerButton"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="Reset Password"></Button>
+			android:text="Poll Server for Event Data"></Button>
 	</LinearLayout>
 
 

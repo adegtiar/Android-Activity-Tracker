@@ -1,8 +1,14 @@
 package edu.berkeley.security.eventtracker.network;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
@@ -38,20 +44,60 @@ public class Synchronizer extends IntentService {
 		switch (request) {
 		case SENDDATA:
 			response = Networking.sendPostRequest(event, request);
-			if (response == PostRequestResponse.Success) {
+			if (response.isSuccess()) {
 				event.mReceivedAtServer = true;
 				manager.updateDatabase(event);
 			}
 			break;
 		case REGISTER:
 			response = Networking.sendPostRequest(ServerRequest.REGISTER);
-			if (response == PostRequestResponse.Success)
+			if (response.isSuccess())
 				Settings.confirmRegistrationWithWebServer();
 			break;
 		case UPDATE:
 		case DELETE:
 			response = Networking.sendPostRequest(event, request);
 			break;
+		case POLL: // TODO finish
+			response = Networking.sendPostRequest(event, request);
+			if (response.isSuccess())
+				try {
+					parseEventPollResponse(response.getContent());
+				} catch (JSONException e) {
+					Log.e(EventActivity.LOG_TAG,
+							"Could not parse JSON response.", e);
+				}
+			break;
 		}
+	}
+
+	/**
+	 * Parses a poll response. Updates and creates relevant events and updates
+	 * the pollTime.
+	 * 
+	 * @param jsonResponseString
+	 *            the response from the server.
+	 * @throws JSONException
+	 *             if the response is poorly formatted.
+	 */
+	void parseEventPollResponse(String jsonResponseString) throws JSONException {
+		EventManager manager = EventManager.getManager();
+		JSONObject jsonResponse = new JSONObject(jsonResponseString);
+		String pollTime = jsonResponse.getString("pollTime");
+		JSONArray events = jsonResponse.getJSONArray("events");
+		for (int eventIndex = 0; eventIndex < events.length(); eventIndex++) {
+			JSONObject eventContents = events.getJSONObject(eventIndex);
+			String uuid = eventContents.getString("uuid");
+			EventEntry event = manager.findOrCreateByUUID(uuid);
+			String updated_at = eventContents.getString("updated_at");
+			if (!event.newerThan(updated_at)) {
+				event.mName = eventContents.getString("name");
+				event.mNotes = eventContents.getString("notes");
+				event.mStartTime = eventContents.getLong("startTime");
+				event.mEndTime = eventContents.getLong("endTime");
+				manager.updateDatabase(event);
+			}
+		}
+		Settings.setPollTime(pollTime);
 	}
 }

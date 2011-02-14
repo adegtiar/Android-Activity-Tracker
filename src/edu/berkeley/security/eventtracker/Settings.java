@@ -30,6 +30,7 @@ public class Settings extends EventActivity {
 	public static final String isPasswordSet = "isPasswordEntered";
 	public static final String PhoneNumber = "phoneNumber";
 	public static final String UUIDOfDevice = "deviceUUID";
+	public static final String POLL_TIME = "pollTime";
 	private static final String isSychronizationEnabled = "enableSychronization";
 	public static final String Registered = "registered";
 	private static NumberPicker GPSSensitivity;
@@ -179,12 +180,14 @@ public class Settings extends EventActivity {
 
 	protected static boolean isPasswordSet() {
 		return settings.getBoolean(isPasswordSet, false);
-
 	}
 
 	public static boolean isSychronizationEnabled() {
 		return settings.getBoolean(isSychronizationEnabled, false);
+	}
 
+	public static String getPollTime() {
+		return settings.getString(POLL_TIME, null);
 	}
 
 	protected static void setPassword(String passwd) {
@@ -210,6 +213,12 @@ public class Settings extends EventActivity {
 		UUID uuid = UUID.randomUUID();
 		SharedPreferences.Editor prefEditor = settings.edit();
 		prefEditor.putString(UUIDOfDevice, uuid.toString());
+		prefEditor.commit();
+	}
+
+	public static void setPollTime(String pollTime) {
+		SharedPreferences.Editor prefEditor = settings.edit();
+		prefEditor.putString(POLL_TIME, pollTime);
 		prefEditor.commit();
 	}
 
