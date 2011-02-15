@@ -1,5 +1,7 @@
 package edu.berkeley.security.eventtracker.network;
 
+import java.text.SimpleDateFormat;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +18,8 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 public class Synchronizer extends IntentService {
 	public static final String EVENT_DATA_EXTRA = "EventData";
 	public static final String REQUEST_EXTRA = "Request";
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss z");
 
 	private EventManager manager;
 

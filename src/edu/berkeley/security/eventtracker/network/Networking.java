@@ -180,8 +180,8 @@ public class Networking {
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
 			params.add(new BasicNameValuePair(EVENT_DATA_PARAM,
 					EventDataSerializer.toJSONObject(data).toString()));
-			params.add(new BasicNameValuePair(EVENT_UPDATED_AT_PARAM, String
-					.valueOf(data.mUpdateTime)));
+			params.add(new BasicNameValuePair(EVENT_UPDATED_AT_PARAM,
+					Synchronizer.dateFormatter.format(data.mUpdateTime)));
 			params.add(new BasicNameValuePair(EVENT_DELETED_PARAM, String
 					.valueOf(data.deleted)));
 			break;

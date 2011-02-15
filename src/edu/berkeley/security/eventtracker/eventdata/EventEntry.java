@@ -1,14 +1,18 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import android.database.Cursor;
+import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.Synchronizer;
 
 /**
  * A local, in-memory version of a Event database entry. This is pushed and
@@ -50,7 +54,8 @@ public class EventEntry implements Serializable {
 	 * @param endTime
 	 *            the long end time of the event.
 	 */
-	public EventEntry(String name, String notes, long startTime, long endTime, boolean persisted) {
+	public EventEntry(String name, String notes, long startTime, long endTime,
+			boolean persisted) {
 		mName = name;
 		mNotes = notes;
 		mUpdateTime = mStartTime = startTime;
@@ -250,8 +255,19 @@ public class EventEntry implements Serializable {
 	 * @return whether or not the event is newer than the timestamp.
 	 */
 	public boolean newerThan(String timestamp) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("");
-		return false;
+
+		// hack to get SimpleDateFormat working with UTC
+		timestamp = timestamp.replace("UTC", "GMT");
+
+		Date otherUpdatedTime;
+		try {
+			otherUpdatedTime = Synchronizer.dateFormatter.parse(timestamp);
+		} catch (ParseException e) {
+			Log.e(EventActivity.LOG_TAG, "Could not parse remote update time.",
+					e);
+			return false;
+		}
+		return new Date(mUpdateTime).after(otherUpdatedTime);
 	}
 
 }
