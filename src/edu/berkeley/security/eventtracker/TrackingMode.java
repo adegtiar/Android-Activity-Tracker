@@ -51,9 +51,8 @@ public class TrackingMode extends AbstractEventEdit {
 		// }
 		Settings.setPhoneNumber(this);
 		Networking.registerIfNeeded(this);
-		// Attempts to send all the requests that are suppose to be sent but for
-		// some reason
-		// did not make it to the web server
+		// Attempts to send all the requests that are suppose to be sent
+		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
 
 	}
@@ -132,7 +131,6 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 		currentEvent.mName = name;
 		updateDatabase(currentEvent);
-
 	}
 
 	@Override
@@ -142,7 +140,6 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 		currentEvent.mNotes = notes;
 		updateDatabase(currentEvent);
-
 	}
 
 	/**
@@ -202,7 +199,6 @@ public class TrackingMode extends AbstractEventEdit {
 			public void onClick(View v) {
 				finishCurrentActivity(false);
 				focusOnNothing();
-
 			}
 		});
 		viewMapButton.setOnClickListener(new OnClickListener() {

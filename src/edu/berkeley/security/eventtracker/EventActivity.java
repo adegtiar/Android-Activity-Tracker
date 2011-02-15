@@ -120,7 +120,7 @@ abstract public class EventActivity extends Activity implements
 		updateTrackingStatus();
 		updateToolbarGUI();
 		ServerActivity.updateIpAdress(Networking.getIpAddress());
-
+		Networking.pollServerIfAllowed(this);
 	}
 
 	/**

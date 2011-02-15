@@ -93,7 +93,7 @@ public class Synchronizer extends IntentService {
 			String uuid = eventContents.getString("uuid");
 			EventEntry event = manager.findOrCreateByUUID(uuid);
 			String updated_at = eventContents.getString("updated_at");
-			if (!event.newerThan(updated_at)) {
+			if (!event.persisted || !event.newerThan(updated_at)) {
 				event.mName = eventContents.getString("name");
 				event.mNotes = eventContents.getString("notes");
 				event.mStartTime = eventContents.getLong("startTime");
