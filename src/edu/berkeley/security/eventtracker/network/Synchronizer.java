@@ -45,8 +45,7 @@ public class Synchronizer extends IntentService {
 		case SENDDATA:
 			response = Networking.sendPostRequest(event, request);
 			if (response.isSuccess()) {
-				event.mReceivedAtServer = true;
-				manager.updateDatabase(event);
+				manager.updateDatabase(event, true);
 			}
 			break;
 		case REGISTER:
@@ -58,7 +57,7 @@ public class Synchronizer extends IntentService {
 		case DELETE:
 			response = Networking.sendPostRequest(event, request);
 			break;
-		case POLL: // TODO finish
+		case POLL:
 			response = Networking.sendPostRequest(event, request);
 			if (response.isSuccess())
 				try {
@@ -95,7 +94,10 @@ public class Synchronizer extends IntentService {
 				event.mNotes = eventContents.getString("notes");
 				event.mStartTime = eventContents.getLong("startTime");
 				event.mEndTime = eventContents.getLong("endTime");
-				manager.updateDatabase(event);
+				event.deleted = eventContents.getBoolean("deleted");
+				if (event.deleted && !event.persisted)
+					break; // trying to create a deleted event!
+				manager.updateDatabase(event, true);
 			}
 		}
 		Settings.setPollTime(pollTime);

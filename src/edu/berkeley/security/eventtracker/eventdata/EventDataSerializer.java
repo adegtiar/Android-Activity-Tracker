@@ -11,7 +11,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 public class EventDataSerializer {
 	private static final EventKey[] keysToSerialize = new EventKey[] {
 			EventKey.NAME, EventKey.NOTES, EventKey.START_TIME,
-			EventKey.END_TIME, EventKey.UPDATE_TIME, EventKey.IS_DELETED };
+			EventKey.END_TIME};
 
 	public static JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();

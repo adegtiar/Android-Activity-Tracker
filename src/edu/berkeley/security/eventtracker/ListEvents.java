@@ -13,8 +13,11 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
  * Handles the event list view that displays all events from most recent to
@@ -116,9 +119,8 @@ public class ListEvents extends EventActivity {
 		@Override
 		public void onClick(View v) {
 			mEventManager.markEventDeleted(rowId);
-			// TODO delete stuff goes here!!
-			// Networking.sendToServer(ServerRequest.DELETE,
-			// mEventManager.fetchEvent(rowId), ListEvents.this);
+			Networking.sendToServer(ServerRequest.DELETE,
+					mEventManager.fetchEvent(rowId), ListEvents.this);
 			mEventsCursor.requery();
 			if (isInProgress) {
 				updateTrackingStatus(false);

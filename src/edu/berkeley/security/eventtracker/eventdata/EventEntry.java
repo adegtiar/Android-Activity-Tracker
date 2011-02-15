@@ -24,8 +24,9 @@ public class EventEntry implements Serializable {
 	public long mEndTime;
 	public long mUpdateTime;
 	public String mUUID = "";
-	public boolean mReceivedAtServer = false;
-	public boolean mDeleted = false;
+	public boolean receivedAtServer = false;
+	public boolean deleted = false;
+	public boolean persisted = false;
 
 	/**
 	 * Creates a new EventEntry with a startTime of now and a new UUID. This is
@@ -49,7 +50,7 @@ public class EventEntry implements Serializable {
 	 * @param endTime
 	 *            the long end time of the event.
 	 */
-	public EventEntry(String name, String notes, long startTime, long endTime) {
+	public EventEntry(String name, String notes, long startTime, long endTime, boolean persisted) {
 		mName = name;
 		mNotes = notes;
 		mUpdateTime = mStartTime = startTime;
@@ -78,7 +79,7 @@ public class EventEntry implements Serializable {
 	 */
 	EventEntry(long dbRowID, String name, String notes, long startTime,
 			long endTime, long updateTime, String uuid, boolean isDeleted,
-			boolean receivedAtServer) {
+			boolean receivedAtServer, boolean persisted) {
 		mDbRowID = dbRowID;
 		mName = name;
 		mNotes = notes;
@@ -86,8 +87,9 @@ public class EventEntry implements Serializable {
 		mEndTime = endTime;
 		mUpdateTime = updateTime;
 		mUUID = uuid;
-		mDeleted = isDeleted;
-		mReceivedAtServer = receivedAtServer;
+		deleted = isDeleted;
+		this.receivedAtServer = receivedAtServer;
+		this.persisted = persisted;
 	}
 
 	/**
@@ -113,7 +115,7 @@ public class EventEntry implements Serializable {
 				EventKey.RECEIVED_AT_SERVER);
 		boolean isDeleted = getBoolean(eventCursor, EventKey.IS_DELETED);
 		return new EventEntry(dbRowID, name, notes, startTime, endTime,
-				updateTime, uuid, isDeleted, recievedAtServer);
+				updateTime, uuid, isDeleted, recievedAtServer, true);
 	}
 
 	@Override
@@ -156,9 +158,9 @@ public class EventEntry implements Serializable {
 		case UUID:
 			return mUUID;
 		case IS_DELETED:
-			return mDeleted;
+			return deleted;
 		case RECEIVED_AT_SERVER:
-			return mReceivedAtServer;
+			return receivedAtServer;
 		case ROW_ID:
 			return mDbRowID;
 		default:
@@ -248,7 +250,8 @@ public class EventEntry implements Serializable {
 	 * @return whether or not the event is newer than the timestamp.
 	 */
 	public boolean newerThan(String timestamp) {
-		return false; // TODO implement
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("");
+		return false;
 	}
 
 }

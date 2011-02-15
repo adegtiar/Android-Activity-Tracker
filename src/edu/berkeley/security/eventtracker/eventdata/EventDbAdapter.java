@@ -128,6 +128,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public boolean markDeleted(long rowId) {
 		ContentValues args = new ContentValues();
 		args.put(EventKey.IS_DELETED.columnName(), 1);
+		args.put(EventKey.RECEIVED_AT_SERVER.columnName(), 0);
 		return mDb.update(DATABASE_TABLE, args, EventKey.ROW_ID.columnName()
 				+ "=" + rowId, null) > 0;
 	}
@@ -174,9 +175,11 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * @return Cursor over all events.
 	 */
 	public Cursor fetchPhoneOnlyEvents() {
-		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(),
-				EventKey.RECEIVED_AT_SERVER.columnName() + "=0", null, null,
-				null, null, null);
+		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(), String
+				.format("%s = ? AND %s > ?",
+						EventKey.RECEIVED_AT_SERVER.columnName(),
+						EventKey.END_TIME.columnName()), new String[] { "0",
+				"0" }, null, null, null, null);
 	}
 
 	/**

@@ -39,6 +39,8 @@ public class Networking {
 	public static final String HASHED_PASSWORD_PARAM = "HashedPasswd";
 	public static final String EVENT_UUID_PARAM = "UUIDOfEvent";
 	public static final String EVENT_DATA_PARAM = "EventData";
+	public static final String EVENT_UPDATED_AT_PARAM = "UpdatedAt";
+	public static final String EVENT_DELETED_PARAM = "Deleted";
 
 	public static void sendAllEvents(Context context) {
 		if (Settings.isSychronizationEnabled()) {
@@ -178,6 +180,10 @@ public class Networking {
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
 			params.add(new BasicNameValuePair(EVENT_DATA_PARAM,
 					EventDataSerializer.toJSONObject(data).toString()));
+			params.add(new BasicNameValuePair(EVENT_UPDATED_AT_PARAM, String
+					.valueOf(data.mUpdateTime)));
+			params.add(new BasicNameValuePair(EVENT_DELETED_PARAM, String
+					.valueOf(data.deleted)));
 			break;
 		case DELETE:
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));

@@ -76,9 +76,10 @@ public class EventManager {
 	 *         upon error.
 	 */
 	public EventEntry createEvent(String name, String notes, long startTime,
-			long endTime) {
-		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime);
-		return updateDatabase(newEntry) ? newEntry : null;
+			long endTime, boolean receivedAtServer) {
+		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime,
+				true);
+		return updateDatabase(newEntry, receivedAtServer) ? newEntry : null;
 	}
 
 	/**
@@ -88,18 +89,19 @@ public class EventManager {
 	 *            The EventEntry to push to the database.
 	 * @return Whether or not the database was successfully updated.
 	 */
-	public boolean updateDatabase(EventEntry event) {
+	public boolean updateDatabase(EventEntry event, boolean receivedAtServer) {
 		if (event == null)
 			return false;
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID,
-					event.mReceivedAtServer);
-			return event.mDbRowID != -1;
+					receivedAtServer);
+			event.persisted = event.mDbRowID != -1;
+			return event.persisted;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
-					event.mUUID, event.mDeleted, event.mReceivedAtServer);
+					event.mUUID, event.deleted, receivedAtServer);
 		}
 	}
 
@@ -165,6 +167,13 @@ public class EventManager {
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
 
+	/**
+	 * Either finds the given event in the database, or a creates a new
+	 * (unsaved) event entry.
+	 * 
+	 * @param uuid the UUID to find or create by.
+	 * @return the new or found event.
+	 */
 	public EventEntry findOrCreateByUUID(String uuid) {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(uuid), this);
 		EventEntry event = events.getCount() > 0 ? events.getEvent()

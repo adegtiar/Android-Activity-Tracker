@@ -39,8 +39,11 @@ public class EditMode extends AbstractEventEdit {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (saveToDB)
+		if (saveToDB) {
 			updateDatabase(editingEvent);
+			Networking.sendToServer(ServerRequest.UPDATE, editingEvent,
+					EditMode.this);
+		}
 	}
 
 	@Override
@@ -79,8 +82,6 @@ public class EditMode extends AbstractEventEdit {
 				saveToDB = true;
 				// propagate the update to the web server(if given permission by
 				// user)
-				Networking.sendToServer(ServerRequest.UPDATE, editingEvent,
-						EditMode.this);
 
 				finish();
 			}

@@ -208,7 +208,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		if (event == null)
 			return true;
 		// Networking.sendData(event);
-		return mEventManager.updateDatabase(event);
+		return mEventManager.updateDatabase(event, false);
 	}
 
 	/**

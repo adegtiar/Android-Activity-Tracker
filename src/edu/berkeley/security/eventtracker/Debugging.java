@@ -108,7 +108,7 @@ public class Debugging extends Activity {
 		while ((eventLine = streamReader.readLine()) != null) {
 			eventParts = eventLine.split("\t+");
 			if (mgr.createEvent(eventParts[0], eventParts[1],
-					parseDate(eventParts[2]), parseDate(eventParts[3])) != null)
+					parseDate(eventParts[2]), parseDate(eventParts[3]), false) != null)
 				nSuccessful++;
 		}
 		return nSuccessful;
