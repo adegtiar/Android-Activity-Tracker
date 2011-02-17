@@ -33,8 +33,14 @@ import edu.berkeley.security.eventtracker.network.Networking;
  * The main activity that all event-related activities extend. It houses a
  * toolbar and a global EventManager.
  */
+
 abstract public class EventActivity extends Activity implements
 		OnGestureListener {
+	
+	
+	
+	
+	
 	public static final String LOG_TAG = "ActivityTracker";
 	protected static final int DIALOG_TEXT_ENTRY = 7;
 	private static final int trackingStringID = R.string.toolbarTracking;
@@ -351,7 +357,7 @@ abstract public class EventActivity extends Activity implements
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {
 		switch (id) {
-
+		
 		case DIALOG_TEXT_ENTRY:
 			// This example shows how to add a custom layout to an AlertDialog
 			LayoutInflater factory = LayoutInflater.from(this);

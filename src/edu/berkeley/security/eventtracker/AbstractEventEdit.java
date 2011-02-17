@@ -5,19 +5,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
@@ -28,6 +36,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected static final int currentEventTextID = R.string.currentActivityText;
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
+	private static final int DIALOG_ENTER_TAG = 8;
 	protected EventEntry currentEvent;
 	protected EventEntry previousEvent;
 
@@ -43,11 +52,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
-
+	protected Button newTagButton;
 	protected ImageView viewMapButton;
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
-
+	protected Spinner dropDown;
+	private boolean ignoreFirstSelection;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,18 +70,23 @@ abstract public class AbstractEventEdit extends EventActivity {
 		editTextEventName.setHint(getString(R.string.eventNameHint));
 		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
 		initializeVoice();
+		
 
 	}
 
+
 	/**
 	 * Initializes the NextActivity and StopTracking buttons. Also, now it
-	 * initalizes the viewMap Button
+	 * initalizes the viewMap Button and others!
 	 */
 	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
 		stopTrackingButton = (Button) findViewById(R.id.StopTrackingButton);
 		viewMapButton = (ImageView) findViewById(R.id.viewMapButton);
-
+		newTagButton = (Button) findViewById(R.id.tag_button);
+		dropDown = (Spinner) findViewById(R.id.tagSpinner);
+		dropDown.setPrompt("Select a tag");
+		
 	}
 
 	/**
@@ -94,11 +109,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 		editTextEventName.setAdapter(adapterActivities);
 		editTextEventNotes.setAdapter(adapterNotes);
 	}
-
+	protected abstract void initializeTags();
+	
 	abstract protected void initializeBottomBar();
 
 	abstract protected void initializeTimesUI();
-
+	
 	/**
 	 * Initializes the toolbar onClickListeners and intializes references to
 	 * toolbar views.
@@ -129,9 +145,16 @@ abstract public class AbstractEventEdit extends EventActivity {
 		super.onResume();
 
 		initializeAutoComplete();
+		initializeTags();
 		fillViewWithEventInfo();
 		focusOnNothing();
-
+		newTagButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_ENTER_TAG);
+			}
+		});
+	
 	}
 
 	@Override
@@ -243,8 +266,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	protected void initializeVoice() {
+
 		eventVoiceButton = (ImageButton) findViewById(R.id.eventVoiceButton);
 		noteVoiceButton = (ImageButton) findViewById(R.id.noteVoiceButton);
+
 		// Check to see if a recognition activity is present
 		PackageManager pm = getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
@@ -262,6 +287,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 					startVoiceRecognitionActivity(VOICE_RECOGNITION_REQUEST_CODE_NOTES);
 				}
 			});
+
 		} else {
 			eventVoiceButton.setEnabled(false);
 			noteVoiceButton.setEnabled(false);
@@ -283,7 +309,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected abstract void setNameText(String name);
 
 	protected abstract void setNotesText(String name);
-
+	
+	
 	/**
 	 * Handle the results from the recognition activity.
 	 */
@@ -301,6 +328,43 @@ abstract public class AbstractEventEdit extends EventActivity {
 			setNotesText(matches.get(0));
 		}
 
+	}
+
+	protected Dialog onCreateDialog(int id, final Bundle bundle) {
+		switch (id) {
+
+		case DIALOG_ENTER_TAG:
+			// This example shows how to add a custom layout to an AlertDialog
+			LayoutInflater factory = LayoutInflater.from(this);
+			final View textEntryView = factory.inflate(
+					R.layout.alert_dialog_tag_entry, null);
+			return new AlertDialog.Builder(AbstractEventEdit.this)
+
+			.setTitle(R.string.alert_dialog_tag_entry).setView(textEntryView)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									EditText tagEditText = (EditText) textEntryView
+											.findViewById(R.id.tag_edit);
+									String tag = tagEditText.getText().toString();
+									EventActivity.mEventManager.addTag(tag);
+									initializeTags();
+									/* User entered in a new tag. Do stuff here */
+
+								}
+							}).setNegativeButton(R.string.alert_dialog_cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									/* User clicked cancel so do some stuff */
+								}
+							}).create();
+		}
+		return null;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package edu.berkeley.security.eventtracker;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +12,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
@@ -54,6 +60,27 @@ public class TrackingMode extends AbstractEventEdit {
 		// Attempts to send all the requests that are suppose to be sent
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
+		
+		//dropDown.setOnItemSelectedListener(new MyOnItemSelectedListener()); //TODO fix this
+		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				if(isTracking())
+				{
+				String tagChosen=parent.getItemAtPosition(position).toString();
+				currentEvent.mTag=tagChosen;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				
+				
+			}
+			
+		});
 
 	}
 
@@ -107,6 +134,14 @@ public class TrackingMode extends AbstractEventEdit {
 		stopTrackingButton.setEnabled(isTracking);
 		int image = isTracking ? R.drawable.maps_on : R.drawable.maps_off;
 		viewMapButton.setImageResource(image);
+		dropDown.setEnabled(isTracking);
+		if (!isTracking) {
+			dropDown.setEnabled(false);
+			dropDown.setSelection(0);
+			
+
+		}
+
 	}
 
 	@Override
@@ -206,29 +241,35 @@ public class TrackingMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				try {
-					Context test = TrackingMode.this;
 
-					// Intent myIntent = new Intent();
-					// //
-					// myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode",
-					// "edu.berkeley.security.eventtracker.maps");
-					//
-					// Bundle infoToPass = new Bundle();
-					//
-					//
-					//
-					// EditMode.this.startActivity(passInfo);
-					//
-					EventEntry current = currentEvent;
 					Intent myIntent = new Intent(TrackingMode.this,
 							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 			}
+		});
+		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				if(isTracking())
+				{
+				String tagChosen=parent.getItemAtPosition(position).toString();
+				currentEvent.mTag=tagChosen;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				
+				
+			}
+			
 		});
 	}
 
@@ -363,5 +404,29 @@ public class TrackingMode extends AbstractEventEdit {
 			startListEventsActivity();
 		}
 		return true;
+	}
+
+	/**
+	 * Queries the tag database in order to populate the tag drop down menu.
+	 */
+	protected void initializeTags() {
+		
+		
+		dropDown = (Spinner) findViewById(R.id.tagSpinner);
+		ArrayList<String> tagList = (ArrayList<String>) EventActivity.mEventManager
+				.getTags();
+	
+		tagList.add(0, "Select a tag");
+		ArrayAdapter adapter = new ArrayAdapter(this,
+				android.R.layout.simple_spinner_item, tagList);
+		dropDown.setAdapter(adapter);
+		int position;
+		if(isTracking()){
+			position=tagList.indexOf(currentEvent.mTag);
+		}else{
+			position=tagList.indexOf("Select a tag");
+		}
+		//
+		dropDown.setSelection(position,true);
 	}
 }

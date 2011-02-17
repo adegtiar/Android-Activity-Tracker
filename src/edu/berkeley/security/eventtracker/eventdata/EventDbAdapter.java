@@ -35,7 +35,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 				ColumnType.LONG), UPDATE_TIME("updateTime", ColumnType.LONG), UUID(
 				"uuid", ColumnType.TEXT), IS_DELETED("isDeleted",
 				ColumnType.INTEGER, "DEFAULT 0"), RECEIVED_AT_SERVER(
-				"receivedAtServer", ColumnType.INTEGER, "DEFAULT 0");
+				"receivedAtServer", ColumnType.INTEGER, "DEFAULT 0"),TAG("tag", ColumnType.TEXT);
 
 		private String mColumnName;
 		private ColumnType mColType;
@@ -99,7 +99,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 * notes, and startTime.
 	 */
 	public Long createEvent(String eventName, String notes, long startTime,
-			long endTime, String uuid, boolean receivedAtServer) {
+			long endTime, String uuid, boolean receivedAtServer, String tag) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(EventKey.NAME.columnName(), eventName);
 		initialValues.put(EventKey.NOTES.columnName(), notes);
@@ -110,6 +110,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		initialValues.put(EventKey.UUID.columnName(), uuid);
 		initialValues.put(EventKey.RECEIVED_AT_SERVER.columnName(),
 				receivedAtServer ? 1 : 0);
+		initialValues.put(EventKey.TAG.columnName(), tag);
 		return mDb.insert(DATABASE_TABLE, null, initialValues);
 	}
 
@@ -229,7 +230,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 
 	public boolean updateEvent(Long rowId, String title, String notes,
 			Long startTime, Long endTime, String uuid, boolean isDeleted,
-			boolean recievedAtServer) {
+			boolean recievedAtServer, String tag) {
 		ContentValues args = new ContentValues();
 		args.put(EventKey.NAME.columnName(), title);
 		args.put(EventKey.NOTES.columnName(), notes);
@@ -241,6 +242,7 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		args.put(EventKey.IS_DELETED.columnName(), isDeleted ? 1 : 0);
 		args.put(EventKey.RECEIVED_AT_SERVER.columnName(), recievedAtServer ? 1
 				: 0);
+		args.put(EventKey.TAG.columnName(), tag);
 		return mDb.update(DATABASE_TABLE, args, EventKey.ROW_ID.columnName()
 				+ "=" + rowId, null) > 0;
 	}

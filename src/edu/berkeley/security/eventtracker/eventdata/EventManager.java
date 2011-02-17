@@ -14,6 +14,7 @@ import edu.berkeley.security.eventtracker.EventActivity;
  * adapter. A manager should be shared across all event-related activities.
  */
 public class EventManager {
+	private TagsDBAdapter mTagHelper;
 	private GPSDbAdapter mGPSHelper;
 	private EventDbAdapter mDbHelper;
 	private static EventManager mEventManager;
@@ -21,6 +22,7 @@ public class EventManager {
 	private EventManager(Context context) {
 		mDbHelper = new EventDbAdapter(context);
 		mGPSHelper = new GPSDbAdapter(context);
+		mTagHelper = new TagsDBAdapter(context);
 	}
 
 	/**
@@ -49,6 +51,7 @@ public class EventManager {
 	public EventManager open() {
 		mDbHelper.open();
 		mGPSHelper.open();
+		mTagHelper.open();
 		return this;
 	}
 
@@ -58,6 +61,7 @@ public class EventManager {
 	public void close() {
 		mDbHelper.close();
 		mGPSHelper.close();
+		mTagHelper.close();
 	}
 
 	/**
@@ -76,9 +80,9 @@ public class EventManager {
 	 *         upon error.
 	 */
 	public EventEntry createEvent(String name, String notes, long startTime,
-			long endTime, boolean receivedAtServer) {
+			long endTime, boolean receivedAtServer, String tag) {
 		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime,
-				true);
+				true, tag);
 		return updateDatabase(newEntry, receivedAtServer) ? newEntry : null;
 	}
 
@@ -95,13 +99,13 @@ public class EventManager {
 		if (event.mDbRowID == -1) {
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID,
-					receivedAtServer);
+					receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
 			return event.persisted;
 		} else {
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
-					event.mUUID, event.deleted, receivedAtServer);
+					event.mUUID, event.deleted, receivedAtServer, event.mTag);
 		}
 	}
 
@@ -215,6 +219,26 @@ public class EventManager {
 		return toBeReturned;
 
 	}
+	public List<String> getTags(){
+		ArrayList<String> tagList = new ArrayList<String>();
+		Cursor cursor = null;
+		try {
+			cursor = mTagHelper.getTags();
+		} catch (Exception e) {
+			Log.e(EventActivity.LOG_TAG, "Failed to get tags.", e);
+		}
+
+		if (cursor.getCount() > 0) {
+			while (cursor.moveToNext()) {
+				String tag = cursor.getString(cursor.getColumnIndex((TagsDBAdapter.KEY_TAG)));
+				tagList.add(tag);
+
+			}
+		}
+		cursor.close();
+		return tagList;
+
+	}
 
 	/**
 	 * Retrieves the event that is currently in progress.
@@ -273,5 +297,12 @@ public class EventManager {
 			nDeleted++;
 		}
 		return nDeleted;
+	}
+	/**
+	 * Adds a tag to the database
+	 * @param string- the tag to be added
+	 */
+	public void addTag(String tag) {
+		mTagHelper.createTagEntry(tag);
 	}
 }

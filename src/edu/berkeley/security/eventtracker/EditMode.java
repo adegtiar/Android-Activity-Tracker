@@ -1,10 +1,16 @@
 package edu.berkeley.security.eventtracker;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
@@ -101,17 +107,6 @@ public class EditMode extends AbstractEventEdit {
 			public void onClick(View v) {
 				try {
 
-					// Intent myIntent = new Intent();
-					// //
-					// myIntent.setClassName("edu.berkeley.security.eventtracker.EditMode",
-					// "edu.berkeley.security.eventtracker.maps");
-					//
-					// Bundle infoToPass = new Bundle();
-					//
-					//
-					//
-					// EditMode.this.startActivity(passInfo);
-					//
 					Intent myIntent = new Intent(EditMode.this,
 							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", editingEvent);
@@ -121,6 +116,24 @@ public class EditMode extends AbstractEventEdit {
 					e.printStackTrace();
 				}
 			}
+		});
+		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				String tagChosen=parent.getItemAtPosition(position).toString();
+				editingEvent.mTag=tagChosen;
+				saveToDB=true;
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				
+				
+			}
+			
 		});
 	}
 
@@ -215,5 +228,28 @@ public class EditMode extends AbstractEventEdit {
 				: getString(previousEventDefaultID);
 		return previousActivityLabel + " " + previousEventString;
 	}
+	
+	/**
+	 * Queries the tag database in order to populate the tag drop down menu. 
+	 */
+	protected void initializeTags() {
 
+		dropDown = (Spinner) findViewById(R.id.tagSpinner);
+		ArrayList<String> tagList = (ArrayList<String>) EventActivity.mEventManager
+				.getTags();
+	
+		tagList.add(0, "Select a tag");
+		ArrayAdapter adapter = new ArrayAdapter(this,
+				android.R.layout.simple_spinner_item, tagList);
+		dropDown.setAdapter(adapter);
+		int position;
+		if(isTracking()){
+			position=tagList.indexOf(editingEvent.mTag);
+		}else{
+			position=tagList.indexOf("Select a tag");
+		}
+		//
+		dropDown.setSelection(position,true);
+		
+	}
 }

@@ -46,4 +46,7 @@
 <string name="alert_dialog_text_entry">Enter a password</string>
 <string name="alert_dialog_password_description">This password will be used to access your event data online</string>
 <string name="viewMap">View Map</string>
+<string name="tagButton">New Tag</string>
+<string name="alert_dialog_tag_entry">Create a new tag</string>
+<string name="alert_dialog_tag_description">Create a new tag that can be used to categorize your events</string>
 </resources>

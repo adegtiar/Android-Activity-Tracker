@@ -34,7 +34,11 @@ public abstract class AbstractDbAdapter {
 			+ "latitude real,"
 			+ "longitude real,"
 			+ "timeOfRecording Long);";
+	
+	protected static final String TABLE_CREATE_TAGDATA = "create table tagData (_id integer primary key autoincrement, "
+		+ "tag string);";
 
+	
 	protected static final String DATABASE_NAME = "data";
 	protected static final int DATABASE_VERSION = 4;
 
@@ -50,6 +54,7 @@ public abstract class AbstractDbAdapter {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(TABLE_CREATE_EVENTS);
 			db.execSQL(TABLE_CREATE_GPSDATA);
+			db.execSQL(TABLE_CREATE_TAGDATA);
 		}
 
 		@Override

@@ -24,6 +24,7 @@ public class EventEntry implements Serializable {
 	public long mDbRowID = -1;
 	public String mName = "";
 	public String mNotes = "";
+	public String mTag="";
 	public long mStartTime;
 	public long mEndTime;
 	public long mUpdateTime;
@@ -55,12 +56,13 @@ public class EventEntry implements Serializable {
 	 *            the long end time of the event.
 	 */
 	public EventEntry(String name, String notes, long startTime, long endTime,
-			boolean persisted) {
+			boolean persisted, String tag) {
 		mName = name;
 		mNotes = notes;
 		mUpdateTime = mStartTime = startTime;
 		mEndTime = endTime;
 		mUUID = Networking.createUUID();
+		mTag=tag;
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class EventEntry implements Serializable {
 	 */
 	EventEntry(long dbRowID, String name, String notes, long startTime,
 			long endTime, long updateTime, String uuid, boolean isDeleted,
-			boolean receivedAtServer, boolean persisted) {
+			boolean receivedAtServer, boolean persisted, String tag) {
 		mDbRowID = dbRowID;
 		mName = name;
 		mNotes = notes;
@@ -95,6 +97,7 @@ public class EventEntry implements Serializable {
 		deleted = isDeleted;
 		this.receivedAtServer = receivedAtServer;
 		this.persisted = persisted;
+		this.mTag=tag;
 	}
 
 	/**
@@ -116,11 +119,12 @@ public class EventEntry implements Serializable {
 		long endTime = getLong(eventCursor, EventKey.END_TIME);
 		long updateTime = getLong(eventCursor, EventKey.UPDATE_TIME);
 		String uuid = getString(eventCursor, EventKey.UUID);
+		String mTag=getString(eventCursor, EventKey.TAG);
 		boolean recievedAtServer = getBoolean(eventCursor,
 				EventKey.RECEIVED_AT_SERVER);
 		boolean isDeleted = getBoolean(eventCursor, EventKey.IS_DELETED);
 		return new EventEntry(dbRowID, name, notes, startTime, endTime,
-				updateTime, uuid, isDeleted, recievedAtServer, true);
+				updateTime, uuid, isDeleted, recievedAtServer, true, mTag);
 	}
 
 	@Override
@@ -168,6 +172,8 @@ public class EventEntry implements Serializable {
 			return receivedAtServer;
 		case ROW_ID:
 			return mDbRowID;
+		case TAG:
+			return mTag;
 		default:
 			throw new IllegalArgumentException("Unknown ColumnType: " + colKey);
 		}
