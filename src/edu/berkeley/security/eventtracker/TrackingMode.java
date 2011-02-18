@@ -137,10 +137,9 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setEnabled(isTracking);
 		if (!isTracking) {
 			dropDown.setEnabled(false);
-			dropDown.setSelection(0);
-			
-
 		}
+		dropDown.setSelection(0);
+			
 
 	}
 

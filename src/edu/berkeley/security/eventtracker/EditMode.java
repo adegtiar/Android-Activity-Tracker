@@ -242,12 +242,8 @@ public class EditMode extends AbstractEventEdit {
 		ArrayAdapter adapter = new ArrayAdapter(this,
 				android.R.layout.simple_spinner_item, tagList);
 		dropDown.setAdapter(adapter);
-		int position;
-		if(isTracking()){
-			position=tagList.indexOf(editingEvent.mTag);
-		}else{
-			position=tagList.indexOf("Select a tag");
-		}
+		int position=tagList.indexOf(editingEvent.mTag);
+		
 		//
 		dropDown.setSelection(position,true);
 		
