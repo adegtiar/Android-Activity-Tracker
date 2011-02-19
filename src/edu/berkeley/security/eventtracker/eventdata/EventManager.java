@@ -1,6 +1,8 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import android.content.Context;
@@ -219,24 +221,24 @@ public class EventManager {
 		return toBeReturned;
 
 	}
-	public List<String> getTags(){
-		ArrayList<String> tagList = new ArrayList<String>();
+	public LinkedHashSet<String> getTags(){
+		LinkedHashSet<String> tagSet = new LinkedHashSet<String>();
 		Cursor cursor = null;
 		try {
 			cursor = mTagHelper.getTags();
 		} catch (Exception e) {
 			Log.e(EventActivity.LOG_TAG, "Failed to get tags.", e);
-		}
+		}d
 
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
 				String tag = cursor.getString(cursor.getColumnIndex((TagsDBAdapter.KEY_TAG)));
-				tagList.add(tag);
+				tagSet.add(tag);
 
 			}
 		}
 		cursor.close();
-		return tagList;
+		return tagSet;
 
 	}
 

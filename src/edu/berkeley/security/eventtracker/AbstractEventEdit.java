@@ -2,6 +2,7 @@ package edu.berkeley.security.eventtracker;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected ImageView viewMapButton;
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
+	
 	protected Spinner dropDown;
+	protected LinkedHashSet<String> mTagSet;
+	protected ArrayList<String> mTagList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

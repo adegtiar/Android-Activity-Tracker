@@ -1,6 +1,7 @@
 package edu.berkeley.security.eventtracker;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -235,14 +236,18 @@ public class EditMode extends AbstractEventEdit {
 	protected void initializeTags() {
 
 		dropDown = (Spinner) findViewById(R.id.tagSpinner);
-		ArrayList<String> tagList = (ArrayList<String>) EventActivity.mEventManager
-				.getTags();
-	
-		tagList.add(0, "Select a tag");
-		ArrayAdapter adapter = new ArrayAdapter(this,
-				android.R.layout.simple_spinner_item, tagList);
+		
+		
+		LinkedHashSet<String> tagSet = EventActivity.mEventManager.getTags();
+		ArrayList<String> mTagList=new ArrayList<String>();
+		for(String tag: tagSet){
+			mTagList.add(tag);
+		}
+		mTagList.add(0, "Select a tag");
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, mTagList);
 		dropDown.setAdapter(adapter);
-		int position=tagList.indexOf(editingEvent.mTag);
+		int position=mTagList.indexOf(editingEvent.mTag);
 		
 		//
 		dropDown.setSelection(position,true);
