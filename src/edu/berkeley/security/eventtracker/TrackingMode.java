@@ -135,9 +135,7 @@ public class TrackingMode extends AbstractEventEdit {
 		int image = isTracking ? R.drawable.maps_on : R.drawable.maps_off;
 		viewMapButton.setImageResource(image);
 		dropDown.setEnabled(isTracking);
-		if (!isTracking) {
-			dropDown.setEnabled(false);
-		}
+		newTagButton.setEnabled(isTracking);
 		dropDown.setSelection(0);
 			
 

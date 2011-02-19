@@ -57,7 +57,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected ImageButton eventVoiceButton;
 	protected ImageButton noteVoiceButton;
 	protected Spinner dropDown;
-	private boolean ignoreFirstSelection;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -352,6 +352,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 									String tag = tagEditText.getText().toString();
 									EventActivity.mEventManager.addTag(tag);
 									initializeTags();
+									tagEditText.setText("");
 									/* User entered in a new tag. Do stuff here */
 
 								}
