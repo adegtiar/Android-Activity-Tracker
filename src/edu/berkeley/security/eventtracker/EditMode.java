@@ -123,18 +123,18 @@ public class EditMode extends AbstractEventEdit {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-
-				String tagChosen = parent.getItemAtPosition(position)
-						.toString();
-				editingEvent.mTag = tagChosen;
-				saveToDB = true;
+				
+				String tagChosen=parent.getItemAtPosition(position).toString();
+				editingEvent.mTag=tagChosen;
+				saveToDB=true;
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-
+				
+				
 			}
-
+			
 		});
 	}
 
@@ -229,27 +229,29 @@ public class EditMode extends AbstractEventEdit {
 				: getString(previousEventDefaultID);
 		return previousActivityLabel + " " + previousEventString;
 	}
-
+	
 	/**
-	 * Queries the tag database in order to populate the tag drop down menu.
+	 * Queries the tag database in order to populate the tag drop down menu. 
 	 */
 	protected void initializeTags() {
 
 		dropDown = (Spinner) findViewById(R.id.tagSpinner);
-
+		
+		
 		LinkedHashSet<String> tagSet = EventActivity.mEventManager.getTags();
-		ArrayList<String> mTagList = new ArrayList<String>();
-		for (String tag : tagSet) {
+		ArrayList<String> mTagList=new ArrayList<String>();
+		for(String tag: tagSet){
 			mTagList.add(tag);
 		}
 		mTagList.add(0, "Select a tag");
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mTagList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		int position = mTagList.indexOf(editingEvent.mTag);
-
+		dropDown.setAdapter(adapter);
+		int position=mTagList.indexOf(editingEvent.mTag);
+		
 		//
-		dropDown.setSelection(position, true);
-
+		dropDown.setSelection(position,true);
+		
 	}
 }
