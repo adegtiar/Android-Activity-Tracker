@@ -61,26 +61,26 @@ public class TrackingMode extends AbstractEventEdit {
 		// Attempts to send all the requests that are suppose to be sent
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
-		
-		//dropDown.setOnItemSelectedListener(new MyOnItemSelectedListener()); //TODO fix this
+
+		// dropDown.setOnItemSelectedListener(new MyOnItemSelectedListener());
+		// //TODO fix this
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(isTracking())
-				{
-				String tagChosen=parent.getItemAtPosition(position).toString();
-				currentEvent.mTag=tagChosen;
+				if (isTracking()) {
+					String tagChosen = parent.getItemAtPosition(position)
+							.toString();
+					currentEvent.mTag = tagChosen;
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				
-				
+
 			}
-			
+
 		});
 
 	}
@@ -138,7 +138,6 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setEnabled(isTracking);
 		newTagButton.setEnabled(isTracking);
 		dropDown.setSelection(0);
-			
 
 	}
 
@@ -255,19 +254,18 @@ public class TrackingMode extends AbstractEventEdit {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(isTracking())
-				{
-				String tagChosen=parent.getItemAtPosition(position).toString();
-				currentEvent.mTag=tagChosen;
+				if (isTracking()) {
+					String tagChosen = parent.getItemAtPosition(position)
+							.toString();
+					currentEvent.mTag = tagChosen;
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				
-				
+
 			}
-			
+
 		});
 	}
 
@@ -408,27 +406,26 @@ public class TrackingMode extends AbstractEventEdit {
 	 * Queries the tag database in order to populate the tag drop down menu.
 	 */
 	protected void initializeTags() {
-		
-		
+
 		dropDown = (Spinner) findViewById(R.id.tagSpinner);
-		
-		
+
 		LinkedHashSet<String> tagSet = EventActivity.mEventManager.getTags();
-		ArrayList<String> mTagList=new ArrayList<String>();
-		for(String tag: tagSet){
+		ArrayList<String> mTagList = new ArrayList<String>();
+		for (String tag : tagSet) {
 			mTagList.add(tag);
 		}
 		mTagList.add(0, "Select a tag");
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mTagList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		dropDown.setAdapter(adapter);
 		int position;
-		if(isTracking()){
-			position=mTagList.indexOf(currentEvent.mTag);
-		}else{
-			position=mTagList.indexOf("Select a tag");
+		if (isTracking()) {
+			position = mTagList.indexOf(currentEvent.mTag);
+		} else {
+			position = mTagList.indexOf("Select a tag");
 		}
 		//
-		dropDown.setSelection(position,true);
+		dropDown.setSelection(position, true);
 	}
 }

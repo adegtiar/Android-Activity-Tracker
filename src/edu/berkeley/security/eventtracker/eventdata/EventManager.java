@@ -228,7 +228,7 @@ public class EventManager {
 			cursor = mTagHelper.getTags();
 		} catch (Exception e) {
 			Log.e(EventActivity.LOG_TAG, "Failed to get tags.", e);
-		}d
+		}
 
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
