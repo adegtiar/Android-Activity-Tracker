@@ -179,7 +179,7 @@ public class Networking {
 		case UPDATE:
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
 			params.add(new BasicNameValuePair(EVENT_DATA_PARAM,
-					EventDataSerializer.toJSONObject(data).toString()));
+					EventDataSerializer.encryptJSONObject(EventDataSerializer.toJSONObject(data)))); //private this
 			params.add(new BasicNameValuePair(EVENT_UPDATED_AT_PARAM,
 					Synchronizer.dateFormatter.format(data.mUpdateTime)));
 			params.add(new BasicNameValuePair(EVENT_DELETED_PARAM, String

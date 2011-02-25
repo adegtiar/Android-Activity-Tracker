@@ -3,8 +3,8 @@ package edu.berkeley.security.eventtracker.network;
 public enum ServerRequest {
 	REGISTER("users/init"),
 	SENDDATA("events/upload"),
-	UPDATE("events/upload"), // TODO fix this
-	DELETE("events/delete"), // TODO fix this
+	UPDATE("events/upload"), 
+	DELETE("events/delete"), 
 	POLL("events/poll");
 	private String mUrl;
 	

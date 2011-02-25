@@ -192,9 +192,10 @@ public class Settings extends EventActivity {
 
 	protected static void setPassword(String passwd) {
 		SharedPreferences.Editor prefEditor = settings.edit();
-		String test = Encryption.base64(Encryption.hash(passwd));
-		prefEditor.putString(password,
-				Encryption.base64(Encryption.hash(passwd)));
+//		String test = Encryption.base64(Encryption.hash(passwd));
+//		prefEditor.putString(password,
+//				Encryption.base64(Encryption.hash(passwd)));
+		prefEditor.putString(password, passwd);
 		prefEditor.putBoolean(isPasswordSet, true);
 		prefEditor.commit();
 
