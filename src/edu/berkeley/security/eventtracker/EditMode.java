@@ -230,6 +230,9 @@ public class EditMode extends AbstractEventEdit {
 		return previousActivityLabel + " " + previousEventString;
 	}
 	
+	
+	
+	
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu. 
 	 */

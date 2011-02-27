@@ -86,19 +86,33 @@ public class Synchronizer extends IntentService {
 	void parseEventPollResponse(String jsonResponseString) throws JSONException {
 		EventManager manager = EventManager.getManager();
 		JSONObject jsonResponse = new JSONObject(jsonResponseString);
+		
 		String pollTime = jsonResponse.getString("pollTime");
 		JSONArray events = jsonResponse.getJSONArray("events");
 		for (int eventIndex = 0; eventIndex < events.length(); eventIndex++) {
-			JSONObject eventContents = events.getJSONObject(eventIndex);
-			String uuid = eventContents.getString("uuid");
+			JSONObject eventData=events.getJSONObject(eventIndex);
+			String encryptedData=eventData.getString("content");
+			char[] passwd=Settings.getPassword().toCharArray();
+			String unencryptedData=null;
+			try {
+				unencryptedData=GibberishAESCrypto.decrypt(encryptedData, passwd);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			JSONObject eventContents = new JSONObject(unencryptedData);
+
+			String uuid = eventData.getString("uuid");
 			EventEntry event = manager.findOrCreateByUUID(uuid);
-			String updated_at = eventContents.getString("updated_at");
+			String updated_at = eventData.getString("updated_at");
 			if (!event.persisted || !event.newerThan(updated_at)) {
 				event.mName = eventContents.getString("name");
 				event.mNotes = eventContents.getString("notes");
 				event.mStartTime = eventContents.getLong("startTime");
 				event.mEndTime = eventContents.getLong("endTime");
-				event.deleted = eventContents.getBoolean("deleted");
+				event.deleted = eventData.getBoolean("deleted");
+				event.mTag=eventContents.getString("tag");
+				EventActivity.mEventManager.addTag(event.mTag);
 				if (event.deleted && !event.persisted)
 					break; // trying to create a deleted event!
 				manager.updateDatabase(event, true);
