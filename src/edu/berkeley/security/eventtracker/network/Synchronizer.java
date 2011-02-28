@@ -43,7 +43,16 @@ public class Synchronizer extends IntentService {
 				.getSerializable(EVENT_DATA_EXTRA);
 		ServerRequest request = (ServerRequest) bundle
 				.getSerializable(REQUEST_EXTRA);
-
+		
+		//hack
+		if(event !=null){
+			if(event.mTag != null){
+				if(event.mTag.equals("Select a tag")){
+					event.mTag="";
+				}
+			}
+		}
+		
 		PostRequestResponse response;
 		switch (request) {
 		case SENDDATA:
@@ -112,7 +121,8 @@ public class Synchronizer extends IntentService {
 				event.mEndTime = eventContents.getLong("endTime");
 				event.deleted = eventData.getBoolean("deleted");
 				event.mTag=eventContents.getString("tag");
-				EventActivity.mEventManager.addTag(event.mTag);
+				if(event.mTag != null && event.mTag.length() != 0)
+					EventActivity.mEventManager.addTag(event.mTag);
 				if (event.deleted && !event.persisted)
 					break; // trying to create a deleted event!
 				manager.updateDatabase(event, true);
