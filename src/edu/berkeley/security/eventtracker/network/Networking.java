@@ -33,9 +33,10 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
  */
 
 public class Networking {
-	public static final String PHONE_NUMBER_PARAM = "PhoneNumber";
-	public static final String DEVICE_UUID_PARAM = "UUIDOfDevice";
+	public static final String PHONE_NUMBER_PARAM = "phone_number";
+	public static final String DEVICE_UUID_PARAM = "uuid";
 	public static final String POLL_TIME_PARAM = "PollTime";
+	public static final String PASSWORD_PARAM = "password";
 	public static final String HASHED_PASSWORD_PARAM = "HashedPasswd";
 	public static final String EVENT_UUID_PARAM = "UUIDOfEvent";
 	public static final String EVENT_DATA_PARAM = "EventData";
@@ -172,7 +173,7 @@ public class Networking {
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			params.add(new BasicNameValuePair(HASHED_PASSWORD_PARAM, Settings
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, Settings
 					.getPassword()));
 			break;
 		case SENDDATA:
