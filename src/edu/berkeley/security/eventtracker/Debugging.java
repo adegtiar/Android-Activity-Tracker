@@ -14,12 +14,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 public class Debugging extends Activity {
-	private static final String TEST_DATA_PATH = "debug/event_test_data.txt";
+//	private static final String TEST_DATA_PATH = "debug/event_test_data.txt";
+	private static final String TEST_DATA_PATH = "debug/event_test_data2.txt"; 
 	private static final String datePattern = "MM/dd/yyyy hh:mma";
 	private static SimpleDateFormat dateFormatter;
 	private static Calendar localCalendar;
@@ -101,15 +104,39 @@ public class Debugging extends Activity {
 
 		BufferedReader streamReader = new BufferedReader(new InputStreamReader(
 				assetMgr.open(TEST_DATA_PATH)));
-		String eventLine;
-		String[] eventParts;
+		String eventLine, gpsLine;
+		String[] eventParts, gpsParts;
 		EventManager mgr = EventManager.getManager();
 		int nSuccessful = 0;
 		while ((eventLine = streamReader.readLine()) != null) {
 			eventParts = eventLine.split("\t+");
-			if (mgr.createEvent(eventParts[0], eventParts[1],
-					parseDate(eventParts[2]), parseDate(eventParts[3]), false,"") != null) //TODO fix this later
+			String tag="";
+			if(eventParts.length >= 5){
+				tag=eventParts[4];
+				EventActivity.mEventManager.addTag(tag);
+			}
+			EventEntry event=mgr.createEvent(eventParts[0], eventParts[1],
+					parseDate(eventParts[2]), parseDate(eventParts[3]), false, tag);
+			if(event != null){
 				nSuccessful++;
+			}
+			
+			try {
+				gpsLine=streamReader.readLine();
+				if(gpsLine.length()==0)
+					continue;
+				gpsParts=gpsLine.split("\t+"); //this is a String array. each element is in the form of lat,long,time
+				for(String gps: gpsParts){
+					String[] gpsData=gps.split(",");
+					Double latitude=Double.valueOf(gpsData[0]);
+					Double longitude=Double.valueOf(gpsData[1]);
+					GPSCoordinates coord= new GPSCoordinates(latitude,longitude, parseDate(gpsData[2]));
+					mgr.addGPSCoordinates(coord, event.mDbRowID);
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return nSuccessful;
 	}
