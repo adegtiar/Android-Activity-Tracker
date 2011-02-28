@@ -104,11 +104,7 @@ public class ServerActivity extends EventActivity {
 				: R.string.startEventServer);
 		serverButton.setEnabled(canStartServer());
 
-		// set the network icon to dim or light up
-		((ImageView) findViewById(R.id.toolbar_right_option))
-				.setImageResource(isServerRunning ? R.drawable.server_on_64
-						: R.drawable.server_off_64);
-
+		
 		// set the web server address text
 		((TextView) findViewById(R.id.remoteServerIntro))
 				.setVisibility(isServerRunning ? View.VISIBLE : View.INVISIBLE);

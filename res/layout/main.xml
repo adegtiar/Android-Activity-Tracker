@@ -15,7 +15,7 @@
 			android:textColor="@color/date_color" android:id="@+id/toolbar_center"
 			android:text="@string/toolbarNotTracking"></TextView>
 		<ImageView android:layout_width="wrap_content" android:adjustViewBounds="true" android:layout_height="wrap_content"
-			android:layout_weight="1" android:id="@+id/toolbar_right_option" android:src="@drawable/server_off_64"></ImageView>
+			android:layout_weight="1" android:id="@+id/toolbar_right_option" android:src="@drawable/settings_icon"></ImageView>
 	</LinearLayout>
 	<ViewStub android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/content_view"

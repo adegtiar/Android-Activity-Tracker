@@ -84,7 +84,7 @@ abstract public class EventActivity extends Activity implements
 
 					@Override
 					public void onClick(View v) {
-						startServerActivity();
+						startSettingsActivity();
 					}
 				});
 		findViewById(R.id.toolbar_left_option).setOnClickListener(
@@ -124,7 +124,7 @@ abstract public class EventActivity extends Activity implements
 		super.onResume();
 		refreshState();
 		updateTrackingStatus();
-		updateToolbarGUI();
+//		updateToolbarGUI();
 		ServerActivity.updateIpAdress(Networking.getIpAddress());
 		Networking.pollServerIfAllowed(this);
 	}
@@ -136,11 +136,7 @@ abstract public class EventActivity extends Activity implements
 	protected void refreshState() {
 	}
 
-	private void updateToolbarGUI() {
-		((ImageView) findViewById(R.id.toolbar_right_option))
-				.setImageResource(ServerActivity.isServerRunning() ? R.drawable.server_on_64
-						: R.drawable.server_off_64);
-	}
+
 
 	/**
 	 * Launches the ListEvents activity.
@@ -158,10 +154,6 @@ abstract public class EventActivity extends Activity implements
 		startActivity(settingsIntent);
 	}
 
-	protected void startServerActivity() {
-		Intent serverIntent = new Intent(this, ServerActivity.class);
-		startActivity(serverIntent);
-	}
 
 	protected void startDebuggingActivity() {
 		Intent debuggingIntent = new Intent(this, Debugging.class);

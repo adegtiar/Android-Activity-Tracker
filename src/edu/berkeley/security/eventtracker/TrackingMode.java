@@ -379,11 +379,7 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
-	@Override
-	protected void startServerActivity() {
-		super.startServerActivity();
-		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
-	}
+	
 
 	@Override
 	protected void startListEventsActivity() {
@@ -395,7 +391,7 @@ public class TrackingMode extends AbstractEventEdit {
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
 		if (velocityX < 0) {// going to right screen
-			startServerActivity();
+			startSettingsActivity();
 		} else { // going to the left screen
 			startListEventsActivity();
 		}
