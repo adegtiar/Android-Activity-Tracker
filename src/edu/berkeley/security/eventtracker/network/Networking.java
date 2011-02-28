@@ -173,8 +173,8 @@ public class Networking {
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			params.add(new BasicNameValuePair(PASSWORD_PARAM, Settings
-					.getPassword()));
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, Encryption.hashPassword(Settings
+					.getPassword())));
 			break;
 		case SENDDATA:
 		case UPDATE:

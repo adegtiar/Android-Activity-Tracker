@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker.network;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -10,6 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+
 import android.util.Base64;
 
 /**
@@ -17,6 +19,23 @@ import android.util.Base64;
  */
 public class Encryption {
 
+	
+	
+	
+	
+	
+	
+	public static String hashPassword(String password){
+		byte[] hashedString=Encryption.hash(password);
+    	String s=Base64.encodeToString(hashedString, 0);
+		return s.substring(0, s.length()-3);
+		
+	}
+	
+	
+	
+	
+	
 	public static byte[] hash(String password) {
 
 		MessageDigest digest = null;
@@ -27,6 +46,7 @@ public class Encryption {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		digest.update(password.getBytes());
 		byte messageDigest[] = digest.digest();
 		int lengthOfKey = messageDigest.length;
