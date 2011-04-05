@@ -3,11 +3,13 @@ package edu.berkeley.security.eventtracker;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
@@ -364,6 +367,14 @@ public class TrackingMode extends AbstractEventEdit {
 			synchronized public void onFinish() {
 				setSpinning(false);
 				resetTimer();
+				
+				Context context = getApplicationContext();
+				CharSequence text = "Saving... done.";
+				int duration = Toast.LENGTH_SHORT;
+
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.setGravity(Gravity.BOTTOM, 0, 0);
+				toast.show();
 			}
 
 			@Override
