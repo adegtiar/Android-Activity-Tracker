@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -36,13 +35,10 @@ import edu.berkeley.security.eventtracker.network.Networking;
 
 abstract public class EventActivity extends Activity implements
 		OnGestureListener {
-	
-	
-	
-	
-	
+
 	public static final String LOG_TAG = "ActivityTracker";
 	protected static final int DIALOG_TEXT_ENTRY = 7;
+	protected static final int DIALOG_NOTE_ENTRY = 9;
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 	static final int TRACKING_NOTIFICATION = 1;
@@ -72,7 +68,7 @@ abstract public class EventActivity extends Activity implements
 	}
 
 	/**
-	 * Initializes the toolbar onClickListeners and intializes references to
+	 * Initializes the toolbar onClickListeners and initializes references to
 	 * toolbar views. The left button is initialized to the edit activity
 	 * button.
 	 */
@@ -124,7 +120,7 @@ abstract public class EventActivity extends Activity implements
 		super.onResume();
 		refreshState();
 		updateTrackingStatus();
-//		updateToolbarGUI();
+		// updateToolbarGUI();
 		ServerActivity.updateIpAdress(Networking.getIpAddress());
 		Networking.pollServerIfAllowed(this);
 	}
@@ -135,8 +131,6 @@ abstract public class EventActivity extends Activity implements
 	 */
 	protected void refreshState() {
 	}
-
-
 
 	/**
 	 * Launches the ListEvents activity.
@@ -153,7 +147,6 @@ abstract public class EventActivity extends Activity implements
 		Intent settingsIntent = new Intent(this, Settings.class);
 		startActivity(settingsIntent);
 	}
-
 
 	protected void startDebuggingActivity() {
 		Intent debuggingIntent = new Intent(this, Debugging.class);
@@ -349,12 +342,13 @@ abstract public class EventActivity extends Activity implements
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {
 		switch (id) {
-		
+
 		case DIALOG_TEXT_ENTRY:
 			// This example shows how to add a custom layout to an AlertDialog
-			LayoutInflater factory = LayoutInflater.from(this);
-			final View textEntryView = factory.inflate(
+			LayoutInflater te_factory = LayoutInflater.from(this);
+			final View textEntryView = te_factory.inflate(
 					R.layout.alert_dialog_text_entry, null);
+
 			return new AlertDialog.Builder(EventActivity.this)
 					.setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.alert_dialog_text_entry)
@@ -384,8 +378,9 @@ abstract public class EventActivity extends Activity implements
 									/* User clicked cancel so do some stuff */
 								}
 							}).create();
+		default:
+			return super.onCreateDialog(id, bundle);
 		}
-		return null;
 	}
 
 }

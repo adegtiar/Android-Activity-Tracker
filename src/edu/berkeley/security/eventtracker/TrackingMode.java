@@ -3,7 +3,6 @@ package edu.berkeley.security.eventtracker;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,11 +13,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
@@ -111,13 +110,11 @@ public class TrackingMode extends AbstractEventEdit {
 	@Override
 	protected void fillViewWithEventInfo() {
 		if (currentEvent != null) {
-			editTextEventName.setText(currentEvent.mName);
-			editTextEventNotes.setText(currentEvent.mNotes);
+			eventNameEditText.setText(currentEvent.mName);
 			textViewStartTime.setText(currentEvent
 					.formatColumn(EventKey.START_TIME));
 		} else {
-			editTextEventName.setText("");
-			editTextEventNotes.setText("");
+			eventNameEditText.setText("");
 			textViewStartTime.setText("");
 		}
 		bottomBar.setText(getPreviousEventString());
@@ -144,16 +141,14 @@ public class TrackingMode extends AbstractEventEdit {
 	@Override
 	protected void syncToEventFromUI() {
 		if (currentEvent != null) {
-			currentEvent.mName = editTextEventName.getText().toString();
-			currentEvent.mNotes = editTextEventNotes.getText().toString();
+			currentEvent.mName = eventNameEditText.getText().toString();
 		}
 	}
 
 	@Override
 	protected void initializeEditTexts() {
 		super.initializeEditTexts();
-		editTextEventName.addTextChangedListener(new StartTrackingListener());
-		editTextEventNotes.addTextChangedListener(new StartTrackingListener());
+		eventNameEditText.addTextChangedListener(new StartTrackingListener());
 	}
 
 	@Override
@@ -221,7 +216,7 @@ public class TrackingMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				finishCurrentActivity(true);
-				editTextEventName.requestFocus();
+				eventNameEditText.requestFocus();
 			}
 		});
 

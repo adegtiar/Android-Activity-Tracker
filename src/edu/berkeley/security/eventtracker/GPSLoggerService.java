@@ -3,7 +3,6 @@ package edu.berkeley.security.eventtracker;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -58,7 +57,7 @@ public class GPSLoggerService extends Service {
 			if (loc == null) {
 				return;
 			}
-			double test=loc.getAccuracy();
+//			double test=loc.getAccuracy();
 //			if((!loc.hasAccuracy() || loc.getAccuracy() > minAccuracyMeters)){
 //				return;
 //			}
