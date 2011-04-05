@@ -192,7 +192,7 @@ public class EditMode extends AbstractEventEdit {
 		}
 	}
 
-	protected void setText(String notes) {
+	protected void setNotesText(String notes) {
 		if (editingEvent != null) {
 			editingEvent.mNotes = notes;
 			updateDatabase(editingEvent);
