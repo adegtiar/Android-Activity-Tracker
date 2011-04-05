@@ -202,8 +202,7 @@ public class EditMode extends AbstractEventEdit {
 
 	@Override
 	protected void fillViewWithEventInfo() {
-		editTextEventName.setText(editingEvent.mName);
-		editTextEventNotes.setText(editingEvent.mNotes);
+		eventNameEditText.setText(editingEvent.mName);
 		startTimeButton.setText(editingEvent.formatColumn(EventKey.START_TIME));
 		endTimeButton.setText(editingEvent.formatColumn(EventKey.END_TIME));
 	}
@@ -215,8 +214,7 @@ public class EditMode extends AbstractEventEdit {
 
 	@Override
 	protected void syncToEventFromUI() {
-		editingEvent.mName = editTextEventName.getText().toString();
-		editingEvent.mNotes = editTextEventNotes.getText().toString();
+		editingEvent.mName = eventNameEditText.getText().toString();
 	}
 
 	/**

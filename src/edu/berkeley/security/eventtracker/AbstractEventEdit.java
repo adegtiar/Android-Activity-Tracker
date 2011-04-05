@@ -17,7 +17,6 @@ import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -26,7 +25,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
@@ -42,26 +40,22 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected EventEntry previousEvent;
 
 	protected ArrayList<String> autoCompleteActivities = new ArrayList<String>();
-	protected ArrayList<String> autoCompleteNotes = new ArrayList<String>();
 	protected Set<String> mActivityNames = new HashSet<String>();
-	protected Set<String> mActivityNotes = new HashSet<String>();
 	protected ArrayAdapter<String> adapterActivities;
-	protected ArrayAdapter<String> adapterNotes;
 
-	protected AutoCompleteTextView editTextEventName;
-	protected AutoCompleteTextView editTextEventNotes;
+	protected AutoCompleteTextView eventNameEditText;
+	protected Button eventNotesButton;
 	protected Button bottomBar;
 	protected Button nextActivityButton;
 	protected Button stopTrackingButton;
 	protected Button newTagButton;
 	protected ImageView viewMapButton;
 	protected ImageButton eventVoiceButton;
-	protected ImageButton noteVoiceButton;
-	
+
 	protected Spinner dropDown;
 	protected LinkedHashSet<String> mTagSet;
 	protected ArrayList<String> mTagList;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,13 +65,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeBottomBar();
 		initializeActivityButtons();
 		initializeTimesUI();
-		editTextEventName.setHint(getString(R.string.eventNameHint));
-		editTextEventNotes.setHint(getString(R.string.eventNotesHint));
+		eventNameEditText.setHint(getString(R.string.eventNameHint));
 		initializeVoice();
-		
 
 	}
-
 
 	/**
 	 * Initializes the NextActivity and StopTracking buttons. Also, now it
@@ -90,7 +81,15 @@ abstract public class AbstractEventEdit extends EventActivity {
 		newTagButton = (Button) findViewById(R.id.tag_button);
 		dropDown = (Spinner) findViewById(R.id.tagSpinner);
 		dropDown.setPrompt("Select a tag");
-		
+		eventNotesButton = (Button) findViewById(R.id.notes_button);
+		eventNotesButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_NOTE_ENTRY, new Bundle());
+			}
+		});
+
 	}
 
 	/**
@@ -98,8 +97,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * related views.
 	 */
 	protected void initializeEditTexts() {
-		editTextEventName = (AutoCompleteTextView) findViewById(R.id.editEventName);
-		editTextEventNotes = (AutoCompleteTextView) findViewById(R.id.editNotes);
+		eventNameEditText = (AutoCompleteTextView) findViewById(R.id.editEventName);
 		// TODO uncomment these to disable soft keyboard
 		// editTextEventName.setInputType(0);
 		// editTextEventNotes.setInputType(0);
@@ -107,18 +105,16 @@ abstract public class AbstractEventEdit extends EventActivity {
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line,
 				autoCompleteActivities);
-		adapterNotes = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line, autoCompleteNotes);
 
-		editTextEventName.setAdapter(adapterActivities);
-		editTextEventNotes.setAdapter(adapterNotes);
+		eventNameEditText.setAdapter(adapterActivities);
 	}
+
 	protected abstract void initializeTags();
-	
+
 	abstract protected void initializeBottomBar();
 
 	abstract protected void initializeTimesUI();
-	
+
 	/**
 	 * Initializes the toolbar onClickListeners and intializes references to
 	 * toolbar views.
@@ -158,7 +154,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 				showDialog(DIALOG_ENTER_TAG);
 			}
 		});
-	
+
 	}
 
 	@Override
@@ -215,12 +211,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * Updates the the AutoComplete adapter with the current name/notes.
 	 */
 	protected void updateAutoComplete() {
-		String activityName = editTextEventName.getText().toString();
-		String activityNotes = editTextEventNotes.getText().toString();
+		String activityName = eventNameEditText.getText().toString();
 		if (mActivityNames.add(activityName))
 			adapterActivities.add(activityName);
-		if (mActivityNotes.add(activityNotes))
-			adapterNotes.add(activityNotes);
 	}
 
 	/**
@@ -256,23 +249,18 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private void initializeAutoComplete() {
 		adapterActivities.clear();
 		mActivityNames.clear();
-		adapterNotes.clear();
-		mActivityNotes.clear();
 		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
 		EventEntry nextEvent;
 		while (allEventsCursor.moveToNext()) {
 			nextEvent = allEventsCursor.getEvent();
 			if (mActivityNames.add(nextEvent.mName))
 				adapterActivities.add(nextEvent.mName);
-			if (mActivityNotes.add(nextEvent.mNotes))
-				adapterNotes.add(nextEvent.mNotes);
 		}
 	}
 
 	protected void initializeVoice() {
 
 		eventVoiceButton = (ImageButton) findViewById(R.id.eventVoiceButton);
-		noteVoiceButton = (ImageButton) findViewById(R.id.noteVoiceButton);
 
 		// Check to see if a recognition activity is present
 		PackageManager pm = getPackageManager();
@@ -285,16 +273,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 					startVoiceRecognitionActivity(VOICE_RECOGNITION_REQUEST_CODE_NAME);
 				}
 			});
-			noteVoiceButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					startVoiceRecognitionActivity(VOICE_RECOGNITION_REQUEST_CODE_NOTES);
-				}
-			});
 
 		} else {
 			eventVoiceButton.setEnabled(false);
-			noteVoiceButton.setEnabled(false);
 			// speakButton.setText("Recognizer not present");
 		}
 	}
@@ -313,8 +294,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected abstract void setNameText(String name);
 
 	protected abstract void setNotesText(String name);
-	
-	
+
 	/**
 	 * Handle the results from the recognition activity.
 	 */
@@ -344,7 +324,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 					R.layout.alert_dialog_tag_entry, null);
 			return new AlertDialog.Builder(AbstractEventEdit.this)
 
-			.setTitle(R.string.alert_dialog_tag_entry).setView(textEntryView)
+					.setTitle(R.string.alert_dialog_tag_entry)
+					.setView(textEntryView)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
@@ -353,14 +334,16 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 									EditText tagEditText = (EditText) textEntryView
 											.findViewById(R.id.tag_edit);
-									String tag = tagEditText.getText().toString();
+									String tag = tagEditText.getText()
+											.toString();
 									EventActivity.mEventManager.addTag(tag);
 									initializeTags();
 									tagEditText.setText("");
 									/* User entered in a new tag. Do stuff here */
 
 								}
-							}).setNegativeButton(R.string.alert_dialog_cancel,
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -368,8 +351,45 @@ abstract public class AbstractEventEdit extends EventActivity {
 									/* User clicked cancel so do some stuff */
 								}
 							}).create();
+		case DIALOG_NOTE_ENTRY:
+			// This example shows how to add a custom layout to an AlertDialog
+			LayoutInflater ne_factory = LayoutInflater.from(this);
+			final View noteEntryView = ne_factory.inflate(
+					R.layout.alert_dialog_note_entry, null);
+			final EditText noteEditText = (EditText) noteEntryView
+					.findViewById(R.id.notes_edit);
+			noteEditText.setText(currentEvent.mNotes);
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.alert_dialog_notes_title)
+					.setView(noteEntryView)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									String notes = noteEditText.getText()
+											.toString();
+
+									AbstractEventEdit.this.currentEvent.mNotes = notes;
+									AbstractEventEdit.this.syncToEventFromUI();
+									AbstractEventEdit.this
+											.updateDatabase(currentEvent);
+								}
+
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									/* User clicked cancel so do some stuff */
+								}
+							}).create();
+		default:
+			return super.onCreateDialog(id, bundle);
 		}
-		return null;
 	}
 
 	/**
@@ -377,8 +397,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	protected void focusOnNothing() {
 		LinearLayout dummy = (LinearLayout) findViewById(R.id.dummyLayout);
-		editTextEventName.clearFocus();
-		editTextEventNotes.clearFocus();
+		eventNameEditText.clearFocus();
 		dummy.requestFocus();
 	}
 }

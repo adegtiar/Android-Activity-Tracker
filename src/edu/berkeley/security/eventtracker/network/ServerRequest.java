@@ -8,8 +8,10 @@ public enum ServerRequest {
 	POLL("events/poll");
 	private String mUrl;
 	
+
 	private static final String SERVER_ROOT = "http://192.168.110.1:3001/";
 //	private static final String SERVER_ROOT = "http://10.10.66.148:3001/";
+
 //	private static final String SERVER_ROOT = "http://eventtracker.dyndns-at-home.com:3001/";
 
 	private ServerRequest(String url) {
