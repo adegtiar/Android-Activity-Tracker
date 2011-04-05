@@ -1,11 +1,11 @@
 package edu.berkeley.security.eventtracker.eventdata;
-import 	edu.berkeley.security.eventtracker.Settings;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.network.GibberishAESCrypto;
 

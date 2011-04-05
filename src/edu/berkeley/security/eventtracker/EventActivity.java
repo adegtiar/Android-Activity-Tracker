@@ -37,7 +37,6 @@ abstract public class EventActivity extends Activity implements
 		OnGestureListener {
 
 	public static final String LOG_TAG = "ActivityTracker";
-	protected static final int DIALOG_TEXT_ENTRY = 7;
 	protected static final int DIALOG_NOTE_ENTRY = 9;
 	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
@@ -190,6 +189,8 @@ abstract public class EventActivity extends Activity implements
 			startService(gpsServiceIntent);
 		} else {
 			stopService(gpsServiceIntent);
+		}
+		if(!isTracking || !Settings.areNotificationsEnabled()){
 			disableTrackingNotification();
 		}
 	}
@@ -304,83 +305,6 @@ abstract public class EventActivity extends Activity implements
 
 	public boolean onTouchEvent(MotionEvent me) {
 		return mGestureScanner.onTouchEvent(me);
-	}
-
-	// GPS
-
-	// private class SampleLocationListener implements LocationListener {
-	// public void onLocationChanged(Location location) {
-	// EventEntry currentEvent = getCurrentEvent();
-	// if (location != null && currentEvent != null) {
-	//
-	// mEventManager.addGPSCoordinates(new GPSCoordinates(location
-	// .getLatitude(), location.getLongitude()),
-	// currentEvent.mDbRowID);
-	//
-	// }
-	// }
-	//
-	// public void onProviderDisabled(String provider) {
-	// // TODO Auto-generated method stub
-	// Log.d("SampleLocationListener onProviderDisabled", provider);
-	// }
-	//
-	// public void onProviderEnabled(String provider) {
-	// // TODO Auto-generated method stub
-	// Log.d("SampleLocationListener onProviderEnabled", provider);
-	// }
-	//
-	// public void onStatusChanged(String provider, int status, Bundle extras) {
-	// // TODO Auto-generated method stub
-	// Log.d("SampleLocationListener onStatusChanged", provider);
-	// }
-	// }
-
-	/*
-	 * Dialog box for password entry
-	 */
-	@Override
-	protected Dialog onCreateDialog(int id, final Bundle bundle) {
-		switch (id) {
-
-		case DIALOG_TEXT_ENTRY:
-			// This example shows how to add a custom layout to an AlertDialog
-			LayoutInflater te_factory = LayoutInflater.from(this);
-			final View textEntryView = te_factory.inflate(
-					R.layout.alert_dialog_text_entry, null);
-
-			return new AlertDialog.Builder(EventActivity.this)
-					.setIcon(R.drawable.alert_dialog_icon)
-					.setTitle(R.string.alert_dialog_text_entry)
-					.setView(textEntryView)
-					.setPositiveButton(R.string.alert_dialog_ok,
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									/* User entered a password and clicked OK */
-									EditText passwdEditText = (EditText) textEntryView
-											.findViewById(R.id.password_edit);
-									String password = passwdEditText.getText()
-											.toString();
-									Settings.setPassword(password);
-									if (bundle.getBoolean("Settings")) {
-										Settings.updatePasswordSettings();
-									}
-
-								}
-							})
-					.setNegativeButton(R.string.alert_dialog_cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-									/* User clicked cancel so do some stuff */
-								}
-							}).create();
-		default:
-			return super.onCreateDialog(id, bundle);
-		}
 	}
 
 }

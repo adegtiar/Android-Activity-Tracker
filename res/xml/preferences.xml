@@ -23,7 +23,6 @@
                         android:title="Enable Web View"
                         android:defaultValue="false"
                          android:summary="View your events online"
-                        android:key="webPref" 
-                        android:id="@+id/webBox" />
+                        android:key="webPref" />
         </PreferenceCategory>
 </PreferenceScreen>
