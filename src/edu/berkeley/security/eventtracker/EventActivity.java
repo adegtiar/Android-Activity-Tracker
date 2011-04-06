@@ -191,7 +191,7 @@ abstract public class EventActivity extends Activity implements
 			stopService(gpsServiceIntent);
 		}
 		if(!isTracking || !Settings.areNotificationsEnabled()){
-			disableTrackingNotification();
+			disableTrackingNotification(this);
 		}
 	}
 
@@ -199,10 +199,9 @@ abstract public class EventActivity extends Activity implements
 
 	}
 
-	private void disableTrackingNotification() {
+	protected static void disableTrackingNotification(Context mContext) {
 		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-
+		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(ns);
 		mNotificationManager.cancel(TRACKING_NOTIFICATION);
 	}
 

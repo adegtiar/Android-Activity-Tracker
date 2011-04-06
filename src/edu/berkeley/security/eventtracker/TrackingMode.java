@@ -91,6 +91,7 @@ public class TrackingMode extends AbstractEventEdit {
 	protected void onPause() {
 		super.onPause();
 		updateDatabase(currentEvent);
+		updateTrackingNotification();
 	}
 
 	@Override
@@ -299,7 +300,11 @@ public class TrackingMode extends AbstractEventEdit {
 	}
 
 	private void updateTrackingNotification() {
-		enableTrackingNotification(this, getCurrentEvent());
+		if (Settings.areNotificationsEnabled() && isTracking()) {
+			enableTrackingNotification(this, getCurrentEvent());
+		}else{
+			disableTrackingNotification(this);
+		}
 	}
 
 	/**
@@ -367,7 +372,7 @@ public class TrackingMode extends AbstractEventEdit {
 			synchronized public void onFinish() {
 				setSpinning(false);
 				resetTimer();
-				
+
 				Context context = getApplicationContext();
 				CharSequence text = "Saving... done.";
 				int duration = Toast.LENGTH_SHORT;
@@ -384,8 +389,6 @@ public class TrackingMode extends AbstractEventEdit {
 
 		}
 	}
-
-	
 
 	@Override
 	protected void startListEventsActivity() {
@@ -419,7 +422,8 @@ public class TrackingMode extends AbstractEventEdit {
 		mTagList.add(0, "Select a tag");
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mTagList);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		dropDown.setAdapter(adapter);
 		int position;
 		if (isTracking()) {

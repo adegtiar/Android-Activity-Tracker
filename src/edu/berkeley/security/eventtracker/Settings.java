@@ -144,6 +144,12 @@ public class Settings extends PreferenceActivity {
 
 			}
 		}
+		if(!areNotificationsEnabled()){
+			EventActivity.disableTrackingNotification(this);
+		}
+		if(areNotificationsEnabled() && EventActivity.mEventManager.isTracking()){
+			EventActivity.enableTrackingNotification(this, EventActivity.mEventManager.getCurrentEvent());
+		}
 	}
 
 	protected static boolean isGPSEnabled() {
