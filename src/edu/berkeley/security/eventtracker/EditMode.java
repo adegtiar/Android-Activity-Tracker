@@ -1,15 +1,19 @@
 package edu.berkeley.security.eventtracker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashSet;
-
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
@@ -145,16 +149,22 @@ public class EditMode extends AbstractEventEdit {
 
 		startTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
-				i.putExtra("Time", editingEvent.mStartTime);
-				startActivityForResult(i, EventKey.START_TIME.ordinal());
+				//Intent i = new Intent(EditMode.this, TimeDatePicker.class);
+				//i.putExtra("Time", editingEvent.mStartTime);
+				//startActivityForResult(i, EventKey.START_TIME.ordinal());
+				Calendar startCalendar=Calendar.getInstance();
+				startCalendar.setTimeInMillis(editingEvent.mStartTime);
+				showDateTimeDialog(startCalendar,EventKey.START_TIME.ordinal());
 			}
 		});
 		endTimeButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Intent i = new Intent(EditMode.this, TimeDatePicker.class);
-				i.putExtra("Time", editingEvent.mEndTime);
-				startActivityForResult(i, EventKey.END_TIME.ordinal());
+				//Intent i = new Intent(EditMode.this, TimeDatePicker.class);
+				//i.putExtra("Time", editingEvent.mEndTime);
+				//startActivityForResult(i, EventKey.END_TIME.ordinal());
+				Calendar endCalendar=Calendar.getInstance();
+				endCalendar.setTimeInMillis(editingEvent.mEndTime);
+				showDateTimeDialog(endCalendar,EventKey.END_TIME.ordinal());
 			}
 		});
 	}
@@ -255,4 +265,97 @@ public class EditMode extends AbstractEventEdit {
 		dropDown.setSelection(position,true);
 		
 	}
+	
+	
+	/**
+     * Copyright 2010 Lukasz Szmit <devmail@szmit.eu>
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+    */
+    private void showDateTimeDialog(Calendar cal, int requestCode) {
+    	final int mRequestCode=requestCode;
+		// Create the dialog
+		final Dialog mDateTimeDialog = new Dialog(this);
+		// Inflate the root layout
+		final RelativeLayout mDateTimeDialogView = (RelativeLayout) getLayoutInflater().inflate(R.layout.date_time_dialog, null);
+		// Grab widget instance
+		final DateTimePicker mDateTimePicker = (DateTimePicker) mDateTimeDialogView.findViewById(R.id.DateTimePicker);
+		mDateTimePicker.datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), mDateTimePicker);
+		mDateTimePicker.timePicker.setCurrentHour(cal.getTime().getHours());
+		mDateTimePicker.timePicker.setCurrentMinute(cal.getTime().getMinutes());
+		mDateTimePicker.mCalendar=cal;
+		// Check is system is set to use 24h time (this doesn't seem to work as expected though)
+		final String timeS = android.provider.Settings.System.getString(getContentResolver(), android.provider.Settings.System.TIME_12_24);
+		final boolean is24h = !(timeS == null || timeS.equals("12"));
+		final int a=3;
+		// Update demo TextViews when the "OK" button is clicked 
+		((Button) mDateTimeDialogView.findViewById(R.id.SetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				if(mRequestCode==EventKey.START_TIME.ordinal()){
+					editingEvent.mStartTime = mDateTimePicker.mCalendar.getTimeInMillis();
+					startTimeButton.setText(editingEvent.formatColumn(EventKey.START_TIME));
+				}
+				if(mRequestCode==EventKey.END_TIME.ordinal()){	
+					editingEvent.mEndTime = mDateTimePicker.mCalendar.getTimeInMillis();
+					endTimeButton.setText(editingEvent.formatColumn(EventKey.END_TIME));
+				}
+				/*
+				// TODO Auto-generated method stub
+				((TextView) findViewById(R.id.Date)).setText(mDateTimePicker.get(Calendar.YEAR) + "/" + (mDateTimePicker.get(Calendar.MONTH)+1) + "/"
+						+ mDateTimePicker.get(Calendar.DAY_OF_MONTH));
+				if (mDateTimePicker.is24HourView()) {
+					((TextView) findViewById(R.id.Time)).setText(mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
+				} else {
+					((TextView) findViewById(R.id.Time)).setText(mDateTimePicker.get(Calendar.HOUR) + ":" + mDateTimePicker.get(Calendar.MINUTE) + " "
+							+ (mDateTimePicker.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM"));
+				}
+				*/
+			Calendar c=mDateTimePicker.mCalendar;
+			
+			Date d=c.getTime();
+			mDateTimeDialog.dismiss();
+			}
+		});
+
+		// Cancel the dialog when the "Cancel" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.CancelDialog)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				mDateTimeDialog.cancel();
+			}
+		});
+
+		// Reset Date and Time pickers when the "Reset" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.ResetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				mDateTimePicker.reset();
+			}
+		});
+		
+		// Setup TimePicker
+		mDateTimePicker.setIs24HourView(is24h);
+		// No title on the dialog window
+		mDateTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// Set the dialog content view
+		mDateTimeDialog.setContentView(mDateTimeDialogView);
+		// Display the dialog
+		mDateTimeDialog.show();
+	}
+	
+
 }

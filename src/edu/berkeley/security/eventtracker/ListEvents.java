@@ -1,5 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -7,14 +10,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
-import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
@@ -23,6 +26,7 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
  * least recent.
  */
 public class ListEvents extends EventActivity {
+	private Date dateListed;
 	/**
 	 * An array that specifies the fields we want to display in the list (only
 	 * TITLE)
@@ -44,9 +48,10 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		dateListed=Calendar.getInstance().getTime();
 		fillData();
 	}
-
+	
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.events_list;
@@ -56,8 +61,9 @@ public class ListEvents extends EventActivity {
 	 * Sets the adapter to fill the rows of the ListView from the database rows.
 	 */
 	private void fillData() {
-		// Get all of the rows from the database and create the item list
-		mEventsCursor = mEventManager.fetchSortedEvents();
+		mEventsCursor = mEventManager.fetchSortedEvents(dateListed);
+//		 Get all of the rows from the database and create the item list
+//		mEventsCursor = mEventManager.fetchSortedEvents();
 		startManagingCursor(mEventsCursor);
 
 		ListView eventList = (ListView) findViewById(R.id.events_list_view);

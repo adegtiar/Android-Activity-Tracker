@@ -2,12 +2,26 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="wrap_content" android:layout_height="wrap_content"
 	android:orientation="vertical">
-	<LinearLayout android:id="@+id/bottom_control_bar"
+	<RelativeLayout android:id="@+id/bottom_control_bar"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:background="@color/list_background"
 		android:layout_alignParentBottom="true">
-		<Button android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="Add Item" />
-	</LinearLayout>	
+		<ImageView android:id="@+id/leftArrow"
+		android:layout_width="wrap_content" 
+		 android:src="@drawable/left_arrow"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left" android:layout_alignParentLeft="true" android:paddingLeft="30dip"/>
+		
+		<ImageView android:id="@+id/calendar"
+		android:layout_width="wrap_content" 
+		android:src="@drawable/calendar"
+		android:layout_height="wrap_content" android:layout_gravity="center" android:layout_centerInParent="true"/>
+		
+		<ImageView android:id="@+id/rightArrow"
+		android:layout_width="wrap_content" 
+		 android:src="@drawable/right_arrow"
+		android:layout_height="wrap_content" android:layout_alignParentRight="true" android:paddingRight="30dip"/>
+	</RelativeLayout>	
 	<ListView android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:id="@+id/events_list_view"
 		android:layout_above="@id/bottom_control_bar"></ListView>

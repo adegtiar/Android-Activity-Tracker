@@ -1,7 +1,7 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -149,6 +149,23 @@ public class EventManager {
 	 */
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
+	}
+	/**
+	 * @return an iterator over all events in descending endTime order on this date
+	 */
+	public EventCursor fetchSortedEvents(Date date) {
+		Date startDate=date;
+		Date endDate=(Date) date.clone();
+		startDate.setHours(0);
+		startDate.setMinutes(0);
+		startDate.setSeconds(0);
+		
+		endDate.setHours(23);
+		endDate.setMinutes(59);
+		endDate.setSeconds(59);
+		
+		
+		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(),endDate.getTime()), this);
 	}
 
 	/**

@@ -2,4 +2,5 @@
 <resources>
 <color name="toolbar_background">#BDBBBB</color>
 <color name="date_color">#000</color>
+<color name="list_background">#BDBBBB</color>
 </resources>

@@ -17,6 +17,7 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,7 +36,8 @@ public class EventDbAdapter extends AbstractDbAdapter {
 				ColumnType.LONG), UPDATE_TIME("updateTime", ColumnType.LONG), UUID(
 				"uuid", ColumnType.TEXT), IS_DELETED("isDeleted",
 				ColumnType.INTEGER, "DEFAULT 0"), RECEIVED_AT_SERVER(
-				"receivedAtServer", ColumnType.INTEGER, "DEFAULT 0"),TAG("tag", ColumnType.TEXT);
+				"receivedAtServer", ColumnType.INTEGER, "DEFAULT 0"), TAG(
+				"tag", ColumnType.TEXT);
 
 		private String mColumnName;
 		private ColumnType mColType;
@@ -177,10 +179,9 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 	public Cursor fetchPhoneOnlyEvents() {
 		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(), String
-				.format("%s = ? AND %s > ?",
-						EventKey.RECEIVED_AT_SERVER.columnName(),
-						EventKey.END_TIME.columnName()), new String[] { "0",
-				"0" }, null, null, null, null);
+				.format("%s = ? AND %s > ?", EventKey.RECEIVED_AT_SERVER
+						.columnName(), EventKey.END_TIME.columnName()),
+				new String[] { "0", "0" }, null, null, null, null);
 	}
 
 	/**
@@ -247,4 +248,18 @@ public class EventDbAdapter extends AbstractDbAdapter {
 				+ "=" + rowId, null) > 0;
 	}
 
+	/**
+	 * Return a Cursor over the list of events that begin after startTime and before endTime.
+	 * Sorted by end Time.
+	 * 
+	 * @return Cursor.
+	 */
+	public Cursor fetchSortedEvents(long startTime, long endTime) {
+		String orderBy = EventKey.START_TIME.columnName() + " DESC";
+
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.START_TIME.columnName() + " > " + startTime + " AND "
+						+ EventKey.START_TIME.columnName() + " < " + endTime,
+				null, null, null, orderBy, null);
+	}
 }
