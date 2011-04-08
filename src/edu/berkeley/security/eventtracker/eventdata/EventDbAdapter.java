@@ -249,15 +249,14 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	}
 
 	/**
-	 * Return a Cursor over the list of events that begin after startTime and before endTime.
-	 * Sorted by end Time.
+	 * Return a Cursor over the list of events that begin after startTime and before endTime. Sorted by end Time.
 	 * 
 	 * @return Cursor.
 	 */
 	public Cursor fetchSortedEvents(long startTime, long endTime) {
 		String orderBy = EventKey.START_TIME.columnName() + " DESC";
 
-		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),EventKey.IS_DELETED.columnName() + "=0" + " AND "+
 				EventKey.START_TIME.columnName() + " > " + startTime + " AND "
 						+ EventKey.START_TIME.columnName() + " < " + endTime,
 				null, null, null, orderBy, null);

@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -110,15 +111,15 @@ public class EditMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				try {
 
-					Intent myIntent = new Intent(EditMode.this,
-							HelloGoogleMaps.class);
-					myIntent.putExtra("EventData", editingEvent);
-					startActivity(myIntent);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(editingEvent.getGPSCoordinates().size()==0){
+					Toast.makeText(getApplicationContext(), "No data yet",  Toast.LENGTH_SHORT).show();
+				}else{
+				
+				Intent myIntent = new Intent(EditMode.this,
+						HelloGoogleMaps.class);
+				myIntent.putExtra("EventData", editingEvent);
+				startActivity(myIntent);
 				}
 			}
 		});

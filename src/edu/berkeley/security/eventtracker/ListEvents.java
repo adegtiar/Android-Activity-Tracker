@@ -1,15 +1,23 @@
 package edu.berkeley.security.eventtracker;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -26,7 +34,7 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
  * least recent.
  */
 public class ListEvents extends EventActivity {
-	private Date dateListed;
+	private static Date dateListed;
 	/**
 	 * An array that specifies the fields we want to display in the list (only
 	 * TITLE)
@@ -44,12 +52,99 @@ public class ListEvents extends EventActivity {
 			R.id.row_event_delete_button };
 
 	private EventCursor mEventsCursor;
+	SimpleCursorAdapter eventsCursorAdapter;
+	private ListView eventList;
+	private TextView titleHeader;
+	private TextView listHeader;
+	
+	//Variables for the date picker
+	private ImageView mPickDate;
+	private int mYear;
+	private int mMonth;
+	private int mDay;
+
+	private static final int DATE_DIALOG_ID = 0;
+	private static final int DIALOG_DELETE_EVENT = 1;
+	 // the callback received when the user "sets" the date in the dialog
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year, 
+                                      int monthOfYear, int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    Calendar c=Calendar.getInstance();
+                    c.set(mYear, mMonth, mDay);
+                    dateListed=c.getTime();
+                 
+                    if(mEventsCursor != null){
+ 	            	   
+ 	            	   stopManagingCursor(mEventsCursor);
+ 	            	   mEventsCursor.close();
+ 	            	   eventList.invalidate();
+ 	            
+ 	               }
+ 	              
+ 	               fillData();
+                }
+            };
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dateListed=Calendar.getInstance().getTime();
+		eventList = (ListView) findViewById(R.id.events_list_view);
+		ImageView leftArrow= (ImageView) findViewById(R.id.leftArrow);
+		ImageView rightArrow= (ImageView) findViewById(R.id.rightArrow);
 		fillData();
+		leftArrow.setOnClickListener(new View.OnClickListener() {
+			 public void onClick(View view) {
+	              
+	               dateListed.setDate(dateListed.getDate()-1);
+	               
+	               if(mEventsCursor != null){
+	            	   
+	            	   stopManagingCursor(mEventsCursor);
+	            	   mEventsCursor.close();
+	            	   eventList.invalidate();
+	            
+	               }
+	              
+	               fillData();
+	            }
+	        });
+		
+		rightArrow.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+              
+               dateListed.setDate(dateListed.getDate()+1);
+               
+               if(mEventsCursor != null){
+            	   
+            	   stopManagingCursor(mEventsCursor);
+            	   mEventsCursor.close();
+            	   eventList.invalidate();
+            
+               }
+              
+               fillData();
+            }
+        });
+		 mPickDate = (ImageView) findViewById(R.id.calendar);
+		 // get the current date
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+     // add a click listener to the button
+        mPickDate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showDialog(DATE_DIALOG_ID);
+            }
+        });
+
 	}
 	
 	@Override
@@ -62,15 +157,17 @@ public class ListEvents extends EventActivity {
 	 */
 	private void fillData() {
 		mEventsCursor = mEventManager.fetchSortedEvents(dateListed);
+		
 //		 Get all of the rows from the database and create the item list
 //		mEventsCursor = mEventManager.fetchSortedEvents();
 		startManagingCursor(mEventsCursor);
 
-		ListView eventList = (ListView) findViewById(R.id.events_list_view);
-
-		SimpleCursorAdapter eventsCursorAdapter = new SimpleCursorAdapter(this,
+		
+		
+		SimpleCursorAdapter eventsCursorAdapter = new SimpleCursorAdapter(ListEvents.this,
 				R.layout.events_row, mEventsCursor, from, to);
 		eventsCursorAdapter.setViewBinder(new EventRowViewBinder());
+		
 
 		initializeHeaders(eventList);
 
@@ -80,9 +177,9 @@ public class ListEvents extends EventActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (position < 2)
+				if (position < 1)
 					return;
-				else if (position == 2 && isTracking())
+				else if (position == 1 && isTracking())
 					finish(); // trying to edit event in progress
 				else
 					startEditEventActivity(id);
@@ -90,6 +187,8 @@ public class ListEvents extends EventActivity {
 		});
 
 		eventList.setAdapter(eventsCursorAdapter);
+
+		
 	}
 
 	/**
@@ -99,13 +198,31 @@ public class ListEvents extends EventActivity {
 	 *            The list to add headers to.
 	 */
 	private void initializeHeaders(ListView list) {
-		TextView textTitle = new TextView(this);
-		textTitle.setText(R.string.activityListHeader);
-		textTitle.setTextSize(20);
-		textTitle.setGravity(Gravity.CENTER);
-		list.addHeaderView(textTitle);
+		int headerCount=list.getHeaderViewsCount();
+		TextView titleHeader=(TextView) findViewById(R.id.titleHeader);
+
+		String titleForList="Activites for ";
+		
+		titleForList +=(isToday(dateListed)) ? "Today" : DateFormat.getDateInstance().format(dateListed);
+		
+		titleHeader.setText(titleForList);
+//		textTitle.setText(R.string.activityListHeader);
+		titleHeader.setTextSize(20);
+		titleHeader.setGravity(Gravity.CENTER);
+		
+		
+		if(headerCount==0){
+//		list.addHeaderView(titleHeader);
 		View listHeader = View.inflate(this, R.layout.event_row_header, null);
 		list.addHeaderView(listHeader);
+		}
+		
+		
+	}
+	private boolean isToday(Date date){
+		String dateString=DateFormat.getDateInstance().format(date);
+		String todayString=DateFormat.getDateInstance().format(new Date());
+		return dateString.equals(todayString);
 	}
 
 	/**
@@ -123,13 +240,12 @@ public class ListEvents extends EventActivity {
 
 		@Override
 		public void onClick(View v) {
-			mEventManager.markEventDeleted(rowId);
-			Networking.sendToServer(ServerRequest.DELETE,
-					mEventManager.fetchEvent(rowId), ListEvents.this);
-			mEventsCursor.requery();
-			if (isInProgress) {
-				updateTrackingStatus(false);
-			}
+			Bundle bundle=new Bundle();
+			bundle.putString("nameOfEvent",mEventManager.fetchEvent(rowId).mName);
+			bundle.putLong("rowId", rowId);
+			bundle.putBoolean("isInProgress", isInProgress);	
+			showDialog(DIALOG_DELETE_EVENT, bundle);
+
 		}
 	}
 
@@ -171,14 +287,86 @@ public class ListEvents extends EventActivity {
 		super.startTrackingActivity();
 		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
 	}
-
+	//TODO fix the flinging
+//	@Override
+//	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+//			float velocityY) {
+//		if (velocityX < 0) { // going to left screen
+//			startTrackingActivity();
+//			return true;
+//		}
+//		return false;
+//	}
 	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		if (velocityX < 0) { // going to left screen
-			startTrackingActivity();
-			return true;
-		}
-		return false;
+	protected Dialog onCreateDialog(int id) {
+	    switch (id) {
+	    case DATE_DIALOG_ID:
+	        return new DatePickerDialog(this,
+	                    mDateSetListener,
+	                    mYear, mMonth, mDay);
+	    }
+	    return null;
 	}
+	
+	@Override
+	protected void onPrepareDialog(final int id, final Dialog dialog, Bundle bundle) {
+	  switch (id) {
+	  case DIALOG_DELETE_EVENT:
+	    TextView deleteEvent= (TextView) dialog.findViewById(R.id.delete_description);
+	    deleteEvent.setText("Are you sure you want to delete the event "+ bundle.getString("nameOfEvent")+"?");
+	    break;
+	  }
+	}
+	
+	
+	/*
+	 * Dialog box for presenting a dialog box when a user tries to delete an event
+	 */
+	@Override
+
+	protected Dialog onCreateDialog(int id, final Bundle bundle) {
+		switch (id) {
+
+		case DIALOG_DELETE_EVENT:
+			
+			LayoutInflater te_factory = LayoutInflater.from(this);
+			final View textEntryView = te_factory.inflate(
+					R.layout.delete_dialog, null);
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.delete_dialog_title)
+					.setView(textEntryView)
+					.setPositiveButton(R.string.delete_dialog_yes,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									long rowId=bundle.getLong("rowId");
+									boolean isInProgress=bundle.getBoolean("isInProgress");
+									
+									mEventManager.markEventDeleted(rowId);
+									Networking.sendToServer(ServerRequest.DELETE,
+											mEventManager.fetchEvent(rowId), ListEvents.this);
+									mEventsCursor.requery();
+									if (isInProgress) {
+										updateTrackingStatus(false);
+									}	
+
+								}
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									/* User clicked cancel so do some stuff */
+								}
+							}).create();
+		default:
+			return super.onCreateDialog(id, bundle);
+		}
+	}
+
+	
+	
 }

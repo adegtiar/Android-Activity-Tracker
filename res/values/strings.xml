@@ -51,4 +51,7 @@
 <string name="alert_dialog_tag_description">Create a new tag that can be used to categorize your events</string>
 <string name="notesButton">Add Note</string>
 <string name="alert_dialog_notes_title">Enter a note:</string>
+<string name="delete_dialog_title">Confirmation</string>
+<string name="delete_dialog_yes">Yes</string>
+
 </resources>

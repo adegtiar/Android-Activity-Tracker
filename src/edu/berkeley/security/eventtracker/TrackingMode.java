@@ -236,16 +236,17 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				try {
-
+				
+					if(currentEvent.getGPSCoordinates().size()==0){
+						Toast.makeText(getApplicationContext(), "No data yet",  Toast.LENGTH_SHORT).show();
+					}else{
+					
 					Intent myIntent = new Intent(TrackingMode.this,
 							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
-				} catch (Exception e) {
-
-					e.printStackTrace();
-				}
+					}
+				
 			}
 		});
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
