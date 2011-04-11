@@ -56,6 +56,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected LinkedHashSet<String> mTagSet;
 	protected ArrayList<String> mTagList;
 
+	protected boolean justResumed;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -143,6 +145,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		justResumed = true;
 
 		initializeAutoComplete();
 		initializeTags();
@@ -154,7 +157,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 				showDialog(DIALOG_ENTER_TAG);
 			}
 		});
-
 	}
 
 	@Override

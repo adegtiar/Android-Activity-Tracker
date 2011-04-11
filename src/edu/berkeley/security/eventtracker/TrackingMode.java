@@ -180,8 +180,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-
-			myProgressTimer.spin();
+			
 			if (currentEvent != null) {
 				// currentEvent.mName = s.toString(); //TODO temp fix. not sure
 				// if this will work
@@ -193,6 +192,10 @@ public class TrackingMode extends AbstractEventEdit {
 				updateStartTimeUI();
 				updateTrackingStatus();
 			}
+			if (justResumed)
+				justResumed = false;
+			else
+				myProgressTimer.spin();
 		}
 
 		@Override
