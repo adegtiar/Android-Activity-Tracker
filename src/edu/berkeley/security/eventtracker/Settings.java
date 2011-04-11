@@ -43,9 +43,10 @@ public class Settings extends PreferenceActivity {
 	private static CheckBoxPreference gpsEnabled;
 	private static CheckBoxPreference notificationsEnabled;
 
-	static boolean gpsPreference;
-	static boolean notificationPreferences;
-	static boolean webPreferences;
+	//don't access these directly
+	private static boolean gpsPreference;
+	private static boolean notificationPreferences;
+	private static boolean webPreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +138,8 @@ public class Settings extends PreferenceActivity {
 	protected void onPause() {
 		super.onPause();
 		updatePreferences();
-		if (isPasswordSet() && webPreferences) {
+		boolean isPass=isPasswordSet();
+		if (isPasswordSet() && isSychronizationEnabled()) {
 			if (!registeredAlready()) {
 				// attempt to register with the server
 				Networking.sendToServer(ServerRequest.REGISTER, null, this);
