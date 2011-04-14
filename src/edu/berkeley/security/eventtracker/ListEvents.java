@@ -21,10 +21,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
@@ -94,15 +96,25 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dateListed=Calendar.getInstance().getTime();
+		//Decide which date to show
+		dateListed=EventManager.getManager().fetchDateOfLatestEvent();
+		
 		eventList = (ListView) findViewById(R.id.events_list_view);
 		ImageView leftArrow= (ImageView) findViewById(R.id.leftArrow);
 		ImageView rightArrow= (ImageView) findViewById(R.id.rightArrow);
 		fillData();
+		//left arrow click!
 		leftArrow.setOnClickListener(new View.OnClickListener() {
 			 public void onClick(View view) {
 	              
-	               dateListed.setDate(dateListed.getDate()-1);
+//	               dateListed.setDate(dateListed.getDate()-1);
+				 Date possibleDate=EventManager.getManager().fetchDateBefore(dateListed);
+				 if(possibleDate==null){
+					 Toast.makeText(getApplicationContext(), "No further events",  Toast.LENGTH_SHORT).show();
+					 return;
+				 }else{
+					 dateListed=possibleDate;
+				 }
 	               
 	               if(mEventsCursor != null){
 	            	   
@@ -119,13 +131,19 @@ public class ListEvents extends EventActivity {
 		rightArrow.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
               
-               dateListed.setDate(dateListed.getDate()+1);
+            	 Date possibleDate=EventManager.getManager().fetchDateAfter(dateListed);
+				 if(possibleDate==null){
+					 Toast.makeText(getApplicationContext(), "No further events",  Toast.LENGTH_SHORT).show();
+					 return;
+				 }else{
+					 dateListed=possibleDate;
+				 }
                
                if(mEventsCursor != null){
-            	   
+            	   eventList.invalidate();
             	   stopManagingCursor(mEventsCursor);
             	   mEventsCursor.close();
-            	   eventList.invalidate();
+            	  
             
                }
               

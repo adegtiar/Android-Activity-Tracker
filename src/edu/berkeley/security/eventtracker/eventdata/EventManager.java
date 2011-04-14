@@ -1,6 +1,7 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -150,19 +151,82 @@ public class EventManager {
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
 	}
+	
+	
+
+	/**
+	 * @return the date of the latest event that took place
+	 */
+	public Date fetchDateOfLatestEvent() {
+		EventCursor mCursor=fetchSortedEvents();
+		if(mCursor.moveToFirst()){
+			EventEntry latestEvent=mCursor.getEvent();
+			return new Date(latestEvent.mStartTime);
+		}else{
+			return Calendar.getInstance().getTime();
+		}
+		
+	}
+	
+	/**
+	 * Gets the earliest time corresponding to the same day as date
+	 * @param date
+	 * @return a date object which represents 12am of that same day
+	 */
+	private  Date EarliestTime(Date date){
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(0);
+		return date;
+	}
+	/**
+	 * Gets the latest time corresponding to the same day as date
+	 * @param date
+	 * @return a date object which represents midnight of that same day
+	 */
+	private  Date LatestTime(Date date){
+		Date dateToReturn=(Date) date.clone();
+		dateToReturn.setHours(23);
+		dateToReturn.setMinutes(59);
+		dateToReturn.setSeconds(59);
+		return dateToReturn;
+	}
+	
+	/**
+	 * @return the date of the event that comes before date
+	 */
+	public Date fetchDateBefore(Date date) {
+		
+		EventCursor mCursor=new EventCursor(mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(date).getTime()),this);
+		if(mCursor.moveToFirst()){
+			EventEntry latestEvent=mCursor.getEvent();
+			return new Date(latestEvent.mStartTime);
+		}else{
+			return null;
+		}
+
+	}
+	/**
+	 * @return the date of the event that comes after after date
+	 */
+	public Date fetchDateAfter(Date date) {
+
+		EventCursor mCursor=new EventCursor(mDbHelper.fetchSortedEventsAfterDate(LatestTime(date).getTime()),this);
+		if(mCursor.moveToFirst()){
+			EventEntry latestEvent=mCursor.getEvent();
+			return new Date(latestEvent.mStartTime);
+		}else{
+			return null;
+		}
+	}
+	
 	/**
 	 * @return an iterator over all events in descending endTime order on this date
 	 */
 	public EventCursor fetchSortedEvents(Date date) {
-		Date startDate=date;
-		Date endDate=(Date) date.clone();
-		startDate.setHours(0);
-		startDate.setMinutes(0);
-		startDate.setSeconds(0);
-		
-		endDate.setHours(23);
-		endDate.setMinutes(59);
-		endDate.setSeconds(59);
+		Date startDate=EarliestTime(date);
+		Date endDate=LatestTime(date);
+	
 		
 		
 		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(),endDate.getTime()), this);
