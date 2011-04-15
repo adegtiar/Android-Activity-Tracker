@@ -33,8 +33,8 @@ import edu.berkeley.security.eventtracker.network.Networking;
  * toolbar and a global EventManager.
  */
 
-abstract public class EventActivity extends Activity implements
-		OnGestureListener {
+abstract public class EventActivity extends Activity
+ {
 
 	public static final String LOG_TAG = "ActivityTracker";
 	protected static final int DIALOG_NOTE_ENTRY = 9;
@@ -50,7 +50,7 @@ abstract public class EventActivity extends Activity implements
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
-	GestureDetector mGestureScanner;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ abstract public class EventActivity extends Activity implements
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
-		mGestureScanner = new GestureDetector(this);
+		
 
 	}
 
@@ -266,44 +266,5 @@ abstract public class EventActivity extends Activity implements
 				notification);
 	}
 
-	@Override
-	public boolean onDown(MotionEvent arg0) {
-		// do nothing
-		return false;
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		// do nothing
-		return false;
-	}
-
-	@Override
-	public void onLongPress(MotionEvent arg0) {
-		// do nothing
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
-			float arg3) {
-		// do nothing
-		return false;
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		// do nothing
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		// do nothing
-		return false;
-	}
-
-	public boolean onTouchEvent(MotionEvent me) {
-		return mGestureScanner.onTouchEvent(me);
-	}
 
 }

@@ -401,16 +401,16 @@ public class TrackingMode extends AbstractEventEdit {
 		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
 	}
 
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		if (velocityX < 0) {// going to right screen
-			startSettingsActivity();
-		} else { // going to the left screen
-			startListEventsActivity();
-		}
-		return true;
-	}
+//	@Override
+//	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+//			float velocityY) {
+//		if (velocityX < 0) {// going to right screen
+//			startSettingsActivity();
+//		} else { // going to the left screen
+//			startListEventsActivity();
+//		}
+//		return true;
+//	}
 
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu.
