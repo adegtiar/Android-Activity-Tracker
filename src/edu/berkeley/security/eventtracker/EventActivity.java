@@ -18,8 +18,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewStub;
+import android.widget.ImageView;
 import android.widget.TextView;
-import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.network.Networking;
@@ -65,7 +65,8 @@ abstract public class EventActivity extends Activity {
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
-		FlingDetector detector = getFlingDetector();
+		FlingDetector detector = new FlingDetector(getLeftActivityClass(),
+				getRightActivityClass());
 		gestureDetector = new GestureDetector(detector);
 		flingListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -79,7 +80,19 @@ abstract public class EventActivity extends Activity {
 		findViewById(R.id.toolbar_center).setOnTouchListener(flingListener);
 	}
 
-	abstract protected FlingDetector getFlingDetector();
+	/**
+	 * Returns the activity that would be launched upon swiping left.
+	 * 
+	 * @return the class of the activity to launch.
+	 */
+	abstract protected Class<?> getLeftActivityClass();
+
+	/**
+	 * Returns the activity that would be launched upon swiping right.
+	 * 
+	 * @return the class of the activity to launch.
+	 */
+	abstract protected Class<?> getRightActivityClass();
 
 	/**
 	 * Initializes the toolbar onClickListeners and initializes references to
@@ -88,23 +101,52 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected void initializeToolbar() {
 		textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
+		setToolbarButton((ImageView) findViewById(R.id.toolbar_right_option),
+				false);
+		setToolbarButton((ImageView) findViewById(R.id.toolbar_left_option),
+				true);
+	}
 
-		findViewById(R.id.toolbar_right_option).setOnClickListener(
-				new OnClickListener() {
+	/**
+	 * Sets the onClickListener and visibility of the given left or right
+	 * toolbar button.
+	 * 
+	 * @param button
+	 *            the left or right button of the top toolbar.
+	 * @param isLeft
+	 *            whether or not it is the left button.
+	 */
+	private void setToolbarButton(ImageView button, final boolean isLeft) {
+		final Class<?> activityClass = isLeft ? getLeftActivityClass()
+				: getRightActivityClass();
 
-					@Override
-					public void onClick(View v) {
-						startActivityRight(Settings.class);
-					}
-				});
-		findViewById(R.id.toolbar_left_option).setOnClickListener(
-				new OnClickListener() {
+		if (activityClass == null)
+			button.setVisibility(View.INVISIBLE);
+		else {
+			button.setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						startActivityLeft(TrackingMode.class);
-					}
-				});
+				@Override
+				public void onClick(View v) {
+					if (isLeft)
+						EventActivity.this.startActivityLeft(activityClass);
+					else
+						EventActivity.this.startActivityRight(activityClass);
+				}
+			});
+			button.setImageResource(getImageIdForActivity(activityClass));
+		}
+	}
+
+	private int getImageIdForActivity(Class<?> activityClass) {
+		if (activityClass == TrackingMode.class)
+			return R.drawable.edit_icon;
+		else if (activityClass == ListEvents.class)
+			return R.drawable.list_icon;
+		else if (activityClass == Settings.class)
+			return R.drawable.settings_icon;
+		else
+			throw new IllegalArgumentException(
+					"Could not find icon for class: " + activityClass);
 	}
 
 	@Override
@@ -161,12 +203,6 @@ abstract public class EventActivity extends Activity {
 	protected void startActivityRight(Class<?> activityClass) {
 		startActivity(activityClass);
 		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
-	}
-
-	protected void startEditEventActivity(long rowId) {
-		Intent editIntent = new Intent(this, EditMode.class);
-		editIntent.putExtra(EventKey.ROW_ID.columnName(), rowId);
-		startActivity(editIntent);
 	}
 
 	/**

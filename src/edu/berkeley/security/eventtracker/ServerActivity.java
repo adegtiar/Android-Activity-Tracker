@@ -132,7 +132,13 @@ public class ServerActivity extends EventActivity {
 	}
 
 	@Override
-	protected FlingDetector getFlingDetector() {
+	protected Class<?> getRightActivityClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Class<?> getLeftActivityClass() {
 		// TODO Auto-generated method stub
 		return null;
 	}

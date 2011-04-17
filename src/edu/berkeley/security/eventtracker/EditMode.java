@@ -354,8 +354,13 @@ public class EditMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected FlingDetector getFlingDetector() {
-		return new FlingDetector(ListEvents.class, Settings.class);
+	protected Class<?> getLeftActivityClass() {
+		return null;
+	}
+
+	@Override
+	protected Class<?> getRightActivityClass() {
+		return ListEvents.class;
 	}
 
 }

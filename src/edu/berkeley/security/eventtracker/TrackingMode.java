@@ -104,7 +104,7 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 		});
 	}
-
+	
 	@Override
 	protected void initializeTimesUI() {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
@@ -421,9 +421,14 @@ public class TrackingMode extends AbstractEventEdit {
 		//
 		dropDown.setSelection(position, true);
 	}
+	
+	@Override
+	protected Class<?> getLeftActivityClass() {
+		return ListEvents.class;
+	}
 
 	@Override
-	protected FlingDetector getFlingDetector() {
-		return new FlingDetector(ListEvents.class, Settings.class);
+	protected Class<?> getRightActivityClass() {
+		return null;
 	}
 }

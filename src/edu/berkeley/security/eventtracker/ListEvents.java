@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -296,16 +297,13 @@ public class ListEvents extends EventActivity {
 		}
 	}
 
-	// TODO fix the flinging
-	// @Override
-	// public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-	// float velocityY) {
-	// if (velocityX < 0) { // going to left screen
-	// startTrackingActivity();
-	// return true;
-	// }
-	// return false;
-	// }
+	protected void startEditEventActivity(long rowId) {
+		Intent editIntent = new Intent(this, EditMode.class);
+		editIntent.putExtra(EventKey.ROW_ID.columnName(), rowId);
+		startActivity(editIntent);
+		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+	}
+	
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -382,9 +380,12 @@ public class ListEvents extends EventActivity {
 	}
 
 	@Override
-	protected FlingDetector getFlingDetector() {
-		// TODO Auto-generated method stub
-		return new FlingDetector(null, TrackingMode.class);
+	protected Class<?> getLeftActivityClass() {
+		return null;
 	}
-
+	
+	@Override
+	protected Class<?> getRightActivityClass() {
+		return TrackingMode.class;
+	}
 }
