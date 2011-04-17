@@ -151,85 +151,92 @@ public class EventManager {
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
 	}
-	
-	
 
 	/**
 	 * @return the date of the latest event that took place
 	 */
 	public Date fetchDateOfLatestEvent() {
-		EventCursor mCursor=fetchSortedEvents();
-		if(mCursor.moveToFirst()){
-			EventEntry latestEvent=mCursor.getEvent();
+		EventCursor mCursor = fetchSortedEvents();
+		if (mCursor.moveToFirst()) {
+			EventEntry latestEvent = mCursor.getEvent();
 			return new Date(latestEvent.mStartTime);
-		}else{
+		} else {
 			return Calendar.getInstance().getTime();
 		}
-		
+
 	}
-	
+
 	/**
 	 * Gets the earliest time corresponding to the same day as date
+	 * 
 	 * @param date
 	 * @return a date object which represents 12am of that same day
 	 */
-	private  Date EarliestTime(Date date){
+	private Date EarliestTime(Date date) {
 		date.setHours(0);
 		date.setMinutes(0);
 		date.setSeconds(0);
 		return date;
 	}
+
 	/**
 	 * Gets the latest time corresponding to the same day as date
+	 * 
 	 * @param date
 	 * @return a date object which represents midnight of that same day
 	 */
-	private  Date LatestTime(Date date){
-		Date dateToReturn=(Date) date.clone();
+	private Date LatestTime(Date date) {
+		Date dateToReturn = (Date) date.clone();
 		dateToReturn.setHours(23);
 		dateToReturn.setMinutes(59);
 		dateToReturn.setSeconds(59);
 		return dateToReturn;
 	}
-	
+
 	/**
 	 * @return the date of the event that comes before date
 	 */
 	public Date fetchDateBefore(Date date) {
-		
-		EventCursor mCursor=new EventCursor(mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(date).getTime()),this);
-		if(mCursor.moveToFirst()){
-			EventEntry latestEvent=mCursor.getEvent();
+
+		EventCursor mCursor = new EventCursor(
+				mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(date)
+						.getTime()), this);
+		if (mCursor.moveToFirst()) {
+			EventEntry latestEvent = mCursor.getEvent();
 			return new Date(latestEvent.mStartTime);
-		}else{
+		} else {
 			return null;
 		}
 
 	}
+
 	/**
 	 * @return the date of the event that comes after after date
 	 */
 	public Date fetchDateAfter(Date date) {
 
-		EventCursor mCursor=new EventCursor(mDbHelper.fetchSortedEventsAfterDate(LatestTime(date).getTime()),this);
-		if(mCursor.moveToFirst()){
-			EventEntry latestEvent=mCursor.getEvent();
+		EventCursor mCursor = new EventCursor(
+				mDbHelper
+						.fetchSortedEventsAfterDate(LatestTime(date).getTime()),
+				this);
+		if (mCursor.moveToFirst()) {
+			EventEntry latestEvent = mCursor.getEvent();
 			return new Date(latestEvent.mStartTime);
-		}else{
+		} else {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * @return an iterator over all events in descending endTime order on this date
+	 * @return an iterator over all events in descending endTime order on this
+	 *         date
 	 */
 	public EventCursor fetchSortedEvents(Date date) {
-		Date startDate=EarliestTime(date);
-		Date endDate=LatestTime(date);
-	
-		
-		
-		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(),endDate.getTime()), this);
+		Date startDate = EarliestTime(date);
+		Date endDate = LatestTime(date);
+
+		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(),
+				endDate.getTime()), this);
 	}
 
 	/**
@@ -258,7 +265,8 @@ public class EventManager {
 	 * Either finds the given event in the database, or a creates a new
 	 * (unsaved) event entry.
 	 * 
-	 * @param uuid the UUID to find or create by.
+	 * @param uuid
+	 *            the UUID to find or create by.
 	 * @return the new or found event.
 	 */
 	public EventEntry findOrCreateByUUID(String uuid) {
@@ -302,7 +310,8 @@ public class EventManager {
 		return toBeReturned;
 
 	}
-	public LinkedHashSet<String> getTags(){
+
+	public LinkedHashSet<String> getTags() {
 		LinkedHashSet<String> tagSet = new LinkedHashSet<String>();
 		Cursor cursor = null;
 		try {
@@ -313,7 +322,8 @@ public class EventManager {
 
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
-				String tag = cursor.getString(cursor.getColumnIndex((TagsDBAdapter.KEY_TAG)));
+				String tag = cursor.getString(cursor
+						.getColumnIndex((TagsDBAdapter.KEY_TAG)));
 				tagSet.add(tag);
 
 			}
@@ -381,9 +391,12 @@ public class EventManager {
 		}
 		return nDeleted;
 	}
+
 	/**
 	 * Adds a tag to the database
-	 * @param string- the tag to be added
+	 * 
+	 * @param string
+	 *            - the tag to be added
 	 */
 	public void addTag(String tag) {
 		mTagHelper.createTagEntry(tag);

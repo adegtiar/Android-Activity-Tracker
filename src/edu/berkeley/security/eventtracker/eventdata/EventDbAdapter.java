@@ -17,7 +17,6 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -179,9 +178,10 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	 */
 	public Cursor fetchPhoneOnlyEvents() {
 		return mDb.query(true, DATABASE_TABLE, EventKey.columnNames(), String
-				.format("%s = ? AND %s > ?", EventKey.RECEIVED_AT_SERVER
-						.columnName(), EventKey.END_TIME.columnName()),
-				new String[] { "0", "0" }, null, null, null, null);
+				.format("%s = ? AND %s > ?",
+						EventKey.RECEIVED_AT_SERVER.columnName(),
+						EventKey.END_TIME.columnName()), new String[] { "0",
+				"0" }, null, null, null, null);
 	}
 
 	/**
@@ -249,17 +249,21 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	}
 
 	/**
-	 * Return a Cursor over the list of events that begin after startTime and before endTime
+	 * Return a Cursor over the list of events that begin after startTime and
+	 * before endTime
 	 * 
 	 * @return Cursor.
 	 */
 	public Cursor fetchSortedEvents(long startTime, long endTime) {
 		String orderBy = EventKey.START_TIME.columnName() + " DESC";
 
-		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),EventKey.IS_DELETED.columnName() + "=0" + " AND "+
-				EventKey.START_TIME.columnName() + " > " + startTime + " AND " + EventKey.START_TIME.columnName() + " < " + endTime,
-				null, null, null, orderBy, null);
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.IS_DELETED.columnName() + "=0" + " AND "
+						+ EventKey.START_TIME.columnName() + " > " + startTime
+						+ " AND " + EventKey.START_TIME.columnName() + " < "
+						+ endTime, null, null, null, orderBy, null);
 	}
+
 	/**
 	 * Return a Cursor over the list of events that begin before startTime
 	 * 
@@ -268,11 +272,12 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public Cursor fetchSortedEventsBeforeDate(long startTime) {
 		String orderBy = EventKey.START_TIME.columnName() + " DESC";
 
-		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),EventKey.IS_DELETED.columnName() + "=0" + " AND "+
-				EventKey.START_TIME.columnName() + " < " + startTime,
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.IS_DELETED.columnName() + "=0" + " AND "
+						+ EventKey.START_TIME.columnName() + " < " + startTime,
 				null, null, null, orderBy, null);
 	}
-	
+
 	/**
 	 * Return a Cursor over the list of events that begin after startTime
 	 * 
@@ -281,9 +286,10 @@ public class EventDbAdapter extends AbstractDbAdapter {
 	public Cursor fetchSortedEventsAfterDate(long startTime) {
 		String orderBy = EventKey.START_TIME.columnName() + " ASC";
 
-		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),EventKey.IS_DELETED.columnName() + "=0" + " AND "+
-				EventKey.START_TIME.columnName() + " > " + startTime,
+		return mDb.query(DATABASE_TABLE, EventKey.columnNames(),
+				EventKey.IS_DELETED.columnName() + "=0" + " AND "
+						+ EventKey.START_TIME.columnName() + " > " + startTime,
 				null, null, null, orderBy, null);
 	}
-	
+
 }

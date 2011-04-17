@@ -1,20 +1,19 @@
-
 /**
  * Copyright 2010 Lukasz Szmit <devmail@szmit.eu>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
-*/
+ */
 package edu.berkeley.security.eventtracker;
 
 import java.util.Calendar;
@@ -31,18 +30,17 @@ import android.widget.ViewSwitcher;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TimePicker.OnTimeChangedListener;
 
+public class DateTimePicker extends RelativeLayout implements
+		View.OnClickListener, OnDateChangedListener, OnTimeChangedListener {
 
-
-public class DateTimePicker extends RelativeLayout implements View.OnClickListener, OnDateChangedListener, OnTimeChangedListener {
-
-	// DatePicker reference
-	DatePicker		datePicker;
 	// TimePicker reference
-	protected TimePicker		timePicker;
-	// ViewSwitcher reference
-	private ViewSwitcher	viewSwitcher;
+	protected TimePicker timePicker;
 	// Calendar reference
-	protected Calendar		mCalendar;
+	protected Calendar mCalendar;
+	// DatePicker reference
+	DatePicker datePicker;
+	// ViewSwitcher reference
+	private ViewSwitcher viewSwitcher;
 
 	// Constructor start
 	public DateTimePicker(Context context) {
@@ -57,13 +55,16 @@ public class DateTimePicker extends RelativeLayout implements View.OnClickListen
 		super(context, attrs, defStyle);
 
 		// Get LayoutInflater instance
-		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		// Inflate myself
 		inflater.inflate(R.layout.datetimepicker, this, true);
 
 		// Inflate the date and time picker views
-		final LinearLayout datePickerView = (LinearLayout) inflater.inflate(R.layout.datepicker, null);
-		final LinearLayout timePickerView = (LinearLayout) inflater.inflate(R.layout.timepicker, null);
+		final LinearLayout datePickerView = (LinearLayout) inflater.inflate(
+				R.layout.datepicker, null);
+		final LinearLayout timePickerView = (LinearLayout) inflater.inflate(
+				R.layout.timepicker, null);
 
 		// Grab a Calendar instance
 		mCalendar = Calendar.getInstance();
@@ -72,49 +73,63 @@ public class DateTimePicker extends RelativeLayout implements View.OnClickListen
 
 		// Init date picker
 		datePicker = (DatePicker) datePickerView.findViewById(R.id.DatePicker);
-		datePicker.init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH), this);
+		datePicker.init(mCalendar.get(Calendar.YEAR),
+				mCalendar.get(Calendar.MONTH),
+				mCalendar.get(Calendar.DAY_OF_MONTH), this);
 
 		// Init time picker
 		timePicker = (TimePicker) timePickerView.findViewById(R.id.TimePicker);
 		timePicker.setOnTimeChangedListener(this);
 
 		// Handle button clicks
-		((Button) findViewById(R.id.SwitchToTime)).setOnClickListener(this); // shows the time picker
-		((Button) findViewById(R.id.SwitchToDate)).setOnClickListener(this); // shows the date picker
+		((Button) findViewById(R.id.SwitchToTime)).setOnClickListener(this); // shows
+																				// the
+																				// time
+																				// picker
+		((Button) findViewById(R.id.SwitchToDate)).setOnClickListener(this); // shows
+																				// the
+																				// date
+																				// picker
 
 		// Populate ViewSwitcher
 		viewSwitcher.addView(timePickerView, 0);
 		viewSwitcher.addView(datePickerView, 1);
-		
+
 	}
+
 	// Constructor end
 
 	// Called every time the user changes DatePicker values
-	public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+	public void onDateChanged(DatePicker view, int year, int monthOfYear,
+			int dayOfMonth) {
 		// Update the internal Calendar instance
-		mCalendar.set(year, monthOfYear, dayOfMonth, mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
+		mCalendar.set(year, monthOfYear, dayOfMonth,
+				mCalendar.get(Calendar.HOUR_OF_DAY),
+				mCalendar.get(Calendar.MINUTE));
 	}
 
 	// Called every time the user changes TimePicker values
 	public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 		// Update the internal Calendar instance
-		mCalendar.set(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
+		mCalendar.set(mCalendar.get(Calendar.YEAR),
+				mCalendar.get(Calendar.MONTH),
+				mCalendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
 	}
 
 	// Handle button clicks
 	public void onClick(View v) {
 		switch (v.getId()) {
-			case R.id.SwitchToDate:
-				v.setEnabled(false);
-				findViewById(R.id.SwitchToTime).setEnabled(true);
-				viewSwitcher.showPrevious();
-				break;
+		case R.id.SwitchToDate:
+			v.setEnabled(false);
+			findViewById(R.id.SwitchToTime).setEnabled(true);
+			viewSwitcher.showPrevious();
+			break;
 
-			case R.id.SwitchToTime:
-				v.setEnabled(false);
-				findViewById(R.id.SwitchToDate).setEnabled(true);
-				viewSwitcher.showNext();
-				break;
+		case R.id.SwitchToTime:
+			v.setEnabled(false);
+			findViewById(R.id.SwitchToDate).setEnabled(true);
+			viewSwitcher.showNext();
+			break;
 		}
 	}
 
@@ -126,8 +141,9 @@ public class DateTimePicker extends RelativeLayout implements View.OnClickListen
 	// Reset DatePicker, TimePicker and internal Calendar instance
 	public void reset() {
 		final Calendar c = Calendar.getInstance();
-		updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-		updateTime(c.get(Calendar.HOUR_OF_DAY),c.get(Calendar.MINUTE));
+		updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
+				c.get(Calendar.DAY_OF_MONTH));
+		updateTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
 	}
 
 	// Convenience wrapper for internal Calendar instance
@@ -139,7 +155,7 @@ public class DateTimePicker extends RelativeLayout implements View.OnClickListen
 	public void setIs24HourView(boolean is24HourView) {
 		timePicker.setIs24HourView(is24HourView);
 	}
-	
+
 	// Convenience wrapper for internal TimePicker instance
 	public boolean is24HourView() {
 		return timePicker.is24HourView();

@@ -26,7 +26,6 @@ import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
-import edu.berkeley.security.eventtracker.webserver.WebServerService;
 
 public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
@@ -38,18 +37,10 @@ public class TrackingMode extends AbstractEventEdit {
 		super.onCreate(savedInstanceState);
 
 		gpsServiceIntent = new Intent(this, GPSLoggerService.class);
-		serverServiceIntent = new Intent(this, WebServerService.class);
 		SynchronizerIntent = new Intent(this, Synchronizer.class);
 		// Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		serverSettings = getSharedPreferences(
-				ServerActivity.PREFERENCE_FILENAME, MODE_PRIVATE);
-
-		// starts the web server if it happened to be destroyed
-		if (ServerActivity.isServerRunning()) {
-			startService(serverServiceIntent);
-		}
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 		// if (!Settings.isPasswordSet()) {

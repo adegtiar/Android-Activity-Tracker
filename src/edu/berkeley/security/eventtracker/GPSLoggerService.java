@@ -33,15 +33,13 @@ public class GPSLoggerService extends Service {
 
 		minTimeMillis = 5 * 60000;
 		minDistanceMeters = 20;
-		
-//		
-//		Criteria criteria = new Criteria(); 
-//		criteria.setAccuracy(Criteria.ACCURACY_FINE); 
-//		criteria.setPowerRequirement(Criteria.NO_REQUIREMENT); 
-//		String bestProvider = lm.getBestProvider(criteria, true); 
 
-		
-		
+		//
+		// Criteria criteria = new Criteria();
+		// criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		// criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+		// String bestProvider = lm.getBestProvider(criteria, true);
+
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMillis,
 				minDistanceMeters, locationListener);
 
@@ -57,27 +55,30 @@ public class GPSLoggerService extends Service {
 			if (loc == null) {
 				return;
 			}
-//			double test=loc.getAccuracy();
-//			if((!loc.hasAccuracy() || loc.getAccuracy() > minAccuracyMeters)){
-//				return;
-//			}
-			
+			// double test=loc.getAccuracy();
+			// if((!loc.hasAccuracy() || loc.getAccuracy() >
+			// minAccuracyMeters)){
+			// return;
+			// }
+
 			manager = EventManager.getManager();
 			if (manager != null) {
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude(),System.currentTimeMillis());
-					manager.addGPSCoordinates(GPSCoord,
-							currentEvent.mDbRowID);
+					GPSCoordinates GPSCoord = new GPSCoordinates(
+							loc.getLatitude(), loc.getLongitude(),
+							System.currentTimeMillis());
+					manager.addGPSCoordinates(GPSCoord, currentEvent.mDbRowID);
 				}
 
 			} else {
 				manager = EventManager.getManager(GPSLoggerService.this);
 				currentEvent = manager.getCurrentEvent();
 				if (currentEvent != null) {
-					GPSCoordinates GPSCoord = new GPSCoordinates(loc.getLatitude(),loc.getLongitude(),System.currentTimeMillis());
-					manager.addGPSCoordinates(GPSCoord,
-							currentEvent.mDbRowID);
+					GPSCoordinates GPSCoord = new GPSCoordinates(
+							loc.getLatitude(), loc.getLongitude(),
+							System.currentTimeMillis());
+					manager.addGPSCoordinates(GPSCoord, currentEvent.mDbRowID);
 					manager.close();
 				}
 			}

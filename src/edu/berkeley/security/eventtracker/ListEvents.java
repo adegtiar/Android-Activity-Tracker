@@ -36,6 +36,9 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
  * least recent.
  */
 public class ListEvents extends EventActivity {
+
+	SimpleCursorAdapter eventsCursorAdapter;
+
 	private static Date dateListed;
 	/**
 	 * An array that specifies the fields we want to display in the list (only
@@ -54,7 +57,6 @@ public class ListEvents extends EventActivity {
 			R.id.row_event_delete_button };
 
 	private EventCursor mEventsCursor;
-	SimpleCursorAdapter eventsCursorAdapter;
 	private ListView eventList;
 
 	// Variables for the date picker
@@ -65,6 +67,7 @@ public class ListEvents extends EventActivity {
 
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int DIALOG_DELETE_EVENT = 1;
+
 	// the callback received when the user "sets" the date in the dialog
 	private DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -303,7 +306,7 @@ public class ListEvents extends EventActivity {
 		startActivity(editIntent);
 		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -333,7 +336,7 @@ public class ListEvents extends EventActivity {
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {
-		
+
 		switch (id) {
 
 		case DIALOG_DELETE_EVENT:
@@ -383,7 +386,7 @@ public class ListEvents extends EventActivity {
 	protected Class<?> getLeftActivityClass() {
 		return null;
 	}
-	
+
 	@Override
 	protected Class<?> getRightActivityClass() {
 		return TrackingMode.class;

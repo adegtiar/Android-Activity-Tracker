@@ -177,7 +177,6 @@ abstract public class EventActivity extends Activity {
 		refreshState();
 		updateTrackingStatus();
 		// updateToolbarGUI();
-		ServerActivity.updateIpAdress(Networking.getIpAddress());
 		Networking.pollServerIfAllowed(this);
 	}
 

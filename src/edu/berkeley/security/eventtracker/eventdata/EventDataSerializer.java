@@ -1,4 +1,5 @@
 package edu.berkeley.security.eventtracker.eventdata;
+
 import java.util.List;
 
 import org.json.JSONArray;
@@ -12,7 +13,7 @@ import edu.berkeley.security.eventtracker.network.GibberishAESCrypto;
 public class EventDataSerializer {
 	private static final EventKey[] keysToSerialize = new EventKey[] {
 			EventKey.NAME, EventKey.NOTES, EventKey.START_TIME,
-			EventKey.END_TIME, EventKey.TAG};
+			EventKey.END_TIME, EventKey.TAG };
 
 	public static JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();
@@ -26,20 +27,20 @@ public class EventDataSerializer {
 		}
 		return json;
 	}
-	public static String encryptJSONObject(JSONObject json){
-		String jsonString=json.toString();
-		String password=Settings.getPassword();
+
+	public static String encryptJSONObject(JSONObject json) {
+		String jsonString = json.toString();
+		String password = Settings.getPassword();
 		String encryptedJSON = null;
-		char[] pass=password.toCharArray();
+		char[] pass = password.toCharArray();
 		try {
-			encryptedJSON=GibberishAESCrypto.encrypt(jsonString, pass);
+			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, pass);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return encryptedJSON;
-		
-		
+
 	}
 
 	private static JSONArray toJSONArray(List<GPSCoordinates> coordsList) {

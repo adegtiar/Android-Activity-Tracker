@@ -52,6 +52,8 @@ import android.widget.LinearLayout;
  * 
  */
 public class NumberPicker extends LinearLayout {
+	Button decrement;
+	Button increment;
 
 	private final long REPEAT_DELAY = 50;
 
@@ -62,9 +64,7 @@ public class NumberPicker extends LinearLayout {
 	private final int MAXIMUM = 999;
 
 	public Integer value;
-
-	Button decrement;
-	Button increment;
+	
 	public EditText valueText;
 
 	private Handler repeatUpdateHandler = new Handler();

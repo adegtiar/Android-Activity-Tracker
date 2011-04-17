@@ -30,13 +30,6 @@ public class EditMode extends AbstractEventEdit {
 	private Button endTimeButton;
 	private boolean saveToDB;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.berkeley.security.eventtracker.AbstractEventEdit#onCreate(android
-	 * .os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,12 +70,6 @@ public class EditMode extends AbstractEventEdit {
 		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeedu.berkeley.security.eventtracker.AbstractEventEdit#
-	 * initializeActivityButtons()
-	 */
 	@Override
 	protected void initializeActivityButtons() {
 		super.initializeActivityButtons();

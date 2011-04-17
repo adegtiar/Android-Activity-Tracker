@@ -76,7 +76,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 	/**
 	 * Initializes the NextActivity and StopTracking buttons. Also, now it
-	 * initalizes the viewMap Button and others!
+	 * Initializes the viewMap Button and others!
 	 */
 	protected void initializeActivityButtons() {
 		nextActivityButton = (Button) findViewById(R.id.NextActivityButton);
@@ -97,7 +97,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	}
 
 	/**
-	 * Initializes the AutoCompleteTextViews and intializes references to
+	 * Initializes the AutoCompleteTextViews and initializes references to
 	 * related views.
 	 */
 	protected void initializeEditTexts() {
@@ -118,24 +118,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	abstract protected void initializeBottomBar();
 
 	abstract protected void initializeTimesUI();
-
-	/**
-	 * Initializes the toolbar onClickListeners and intializes references to
-	 * toolbar views.
-	 */
-	protected void initializeToolbar() {
-		super.initializeToolbar();
-		ImageView toolbarLeftOption = ((ImageView) findViewById(R.id.toolbar_left_option));
-		toolbarLeftOption.setImageResource(R.drawable.list_icon);
-		findViewById(R.id.toolbar_left_option).setOnClickListener(
-				new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						startActivityLeft(ListEvents.class);
-					}
-				});
-	}
 
 	@Override
 	protected void onPause() {
