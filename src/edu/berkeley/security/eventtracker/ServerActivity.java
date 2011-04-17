@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -133,9 +132,9 @@ public class ServerActivity extends EventActivity {
 	}
 
 	@Override
-	protected void startTrackingActivity() {
-		super.startTrackingActivity();
-		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+	protected FlingDetector getFlingDetector() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 //	@Override

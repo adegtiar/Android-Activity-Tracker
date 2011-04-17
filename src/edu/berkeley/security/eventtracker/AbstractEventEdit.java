@@ -33,9 +33,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected static final int previousEventTextID = R.string.previousActivityText;
 	protected static final int previousEventDefaultID = R.string.previousActivityDefault;
 	protected static final int currentEventTextID = R.string.currentActivityText;
-	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
-	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
-	private static final int DIALOG_ENTER_TAG = 8;
+
 	protected EventEntry currentEvent;
 	protected EventEntry previousEvent;
 
@@ -57,6 +55,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected ArrayList<String> mTagList;
 
 	protected boolean justResumed;
+
+	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
+	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
+	private static final int DIALOG_ENTER_TAG = 8;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +132,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 					@Override
 					public void onClick(View v) {
-						startListEventsActivity();
+						startActivityLeft(ListEvents.class);
 					}
 				});
 	}

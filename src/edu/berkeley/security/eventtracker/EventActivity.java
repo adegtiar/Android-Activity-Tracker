@@ -1,27 +1,23 @@
 package edu.berkeley.security.eventtracker;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.LayoutInflater;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewStub;
-import android.widget.EditText;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -33,24 +29,31 @@ import edu.berkeley.security.eventtracker.network.Networking;
  * toolbar and a global EventManager.
  */
 
-abstract public class EventActivity extends Activity
- {
+abstract public class EventActivity extends Activity {
 
 	public static final String LOG_TAG = "ActivityTracker";
-	protected static final int DIALOG_NOTE_ENTRY = 9;
-	private static final int trackingStringID = R.string.toolbarTracking;
-	private static final int notTrackingStringID = R.string.toolbarNotTracking;
-	static final int TRACKING_NOTIFICATION = 1;
-	protected TextView textViewIsTracking;
-	public static EventManager mEventManager; // TODO not sure if this is right.
-	// Variables for Services
-	protected static Intent gpsServiceIntent;
-	protected static Intent serverServiceIntent;
+
 	public static Intent SynchronizerIntent;
+	public static EventManager mEventManager; // TODO not sure if this is right.
+
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
-	
+
+	protected static final int DIALOG_NOTE_ENTRY = 9;
+	protected TextView textViewIsTracking;
+
+	// Variables for Services
+	protected static Intent gpsServiceIntent;
+	protected static Intent serverServiceIntent;
+
+	static final int TRACKING_NOTIFICATION = 1;
+
+	private static final int trackingStringID = R.string.toolbarTracking;
+	private static final int notTrackingStringID = R.string.toolbarNotTracking;
+
+	private GestureDetector gestureDetector;
+	private OnTouchListener flingListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +65,21 @@ abstract public class EventActivity extends Activity
 		initializeToolbar();
 
 		mEventManager = EventManager.getManager(this);
-		
-
+		FlingDetector detector = getFlingDetector();
+		gestureDetector = new GestureDetector(detector);
+		flingListener = new View.OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent event) {
+				if (gestureDetector.onTouchEvent(event)) {
+					return true;
+				}
+				return false;
+			}
+		};
+		findViewById(R.id.toolbar_center).setOnClickListener(detector);
+		findViewById(R.id.toolbar_center).setOnTouchListener(flingListener);
 	}
+
+	abstract protected FlingDetector getFlingDetector();
 
 	/**
 	 * Initializes the toolbar onClickListeners and initializes references to
@@ -79,7 +94,7 @@ abstract public class EventActivity extends Activity
 
 					@Override
 					public void onClick(View v) {
-						startSettingsActivity();
+						startActivityRight(Settings.class);
 					}
 				});
 		findViewById(R.id.toolbar_left_option).setOnClickListener(
@@ -87,7 +102,7 @@ abstract public class EventActivity extends Activity
 
 					@Override
 					public void onClick(View v) {
-						startTrackingActivity();
+						startActivityLeft(TrackingMode.class);
 					}
 				});
 	}
@@ -104,10 +119,10 @@ abstract public class EventActivity extends Activity
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.settings_option:
-			startSettingsActivity();
+			startActivity(Settings.class);
 			return true;
 		case R.id.debug_option:
-			startDebuggingActivity();
+			startActivity(Settings.class);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -131,33 +146,21 @@ abstract public class EventActivity extends Activity
 	protected void refreshState() {
 	}
 
-	/**
-	 * Launches the ListEvents activity.
-	 */
-	protected void startListEventsActivity() {
-		Intent listIntent = new Intent(this, ListEvents.class);
-		startActivity(listIntent);
+	protected void startActivity(Class<?> activityClass) {
+		if (activityClass != null) {
+			Intent debuggingIntent = new Intent(this, activityClass);
+			startActivity(debuggingIntent);
+		}
 	}
 
-	/**
-	 * Launches the Settings activity.
-	 */
-	protected void startSettingsActivity() {
-		Intent settingsIntent = new Intent(this, Settings.class);
-		startActivity(settingsIntent);
+	protected void startActivityLeft(Class<?> activityClass) {
+		startActivity(activityClass);
+		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
 	}
 
-	protected void startDebuggingActivity() {
-		Intent debuggingIntent = new Intent(this, Debugging.class);
-		startActivity(debuggingIntent);
-	}
-
-	/**
-	 * Launches the AbstractEventEdit activity.
-	 */
-	protected void startTrackingActivity() {
-		Intent trackingIntent = new Intent(this, TrackingMode.class);
-		startActivity(trackingIntent);
+	protected void startActivityRight(Class<?> activityClass) {
+		startActivity(activityClass);
+		overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
 	}
 
 	protected void startEditEventActivity(long rowId) {
@@ -190,7 +193,7 @@ abstract public class EventActivity extends Activity
 		} else {
 			stopService(gpsServiceIntent);
 		}
-		if(!isTracking || !Settings.areNotificationsEnabled()){
+		if (!isTracking || !Settings.areNotificationsEnabled()) {
 			disableTrackingNotification(this);
 		}
 	}
@@ -201,7 +204,8 @@ abstract public class EventActivity extends Activity
 
 	protected static void disableTrackingNotification(Context mContext) {
 		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(ns);
+		NotificationManager mNotificationManager = (NotificationManager) mContext
+				.getSystemService(ns);
 		mNotificationManager.cancel(TRACKING_NOTIFICATION);
 	}
 
@@ -266,5 +270,44 @@ abstract public class EventActivity extends Activity
 				notification);
 	}
 
+	class FlingDetector extends SimpleOnGestureListener implements
+			OnClickListener {
+		private static final int SWIPE_MIN_DISTANCE = 120;
+		private static final int SWIPE_MAX_OFF_PATH = 250;
+		private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+		private final Class<?> onLeftFling;
+		private final Class<?> onRightFling;
+
+		public FlingDetector(Class<?> onLeftFling, Class<?> onRightFling) {
+			this.onLeftFling = onLeftFling;
+			this.onRightFling = onRightFling;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			try {
+				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+					return false;
+				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
+						&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+					// right to left swipe
+					EventActivity.this.startActivityRight(onRightFling);
+				} else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+						&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+					// left to right swipe
+					EventActivity.this.startActivityLeft(onLeftFling);
+				}
+			} catch (Exception e) {
+				// nothing
+			}
+			return false;
+		}
+
+		@Override
+		public void onClick(View v) {
+		}
+
+	}
 
 }

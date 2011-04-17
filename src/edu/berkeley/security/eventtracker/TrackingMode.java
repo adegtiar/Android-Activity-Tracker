@@ -10,7 +10,6 @@ import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -101,7 +100,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				startListEventsActivity();
+				startActivityLeft(ListEvents.class);
 			}
 		});
 	}
@@ -395,23 +394,6 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
-	@Override
-	protected void startListEventsActivity() {
-		super.startListEventsActivity();
-		overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
-	}
-
-//	@Override
-//	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-//			float velocityY) {
-//		if (velocityX < 0) {// going to right screen
-//			startSettingsActivity();
-//		} else { // going to the left screen
-//			startListEventsActivity();
-//		}
-//		return true;
-//	}
-
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu.
 	 */
@@ -438,5 +420,10 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 		//
 		dropDown.setSelection(position, true);
+	}
+
+	@Override
+	protected FlingDetector getFlingDetector() {
+		return new FlingDetector(ListEvents.class, Settings.class);
 	}
 }
