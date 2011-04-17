@@ -8,16 +8,19 @@
 		android:layout_above="@+id/previous_activity_bar">
 		<TextView android:id="@+id/EventText" android:textStyle="bold"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="@string/Event" />
+			android:text="@string/Event" 
+			android:textSize="18sp"/>
 		<LinearLayout android:id="@+id/eventVoiceContainer"
 			android:orientation="horizontal" android:layout_width="fill_parent"
 			android:layout_height="wrap_content">
-			<AutoCompleteTextView android:layout_below="@+id/EventText"
-				android:id="@+id/editEventName" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:layout_weight="7" />
+		<AutoCompleteTextView android:layout_below="@+id/EventText"
+				android:id="@+id/editEventName" 
+				android:layout_width="wrap_content" android:layout_weight="8"
+				android:imeOptions="actionDone"
+				android:layout_height="55dip"/>
 			<ImageButton android:id="@+id/eventVoiceButton"
 				android:layout_weight="1" android:layout_gravity="center"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:layout_width="55dip" android:layout_height="55dip"
 				android:src="@drawable/ic_btn_speak_now" />
 		</LinearLayout>
 		<LinearLayout android:id="@+id/eventTagsContainer"
