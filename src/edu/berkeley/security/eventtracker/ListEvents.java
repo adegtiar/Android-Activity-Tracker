@@ -11,10 +11,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.DatePicker;
@@ -35,7 +39,7 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
  * Handles the event list view that displays all events from most recent to
  * least recent.
  */
-public class ListEvents extends EventActivity {
+public class ListEvents extends EventActivity implements OnGestureListener {
 
 	SimpleCursorAdapter eventsCursorAdapter;
 
@@ -67,7 +71,15 @@ public class ListEvents extends EventActivity {
 
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int DIALOG_DELETE_EVENT = 1;
-
+	
+	//Used for deleting events 
+	private static long deleteROWID;
+	private static boolean deletedRowInProgress;
+	
+	//gesture stuff
+	GestureDetector mDetector;
+	
+	
 	// the callback received when the user "sets" the date in the dialog
 	private DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -95,61 +107,35 @@ public class ListEvents extends EventActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	
+		mDetector= new GestureDetector(this, this);
+
 		// Decide which date to show
 		dateListed = EventManager.getManager().fetchDateOfLatestEvent();
 
 		eventList = (ListView) findViewById(R.id.events_list_view);
+		eventList.setOnTouchListener(new OnTouchListener() {
+	    public boolean onTouch(View view, MotionEvent e) {
+	        mDetector.onTouchEvent(e);
+	        return false;
+	    }
+	});
+		
+		
 		ImageView leftArrow = (ImageView) findViewById(R.id.leftArrow);
 		ImageView rightArrow = (ImageView) findViewById(R.id.rightArrow);
 		fillData();
 		// left arrow click!
 		leftArrow.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-
-				// dateListed.setDate(dateListed.getDate()-1);
-				Date possibleDate = EventManager.getManager().fetchDateBefore(
-						dateListed);
-				if (possibleDate == null) {
-					Toast.makeText(getApplicationContext(),
-							"No further events", Toast.LENGTH_SHORT).show();
-					return;
-				} else {
-					dateListed = possibleDate;
-				}
-
-				if (mEventsCursor != null) {
-
-					stopManagingCursor(mEventsCursor);
-					mEventsCursor.close();
-					eventList.invalidate();
-
-				}
-
-				fillData();
+				previousListOfEvents();
+				
 			}
 		});
 
 		rightArrow.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-
-				Date possibleDate = EventManager.getManager().fetchDateAfter(
-						dateListed);
-				if (possibleDate == null) {
-					Toast.makeText(getApplicationContext(),
-							"No further events", Toast.LENGTH_SHORT).show();
-					return;
-				} else {
-					dateListed = possibleDate;
-				}
-
-				if (mEventsCursor != null) {
-					eventList.invalidate();
-					stopManagingCursor(mEventsCursor);
-					mEventsCursor.close();
-
-				}
-
-				fillData();
+				nextListOfEvents();
 			}
 		});
 		mPickDate = (ImageView) findViewById(R.id.calendar);
@@ -167,6 +153,50 @@ public class ListEvents extends EventActivity {
 
 	}
 
+	private void previousListOfEvents(){
+		// dateListed.setDate(dateListed.getDate()-1);
+		Date possibleDate = EventManager.getManager().fetchDateBefore(
+				dateListed);
+		if (possibleDate == null) {
+			Toast.makeText(getApplicationContext(),
+					"No further events", Toast.LENGTH_SHORT).show();
+			return;
+		} else {
+			dateListed = possibleDate;
+		}
+
+		if (mEventsCursor != null) {
+
+			stopManagingCursor(mEventsCursor);
+			mEventsCursor.close();
+			eventList.invalidate();
+
+		}
+
+		fillData();
+	}
+	private void nextListOfEvents(){
+
+		Date possibleDate = EventManager.getManager().fetchDateAfter(
+				dateListed);
+		if (possibleDate == null) {
+			Toast.makeText(getApplicationContext(),
+					"No further events", Toast.LENGTH_SHORT).show();
+			return;
+		} else {
+			dateListed = possibleDate;
+		}
+
+		if (mEventsCursor != null) {
+			eventList.invalidate();
+			stopManagingCursor(mEventsCursor);
+			mEventsCursor.close();
+
+		}
+
+		fillData();
+	}
+	
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.events_list;
@@ -176,6 +206,9 @@ public class ListEvents extends EventActivity {
 	 * Sets the adapter to fill the rows of the ListView from the database rows.
 	 */
 	private void fillData() {
+
+
+		
 		mEventsCursor = mEventManager.fetchSortedEvents(dateListed);
 
 		// Get all of the rows from the database and create the item list
@@ -216,7 +249,7 @@ public class ListEvents extends EventActivity {
 	private void initializeHeaders(ListView list) {
 		int headerCount = list.getHeaderViewsCount();
 		TextView titleHeader = (TextView) findViewById(R.id.titleHeader);
-
+		
 		String titleForList = "Activites for ";
 
 		titleForList += (isToday(dateListed)) ? "Today" : DateFormat
@@ -224,7 +257,7 @@ public class ListEvents extends EventActivity {
 
 		titleHeader.setText(titleForList);
 		// textTitle.setText(R.string.activityListHeader);
-		titleHeader.setTextSize(20);
+		titleHeader.setTextSize(25);
 		titleHeader.setGravity(Gravity.CENTER);
 
 		if (headerCount == 0) {
@@ -326,6 +359,9 @@ public class ListEvents extends EventActivity {
 					.findViewById(R.id.delete_description);
 			deleteEvent.setText("Are you sure you want to delete the event "
 					+ bundle.getString("nameOfEvent") + "?");
+			deleteROWID=bundle.getLong("rowId");
+			deletedRowInProgress=bundle.getBoolean("isInProgress");
+			
 			break;
 		}
 	}
@@ -336,7 +372,6 @@ public class ListEvents extends EventActivity {
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {
-
 		switch (id) {
 
 		case DIALOG_DELETE_EVENT:
@@ -353,17 +388,15 @@ public class ListEvents extends EventActivity {
 
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									long rowId = bundle.getLong("rowId");
-									boolean isInProgress = bundle
-											.getBoolean("isInProgress");
+									
 
-									mEventManager.markEventDeleted(rowId);
+									mEventManager.markEventDeleted(deleteROWID);
 									Networking.sendToServer(
 											ServerRequest.DELETE,
-											mEventManager.fetchEvent(rowId),
+											mEventManager.fetchEvent(deleteROWID),
 											ListEvents.this);
 									mEventsCursor.requery();
-									if (isInProgress) {
+									if (deletedRowInProgress) {
 										updateTrackingStatus(false);
 									}
 
@@ -384,6 +417,7 @@ public class ListEvents extends EventActivity {
 
 	@Override
 	protected Class<?> getLeftActivityClass() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -391,4 +425,59 @@ public class ListEvents extends EventActivity {
 	protected Class<?> getRightActivityClass() {
 		return TrackingMode.class;
 	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		try {
+			if (Math.abs(e1.getY() - e2.getY()) > FlingDetector.SWIPE_MAX_OFF_PATH)
+				return false;
+			if (e1.getX() - e2.getX() > FlingDetector.SWIPE_MIN_DISTANCE
+					&& Math.abs(velocityX) > FlingDetector.SWIPE_THRESHOLD_VELOCITY) {
+				// right to left swipe
+				nextListOfEvents();
+			} else if (e2.getX() - e1.getX() > FlingDetector.SWIPE_MIN_DISTANCE
+					&& Math.abs(velocityX) > FlingDetector.SWIPE_THRESHOLD_VELOCITY) {
+				// left to right swipe
+				previousListOfEvents();
+				
+			}
+		} catch (Exception e) {
+			// nothing
+		}
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
 }
