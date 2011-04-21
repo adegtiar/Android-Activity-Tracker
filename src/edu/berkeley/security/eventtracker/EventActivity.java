@@ -76,7 +76,7 @@ abstract public class EventActivity extends Activity {
 				return false;
 			}
 		};
-		
+
 		// Attach fling listeners to the views in the top toolbar
 		findViewById(R.id.toolbar_center).setOnClickListener(detector);
 		int[] viewsToAttachListener = new int[] { R.id.toolbar_left_option,

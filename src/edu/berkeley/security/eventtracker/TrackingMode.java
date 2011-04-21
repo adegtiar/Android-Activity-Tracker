@@ -28,6 +28,13 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
 
 public class TrackingMode extends AbstractEventEdit {
+	/**
+	 * The minimum time of an activity (used to prevent spamming the next
+	 * activity button).
+	 */
+	public static final int MIN_ACTIVITY_DURATION = 5;
+	private static final int MILLIS_PER_SECOND = 1000;
+
 	private TextView textViewStartTime;
 	private ProgressIndicatorSpinner myProgressTimer;
 
@@ -43,19 +50,14 @@ public class TrackingMode extends AbstractEventEdit {
 				MODE_PRIVATE);
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
-		// if (!Settings.isPasswordSet()) {
-		// Bundle bundle = new Bundle();
-		// bundle.putBoolean("Settings", false);
-		// showDialog(DIALOG_TEXT_ENTRY, bundle);
-		// }
+
 		Settings.setPhoneNumber(this);
 		Networking.registerIfNeeded(this);
+
 		// Attempts to send all the requests that are suppose to be sent
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
 
-		// dropDown.setOnItemSelectedListener(new MyOnItemSelectedListener());
-		// //TODO fix this
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -91,17 +93,18 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				startActivityLeft(ListEvents.class);//TODO fix this
+				startActivityLeft(ListEvents.class);
 				startEditEventActivity(previousEvent.mDbRowID);
 			}
 		});
 	}
+
 	protected void startEditEventActivity(long rowId) {
 		Intent editIntent = new Intent(this, EditMode.class);
 		editIntent.putExtra(EventKey.ROW_ID.columnName(), rowId);
 		startActivity(editIntent);
 	}
-	
+
 	@Override
 	protected void initializeTimesUI() {
 		textViewStartTime = (TextView) findViewById(R.id.startTime);
@@ -177,12 +180,9 @@ public class TrackingMode extends AbstractEventEdit {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			
-			if (currentEvent != null) {
-				// currentEvent.mName = s.toString(); //TODO temp fix. not sure
-				// if this will work
+
+			if (currentEvent != null)
 				updateTrackingNotification();
-			}
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
@@ -211,6 +211,28 @@ public class TrackingMode extends AbstractEventEdit {
 				.formatColumn(EventKey.START_TIME));
 	}
 
+	/**
+	 * Checks whether the start time of an event is past the threshold for
+	 * saving it (to prevent spamming the next activity button).
+	 * 
+	 * @return whether the current event has a long enough duration.
+	 */
+	private boolean timePassedThreshold() {
+		return (System.currentTimeMillis() - currentEvent.mStartTime)
+				/ MILLIS_PER_SECOND > MIN_ACTIVITY_DURATION;
+	}
+
+	/**
+	 * Checks whether the current event (or the text field it corresponds to)
+	 * has a name.
+	 * 
+	 * @return whether the current event has a name.
+	 */
+	private boolean currentEventHasName() {
+		return currentEvent.mName.length() > 0
+				|| eventNameEditText.getText().length() > 0;
+	}
+
 	@Override
 	protected void initializeActivityButtons() {
 		super.initializeActivityButtons();
@@ -219,7 +241,8 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				finishCurrentActivity(true);
+				if (currentEventHasName() || timePassedThreshold())
+					finishCurrentActivity(true);
 				eventNameEditText.requestFocus();
 			}
 		});
@@ -236,17 +259,18 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				
-					if(currentEvent.getGPSCoordinates().size()==0){
-						Toast.makeText(getApplicationContext(), "No data yet",  Toast.LENGTH_SHORT).show();
-					}else{
-					
+
+				if (currentEvent.getGPSCoordinates().size() == 0) {
+					Toast.makeText(getApplicationContext(), "No data yet",
+							Toast.LENGTH_SHORT).show();
+				} else {
+
 					Intent myIntent = new Intent(TrackingMode.this,
 							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
-					}
-				
+				}
+
 			}
 		});
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -303,7 +327,7 @@ public class TrackingMode extends AbstractEventEdit {
 	private void updateTrackingNotification() {
 		if (Settings.areNotificationsEnabled() && isTracking()) {
 			enableTrackingNotification(this, getCurrentEvent());
-		}else{
+		} else {
 			disableTrackingNotification(this);
 		}
 	}
@@ -379,7 +403,10 @@ public class TrackingMode extends AbstractEventEdit {
 				int duration = Toast.LENGTH_SHORT;
 
 				Toast toast = Toast.makeText(context, text, duration);
-				toast.setGravity(Gravity.BOTTOM, 0, 0);
+				// toast.setGravity(Gravity.BOTTOM, 0, 0);
+				toast.setGravity(Gravity.CENTER, 0, -15);
+				// toast.setGravity(Gravity.TOP, 0, 15);
+				// toast.setGravity(Gravity.TOP | Gravity.RIGHT, 0, 0);
 				toast.show();
 			}
 
@@ -406,8 +433,7 @@ public class TrackingMode extends AbstractEventEdit {
 		mTagList.add(0, "Select a tag");
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mTagList);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		dropDown.setAdapter(adapter);
 		int position;
 		if (isTracking()) {
@@ -418,7 +444,7 @@ public class TrackingMode extends AbstractEventEdit {
 		//
 		dropDown.setSelection(position, true);
 	}
-	
+
 	@Override
 	protected Class<?> getLeftActivityClass() {
 		return ListEvents.class;
