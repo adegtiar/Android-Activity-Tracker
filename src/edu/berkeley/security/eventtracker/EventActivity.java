@@ -76,8 +76,14 @@ abstract public class EventActivity extends Activity {
 				return false;
 			}
 		};
+		
+		// Attach fling listeners to the views in the top toolbar
 		findViewById(R.id.toolbar_center).setOnClickListener(detector);
-		findViewById(R.id.toolbar_center).setOnTouchListener(flingListener);
+		int[] viewsToAttachListener = new int[] { R.id.toolbar_left_option,
+				R.id.toolbar_right_option, R.id.toolbar_center };
+		for (int view_id : viewsToAttachListener) {
+			findViewById(view_id).setOnTouchListener(flingListener);
+		}
 	}
 
 	/**
@@ -337,6 +343,11 @@ abstract public class EventActivity extends Activity {
 				// nothing
 			}
 			return false;
+		}
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			return super.onDown(e);
 		}
 
 		@Override
