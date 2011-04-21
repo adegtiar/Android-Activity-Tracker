@@ -164,7 +164,7 @@ abstract public class EventActivity extends Activity {
 			startActivity(Settings.class);
 			return true;
 		case R.id.debug_option:
-			startActivity(Settings.class);
+			startActivity(Debugging.class);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -307,9 +307,9 @@ abstract public class EventActivity extends Activity {
 
 	class FlingDetector extends SimpleOnGestureListener implements
 			OnClickListener {
-		private static final int SWIPE_MIN_DISTANCE = 120;
-		private static final int SWIPE_MAX_OFF_PATH = 250;
-		private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+		protected static final int SWIPE_MIN_DISTANCE = 120;
+		protected static final int SWIPE_MAX_OFF_PATH = 250;
+		protected static final int SWIPE_THRESHOLD_VELOCITY = 200;
 		private final Class<?> onLeftFling;
 		private final Class<?> onRightFling;
 

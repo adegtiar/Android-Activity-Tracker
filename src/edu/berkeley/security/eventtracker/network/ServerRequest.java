@@ -9,8 +9,8 @@ public enum ServerRequest {
 	private String mUrl;
 	
 
-	private static final String SERVER_ROOT = "192.168.0.110";
-	private static final String SERVER_PORT = "3000";
+	private static final String SERVER_ROOT = "192.168.0.105";
+	private static final String SERVER_PORT = "3001";
 
 //	private static final String SERVER_ROOT = "eventtracker.dyndns-at-home.com";
 //	private static final String SERVER_PORT = "3001";
