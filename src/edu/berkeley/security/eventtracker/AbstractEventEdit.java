@@ -322,7 +322,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 											.findViewById(R.id.tag_edit);
 									String tag = tagEditText.getText()
 											.toString();
-									EventActivity.mEventManager.addTag(tag);
+									if(tag.length() > 0)
+										EventActivity.mEventManager.addTag(tag);
 									initializeTags();
 									tagEditText.setText("");
 									/* User entered in a new tag. Do stuff here */
