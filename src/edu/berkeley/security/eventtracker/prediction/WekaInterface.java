@@ -1,4 +1,4 @@
-package machinelearning;
+package edu.berkeley.security.eventtracker.prediction;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -31,9 +31,9 @@
 	<activity android:name=".ServerActivity" android:launchMode="singleTask"></activity>
 <service android:name=".webserver.WebServerService"></service>
 
-<service android:name=".network.Synchronizer"></service>
+<service android:name="network.Synchronizer"></service>
 <activity android:name=".Debugging"></activity>
-<activity android:name=".maps.HelloGoogleMaps"
+<activity android:name="maps.HelloGoogleMaps"
 			 android:label="@string/app_name"
     		 android:theme="@android:style/Theme.NoTitleBar">
 			</activity>

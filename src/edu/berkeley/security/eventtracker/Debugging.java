@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import machinelearning.WekaInterface;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -20,10 +19,10 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
+import edu.berkeley.security.eventtracker.prediction.WekaInterface;
 
 public class Debugging extends Activity {
 
-	// private static final String TEST_DATA_PATH = "debug/event_test_data.txt";
 	private static final String TEST_DATA_PATH = "debug/event_test_data2.txt";
 	private static final String datePattern = "MM/dd/yyyy hh:mma";
 	private static SimpleDateFormat dateFormatter;
@@ -32,7 +31,6 @@ public class Debugging extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.debugging);
 		dateFormatter = new SimpleDateFormat(datePattern);
