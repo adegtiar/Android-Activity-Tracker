@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.prediction.WekaInterface;
 
 abstract public class AbstractEventEdit extends EventActivity {
 
@@ -237,16 +238,20 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private void initializeAutoComplete() {
 		adapterActivities.clear();
 		mActivityNames.clear();
-		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
-		EventEntry nextEvent;
-		while (allEventsCursor.moveToNext()) {
-			nextEvent = allEventsCursor.getEvent();
-			if(nextEvent.mName.length()==0){
-				continue;
-			}
-			if (mActivityNames.add(nextEvent.mName))
-				adapterActivities.add(nextEvent.mName);
-		}
+//		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
+//		EventEntry nextEvent;
+//		while (allEventsCursor.moveToNext()) {
+//			nextEvent = allEventsCursor.getEvent();
+//			if(nextEvent.mName.length()==0){
+//				continue;
+//			}
+//			if (mActivityNames.add(nextEvent.mName))
+//				adapterActivities.add(nextEvent.mName);
+//		}
+		String predictedEvent = WekaInterface.predictEventName();
+		mActivityNames.add(predictedEvent);
+		adapterActivities.add(predictedEvent);
+		
 	}
 
 	protected void initializeVoice() {
