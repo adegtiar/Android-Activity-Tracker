@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import machinelearning.WekaInterface;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -62,13 +63,13 @@ public class Debugging extends Activity {
 						debugStatus.setText("clearing events... Done");
 					}
 				});
-		((Button) findViewById(R.id.tryRegisterButton))
+		((Button) findViewById(R.id.doMLButton))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						Networking.registerIfNeeded(Debugging.this);
-						debugStatus.setText("Registration attempted.");
+						String name = WekaInterface.predictEventName();
+						debugStatus.setText("Predicted event: " + name);
 					}
 				});
 		((Button) findViewById(R.id.forceRegisterButton))
@@ -99,6 +100,8 @@ public class Debugging extends Activity {
 					}
 				});
 	}
+
+	
 
 	private int importTestEvents() throws IOException, ParseException {
 		AssetManager assetMgr = getAssets();
