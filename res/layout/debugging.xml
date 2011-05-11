@@ -14,9 +14,9 @@
 	</LinearLayout>
 	<LinearLayout android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/LinearLayout01">
-		<Button android:id="@+id/tryRegisterButton"
+		<Button android:id="@+id/doMLButton"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="Try registering"></Button>
+			android:text="Do Machine Learning"></Button>
 		<Button android:id="@+id/forceRegisterButton"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="Force registration"></Button>

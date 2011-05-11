@@ -19,10 +19,10 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
+import edu.berkeley.security.eventtracker.prediction.WekaInterface;
 
 public class Debugging extends Activity {
 
-	// private static final String TEST_DATA_PATH = "debug/event_test_data.txt";
 	private static final String TEST_DATA_PATH = "debug/event_test_data2.txt";
 	private static final String datePattern = "MM/dd/yyyy hh:mma";
 	private static SimpleDateFormat dateFormatter;
@@ -31,7 +31,6 @@ public class Debugging extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.debugging);
 		dateFormatter = new SimpleDateFormat(datePattern);
@@ -62,13 +61,13 @@ public class Debugging extends Activity {
 						debugStatus.setText("clearing events... Done");
 					}
 				});
-		((Button) findViewById(R.id.tryRegisterButton))
+		((Button) findViewById(R.id.doMLButton))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						Networking.registerIfNeeded(Debugging.this);
-						debugStatus.setText("Registration attempted.");
+						String name = WekaInterface.predictEventName();
+						debugStatus.setText("Predicted event: " + name);
 					}
 				});
 		((Button) findViewById(R.id.forceRegisterButton))
@@ -99,6 +98,8 @@ public class Debugging extends Activity {
 					}
 				});
 	}
+
+	
 
 	private int importTestEvents() throws IOException, ParseException {
 		AssetManager assetMgr = getAssets();
