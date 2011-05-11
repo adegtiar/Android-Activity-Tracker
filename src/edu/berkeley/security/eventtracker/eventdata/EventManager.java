@@ -260,6 +260,19 @@ public class EventManager {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
+	
+	
+	public EventEntry fetchEvents(String name) throws SQLException {
+		EventCursor events = new EventCursor(mDbHelper.fetchEvents(name), this);
+		return events.getCount() > 0 ? events.getEvent() : null;
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * Either finds the given event in the database, or a creates a new

@@ -42,6 +42,7 @@
 			android:orientation="horizontal" android:layout_height="wrap_content"
 			android:layout_gravity="center_vertical" android:layout_width="match_parent"
 			android:layout_margin="10dip">
+			
 			<Button android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:layout_weight="1"
 				android:id="@+id/tag_button" android:text="@string/tagButton"
@@ -51,6 +52,7 @@
 				android:layout_height="wrap_content" android:layout_centerVertical="true"
 				android:layout_weight="3" android:layout_gravity="center_vertical" />
 		</LinearLayout>
+				
 		<LinearLayout android:layout_height="wrap_content"
 			android:id="@+id/LinearLayout01" android:layout_width="fill_parent">
 			<LinearLayout android:id="@+id/startTimeContainer"
@@ -72,8 +74,12 @@
 				android:layout_width="wrap_content" android:layout_gravity="center_vertical"
 				android:layout_weight="1" android:scaleType="center"
 				android:padding="2dip" android:id="@+id/viewMapButton" android:src="@drawable/maps_on"></ImageView>
-		</LinearLayout>
+			
+				
+		
+</LinearLayout>
 	</LinearLayout>
+
 	<Button android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true" android:layout_width="fill_parent"
 		android:clickable="false" android:gravity="left|center_vertical"

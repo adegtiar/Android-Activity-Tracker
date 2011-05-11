@@ -7,13 +7,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
@@ -139,6 +146,7 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setEnabled(isTracking);
 		newTagButton.setEnabled(isTracking);
 		dropDown.setSelection(0);
+		
 
 	}
 
@@ -149,12 +157,45 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
+	
+	private Handler mHandler = new Handler();
+	private Runnable mUpdateTimeTask = new Runnable() {
+		   public void run() {
+		     eventNameEditText.showDropDown();
+		   }
+		};
+	
 	@Override
 	protected void initializeEditTexts() {
 		super.initializeEditTexts();
 		eventNameEditText.addTextChangedListener(new StartTrackingListener());
-	}
 
+		eventNameEditText.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				
+						if(event.getAction()==0){
+							mHandler.removeCallbacks(mUpdateTimeTask);
+				            mHandler.postDelayed(mUpdateTimeTask, 200);
+						}				
+						return false;
+			}
+		});
+		eventNameEditText.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				String activityName= (String) ((TextView)arg1).getText();
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(), 0);
+				EventEntry thisEvent=EventManager.getManager().fetchEvents(activityName);
+				currentEvent.mTag=thisEvent.mTag;
+				initializeTags();
+			}
+		});
+	}
 	@Override
 	protected void setNameText(String name) {
 		if (currentEvent == null) {
@@ -181,6 +222,7 @@ public class TrackingMode extends AbstractEventEdit {
 		@Override
 		public void afterTextChanged(Editable s) {
 
+			
 			if (currentEvent != null)
 				updateTrackingNotification();
 			if (s.length() != 0 && currentEvent == null) {
@@ -193,6 +235,7 @@ public class TrackingMode extends AbstractEventEdit {
 				justResumed = false;
 			else
 				myProgressTimer.spin();
+				
 		}
 
 		@Override
@@ -203,6 +246,7 @@ public class TrackingMode extends AbstractEventEdit {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
+			
 		}
 	}
 
@@ -244,6 +288,7 @@ public class TrackingMode extends AbstractEventEdit {
 				if (currentEventHasName() || timePassedThreshold())
 					finishCurrentActivity(true);
 				eventNameEditText.requestFocus();
+				
 			}
 		});
 
@@ -301,6 +346,8 @@ public class TrackingMode extends AbstractEventEdit {
 	 *            Whether or not to start tracking a new activity.
 	 */
 	private void finishCurrentActivity(boolean createNewActivity) {
+
+		
 		currentEvent.mEndTime = System.currentTimeMillis();
 		updateAutoComplete();
 		syncToEventFromUI();

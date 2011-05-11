@@ -70,6 +70,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeActivityButtons();
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
+		
 		initializeVoice();
 
 	}
@@ -111,6 +112,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 				autoCompleteActivities);
 
 		eventNameEditText.setAdapter(adapterActivities);
+		
 	}
 
 	protected abstract void initializeTags();
@@ -239,6 +241,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 		EventEntry nextEvent;
 		while (allEventsCursor.moveToNext()) {
 			nextEvent = allEventsCursor.getEvent();
+			if(nextEvent.mName.length()==0){
+				continue;
+			}
 			if (mActivityNames.add(nextEvent.mName))
 				adapterActivities.add(nextEvent.mName);
 		}

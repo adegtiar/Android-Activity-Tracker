@@ -212,6 +212,15 @@ public class EventDbAdapter extends AbstractDbAdapter {
 		return mCursor;
 	}
 
+	public Cursor fetchEvents(String name) throws SQLException {
+		Cursor mCursor = mDb.query(true, DATABASE_TABLE,
+				EventKey.columnNames(), EventKey.NAME.columnName() + "=?",
+				new String[] { name }, null, null, null, null);
+		if (mCursor != null)
+			mCursor.moveToFirst();
+		return mCursor;
+	}
+
 	/**
 	 * Update the event using the details provided.
 	 * 
