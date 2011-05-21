@@ -71,7 +71,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeActivityButtons();
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
-		
+
 		initializeVoice();
 
 	}
@@ -113,7 +113,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 				autoCompleteActivities);
 
 		eventNameEditText.setAdapter(adapterActivities);
-		
+
 	}
 
 	protected abstract void initializeTags();
@@ -238,24 +238,24 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private void initializeAutoComplete() {
 		adapterActivities.clear();
 		mActivityNames.clear();
-//		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
-//		EventEntry nextEvent;
-//		while (allEventsCursor.moveToNext()) {
-//			nextEvent = allEventsCursor.getEvent();
-//			if(nextEvent.mName.length()==0){
-//				continue;
-//			}
-//			if (mActivityNames.add(nextEvent.mName))
-//				adapterActivities.add(nextEvent.mName);
-//		}
-		String predictedEvent = WekaInterface.predictEventName();
-		mActivityNames.add(predictedEvent);
-		adapterActivities.add(predictedEvent);
-		
+
+		// Add predicted events in order of likelihood
+		List<String> predictedEvents = WekaInterface.predictEventNames();
+		mActivityNames.addAll(predictedEvents);
+		autoCompleteActivities.addAll(predictedEvents);
+
+		// Add the rest of the events
+		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
+		while (allEventsCursor.moveToNext()) {
+			EventEntry nextEvent = allEventsCursor.getEvent();
+			if (nextEvent.mName.length() == 0)
+				continue;
+			if (mActivityNames.add(nextEvent.mName))
+				adapterActivities.add(nextEvent.mName);
+		}
 	}
 
 	protected void initializeVoice() {
-
 		eventVoiceButton = (ImageButton) findViewById(R.id.eventVoiceButton);
 
 		// Check to see if a recognition activity is present
@@ -332,7 +332,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 											.findViewById(R.id.tag_edit);
 									String tag = tagEditText.getText()
 											.toString();
-									if(tag.length() > 0)
+									if (tag.length() > 0)
 										EventActivity.mEventManager.addTag(tag);
 									initializeTags();
 									tagEditText.setText("");

@@ -2,10 +2,15 @@ package edu.berkeley.security.eventtracker.prediction;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
@@ -35,7 +40,7 @@ public class WekaInterface {
 	 */
 	public static Instances dumpDbWeka(ArrayList<Attribute> eventAttributes) {
 		EventCursor eventsCursor = EventManager.getManager()
-				.fetchSortedEvents();
+				.fetchUndeletedEvents();
 		Calendar calendar = Calendar.getInstance();
 
 		Instances eventData = new Instances("EventData", eventAttributes, 0);
@@ -75,6 +80,7 @@ public class WekaInterface {
 	 * @return the predicted name.
 	 */
 	public static String predictEventName() {
+		predictEventNames();
 		ArrayList<Attribute> attributes = getEventAttributes();
 		Instances eventInstances = dumpDbWeka(attributes);
 
@@ -94,9 +100,85 @@ public class WekaInterface {
 			throw new RuntimeException();
 		}
 
+		return getEventName(prediction, attributes);
+	}
+
+	/**
+	 * Calculates the distribution of probabilities over all predictable events.
+	 * 
+	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
+	 *         from highest to lowest probability.
+	 */
+	public static SortedMap<Double, String> getEventDistribution() {
+		ArrayList<Attribute> attributes = getEventAttributes();
+		Instances eventInstances = dumpDbWeka(attributes);
+
+		Instance partialInstance = eventToInstance(new EventEntry(),
+				Calendar.getInstance(), attributes);
+		partialInstance.setDataset(eventInstances);
+
+		// Create a (naïve bayes) classifier
+		Classifier cModel = (Classifier) new NaiveBayes();
+
+		double[] predictions;
+		try {
+			cModel.buildClassifier(eventInstances);
+			predictions = cModel.distributionForInstance(partialInstance);
+		} catch (Exception e) {
+			// Huh?
+			throw new RuntimeException();
+		}
+
+		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
+				new OppositeDoubleComparator());
+		for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
+			predictionResults.put(predictions[attributeIndex],
+					getEventName(attributeIndex, attributes));
+		}
+		return predictionResults;
+	}
+
+	/**
+	 * Predicts the name of an event that might be starting now.
+	 * 
+	 * @return the predicted name.
+	 */
+	public static List<String> predictEventNames() {
+		Map<Double, String> predictionResults = getEventDistribution();
+
+		List<String> eventNames = new ArrayList<String>(
+				predictionResults.size());
+		for (Entry<Double, String> predictedResult : predictionResults
+				.entrySet())
+			eventNames.add(predictedResult.getValue());
+		return eventNames;
+	}
+
+	/**
+	 * A comparator that prioritizes higher values over lower ones.
+	 */
+	private static class OppositeDoubleComparator implements Comparator<Double> {
+
+		@Override
+		public int compare(Double arg0, Double arg1) {
+			return arg1.compareTo(arg0);
+		}
+
+	}
+
+	/**
+	 * Gets the name of an event based on its index in the attributes.
+	 * 
+	 * @param attributeIndex
+	 *            the index of the attribute to get the name of.
+	 * @param attributes
+	 *            the list of attributes.
+	 * @return the name of the event the attribute at the index corresponds to.
+	 */
+	public static String getEventName(double attributeIndex,
+			List<Attribute> attributes) {
 		Attribute classAttribute = attributes.get(attributes.size() - 1);
-		String predictedName = classAttribute.value((int) prediction);
-		return predictedName;
+		return classAttribute.value((int) attributeIndex);
 	}
 
 	/**

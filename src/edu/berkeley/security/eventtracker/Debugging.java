@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -66,8 +68,15 @@ public class Debugging extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						String name = WekaInterface.predictEventName();
-						debugStatus.setText("Predicted event: " + name);
+						Map<Double, String> eventPredictions = WekaInterface
+								.getEventDistribution();
+						String debugText = "Predicted events: ";
+						for (Entry<Double, String> probNamePair : eventPredictions
+								.entrySet())
+							debugText += String.format("\n%s: %.2f%%",
+									probNamePair.getValue(),
+									probNamePair.getKey() * 100);
+						debugStatus.setText(debugText);
 					}
 				});
 		((Button) findViewById(R.id.forceRegisterButton))
@@ -98,8 +107,6 @@ public class Debugging extends Activity {
 					}
 				});
 	}
-
-	
 
 	private int importTestEvents() throws IOException, ParseException {
 		AssetManager assetMgr = getAssets();
