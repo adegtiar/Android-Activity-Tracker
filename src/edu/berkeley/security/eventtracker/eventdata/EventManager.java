@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
+import edu.berkeley.security.eventtracker.Settings;
 
 /**
  * Manages the event data back-end and acts as a wrapper around a database
@@ -99,13 +100,16 @@ public class EventManager {
 	public boolean updateDatabase(EventEntry event, boolean receivedAtServer) {
 		if (event == null)
 			return false;
+		EventActivity.isDbUpdated = true;
 		if (event.mDbRowID == -1) {
+			EventActivity.u
 			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID,
 					receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
 			return event.persisted;
 		} else {
+			EventActivity.setWekaModel(null);
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
 					event.mUUID, event.deleted, receivedAtServer, event.mTag);
@@ -120,6 +124,8 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean markEventDeleted(long rowId) {
+		EventActivity.setWekaModel(null);
+		EventActivity.isDbUpdated = true;
 		return mDbHelper.markDeleted(rowId);
 	}
 
@@ -131,6 +137,8 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(long rowId) {
+		EventActivity.setWekaModel(null);
+		EventActivity.isDbUpdated = true;
 		return mDbHelper.deleteEvent(rowId);
 	}
 

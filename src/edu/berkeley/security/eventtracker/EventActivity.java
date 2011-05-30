@@ -1,5 +1,6 @@
 package edu.berkeley.security.eventtracker;
 
+import weka.classifiers.Classifier;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -42,6 +43,10 @@ abstract public class EventActivity extends Activity {
 
 	protected static final int DIALOG_NOTE_ENTRY = 9;
 	protected TextView textViewIsTracking;
+
+	// Machine learning variables
+	public static boolean isDbUpdated;
+	protected static Classifier wekaModel;
 
 	// Variables for Services
 	protected static Intent gpsServiceIntent;
@@ -356,4 +361,18 @@ abstract public class EventActivity extends Activity {
 
 	}
 
+	public static void setWekaModel(Classifier wekaModel) {
+		EventActivity.wekaModel = wekaModel;
+	}
+
+	public static Classifier getWekaModel() {
+		if (wekaModel == null)
+			wekaModel = Settings.getWekaModel();
+		return wekaModel;
+	}
+	
+	public static void updateWekaModel(EventEntry newEvent) {
+		if (wekaModel != null)
+			wekaModel.
+	}
 }

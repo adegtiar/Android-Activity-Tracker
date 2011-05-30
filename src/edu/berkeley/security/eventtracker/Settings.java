@@ -1,7 +1,9 @@
 package edu.berkeley.security.eventtracker;
 
+import java.io.IOException;
 import java.util.UUID;
 
+import weka.classifiers.Classifier;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -10,15 +12,16 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
+import edu.berkeley.security.eventtracker.prediction.WekaInterface;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
@@ -36,6 +39,7 @@ public class Settings extends PreferenceActivity {
 	public static final String UUIDOfDevice = "deviceUUID";
 	public static final String POLL_TIME = "pollTime";
 	public static final String Registered = "registered";
+	public static final String WekaModel = "wekaModel";
 	private static final String isSychronizationEnabled = "enableSychronization";
 	private static final int DIALOG_TEXT_ENTRY = 0;
 
@@ -43,69 +47,73 @@ public class Settings extends PreferenceActivity {
 	private static CheckBoxPreference gpsEnabled;
 	private static CheckBoxPreference notificationsEnabled;
 
-	//don't access these directly
+	// don't access these directly
 	private static boolean gpsPreference;
 	private static boolean notificationPreferences;
 	private static boolean webPreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preferences);
-			sychronizeDataEnabled = (CheckBoxPreference) findPreference("webPref");
-			gpsEnabled = (CheckBoxPreference) findPreference("gpsPref");
-			notificationsEnabled = (CheckBoxPreference) findPreference("notificationsPref");
-			getPrefs();
-			if (getDeviceUUID().length() == 0) {
-				setDeviceUUID();
-			}
-			
-			
-			  gpsEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				  
-                  public boolean onPreferenceClick(Preference preference) {
-                  	
-                  	
-					if(gpsEnabled.isChecked())
-						EventActivity.gpsServiceIntent.putExtra("gps", true);
-					else {
-						EventActivity.gpsServiceIntent.putExtra("gps", false);
-					}
-					if (EventActivity.mEventManager.isTracking())
-						startService(EventActivity.gpsServiceIntent);
 
-					
-                    return true;
-                  }
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.preferences);
+		sychronizeDataEnabled = (CheckBoxPreference) findPreference("webPref");
+		gpsEnabled = (CheckBoxPreference) findPreference("gpsPref");
+		notificationsEnabled = (CheckBoxPreference) findPreference("notificationsPref");
+		getPrefs();
+		if (getDeviceUUID().length() == 0) {
+			setDeviceUUID();
+		}
 
-          });
-				notificationsEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		gpsEnabled
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 					public boolean onPreferenceClick(Preference preference) {
-	                  	//TODO fix this
-						SharedPreferences prefs = PreferenceManager
-						.getDefaultSharedPreferences(getBaseContext());
-						 boolean test=prefs.getBoolean("notificationsPref", false);
-						 updatePreferences();
+
+						if (gpsEnabled.isChecked())
+							EventActivity.gpsServiceIntent
+									.putExtra("gps", true);
+						else {
+							EventActivity.gpsServiceIntent.putExtra("gps",
+									false);
+						}
+						if (EventActivity.mEventManager.isTracking())
+							startService(EventActivity.gpsServiceIntent);
+
 						return true;
 					}
-				});	
-				
-				sychronizeDataEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+				});
+		notificationsEnabled
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+					public boolean onPreferenceClick(Preference preference) {
+						// TODO fix this
+						SharedPreferences prefs = PreferenceManager
+								.getDefaultSharedPreferences(getBaseContext());
+						boolean test = prefs.getBoolean("notificationsPref",
+								false);
+						updatePreferences();
+						return true;
+					}
+				});
+
+		sychronizeDataEnabled
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 					public boolean onPreferenceClick(Preference preference) {
 
-						if (!isPasswordSet() && sychronizeDataEnabled.isChecked()) {
+						if (!isPasswordSet()
+								&& sychronizeDataEnabled.isChecked()) {
 							sychronizeDataEnabled.setChecked(false);
-						
+
 							showDialog(DIALOG_TEXT_ENTRY);
 						}
 						return true;
 
 					}
-				});		
-	
+				});
+
 	}
 
 	private void getPrefs() {
@@ -119,11 +127,14 @@ public class Settings extends PreferenceActivity {
 	}
 
 	private void updatePreferences() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putBoolean(isGPSEnabled, prefs.getBoolean("gpsPref", false));
-		prefEditor.putBoolean(areNotificationsEnabled, prefs.getBoolean("notificationsPref", false));
-		prefEditor.putBoolean(isSychronizationEnabled, prefs.getBoolean("webPref", false));
+		prefEditor.putBoolean(areNotificationsEnabled,
+				prefs.getBoolean("notificationsPref", false));
+		prefEditor.putBoolean(isSychronizationEnabled,
+				prefs.getBoolean("webPref", false));
 		prefEditor.commit();
 	}
 
@@ -138,7 +149,7 @@ public class Settings extends PreferenceActivity {
 	protected void onPause() {
 		super.onPause();
 		updatePreferences();
-		boolean isPass=isPasswordSet();
+		boolean isPass = isPasswordSet();
 		if (isPasswordSet() && isSychronizationEnabled()) {
 			if (!registeredAlready()) {
 				// attempt to register with the server
@@ -146,11 +157,13 @@ public class Settings extends PreferenceActivity {
 
 			}
 		}
-		if(!areNotificationsEnabled()){
+		if (!areNotificationsEnabled()) {
 			EventActivity.disableTrackingNotification(this);
 		}
-		if(areNotificationsEnabled() && EventActivity.mEventManager.isTracking()){
-			EventActivity.enableTrackingNotification(this, EventActivity.mEventManager.getCurrentEvent());
+		if (areNotificationsEnabled()
+				&& EventActivity.mEventManager.isTracking()) {
+			EventActivity.enableTrackingNotification(this,
+					EventActivity.mEventManager.getCurrentEvent());
 		}
 	}
 
@@ -178,13 +191,59 @@ public class Settings extends PreferenceActivity {
 
 	protected static void setPassword(String passwd) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
-		// String test = Encryption.base64(Encryption.hash(passwd));
-		// prefEditor.putString(password,
-		// Encryption.base64(Encryption.hash(passwd)));
 		prefEditor.putString(password, passwd);
 		prefEditor.putBoolean(isPasswordSet, true);
 		prefEditor.commit();
+	}
 
+	public static String getPassword() {
+		return EventActivity.settings.getString(password, "");
+	}
+
+	/**
+	 * Stores the given <tt>Classifier</tt> as the current WEKA model.
+	 * 
+	 * @param model
+	 *            the WEKA model to store.
+	 */
+	public static void setWekaModel(Classifier model) {
+		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+		String modelString;
+		if (model == null)
+			modelString = null;
+		else {
+			try {
+				modelString = WekaInterface.classifierToString(model);
+			} catch (IOException e) {
+				modelString = null;
+			}
+		}
+		prefEditor.putString(WekaModel, modelString);
+		prefEditor.commit();
+	}
+
+	/**
+	 * Retrieves the stored WEKA model.
+	 * 
+	 * @return the WEKA model for the current set of events.
+	 */
+	public static Classifier getWekaModel() {
+		String wekaModelString = null;
+		if (!EventActivity.isDbUpdated)
+			wekaModelString = EventActivity.settings.getString(WekaModel, null);
+		Classifier wekaModel;
+		if (wekaModelString == null) {
+			wekaModel = WekaInterface.getEventModel();
+		} else {
+			try {
+				wekaModel = WekaInterface.stringToClassifer(wekaModelString);
+			} catch (IOException e) {
+				// Had an invalid model stored. Better recalculate it.
+				wekaModel = WekaInterface.getEventModel();
+				setWekaModel(wekaModel);
+			}
+		}
+		return wekaModel;
 	}
 
 	protected static void setPhoneNumber(Context context) {
@@ -216,10 +275,6 @@ public class Settings extends PreferenceActivity {
 
 	}
 
-	public static String getPassword() {
-		return EventActivity.settings.getString(password, "");
-	}
-
 	public static String getDeviceUUID() {
 		return EventActivity.settings.getString(UUIDOfDevice, "");
 	}
@@ -231,6 +286,7 @@ public class Settings extends PreferenceActivity {
 	public static boolean registeredAlready() {
 		return EventActivity.settings.getBoolean(Registered, false);
 	}
+
 	/*
 	 * Dialog box for password entry
 	 */
@@ -259,10 +315,8 @@ public class Settings extends PreferenceActivity {
 									String password = passwdEditText.getText()
 											.toString();
 									Settings.setPassword(password);
-									
-									Settings.updatePasswordSettings();
-									
 
+									Settings.updatePasswordSettings();
 								}
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,

@@ -1,5 +1,10 @@
 package edu.berkeley.security.eventtracker.prediction;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -18,6 +23,7 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import android.util.Base64;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
@@ -80,20 +86,15 @@ public class WekaInterface {
 	 * @return the predicted name.
 	 */
 	public static String predictEventName() {
-		predictEventNames();
 		ArrayList<Attribute> attributes = getEventAttributes();
 		Instances eventInstances = dumpDbWeka(attributes);
-
+		Classifier cModel = getEventModel(eventInstances);
 		Instance partialInstance = eventToInstance(new EventEntry(),
 				Calendar.getInstance(), attributes);
 		partialInstance.setDataset(eventInstances);
 
-		// Create a (naïve bayes) classifier
-		Classifier cModel = (Classifier) new NaiveBayes();
-
 		double prediction;
 		try {
-			cModel.buildClassifier(eventInstances);
 			prediction = cModel.classifyInstance(partialInstance);
 		} catch (Exception e) {
 			// Huh?
@@ -112,34 +113,98 @@ public class WekaInterface {
 	public static SortedMap<Double, String> getEventDistribution() {
 		ArrayList<Attribute> attributes = getEventAttributes();
 		Instances eventInstances = dumpDbWeka(attributes);
-		
-		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
-				new OppositeDoubleComparator());
-
-		if (eventInstances.size() > 0) {
-			Instance partialInstance = eventToInstance(new EventEntry(),
-					Calendar.getInstance(), attributes);
-			partialInstance.setDataset(eventInstances);
-	
-			// Create a (naïve bayes) classifier
-			Classifier cModel = (Classifier) new NaiveBayes();
-	
-			double[] predictions;
-			try {
-				cModel.buildClassifier(eventInstances);
-				predictions = cModel.distributionForInstance(partialInstance);
-			} catch (Exception e) {
-				// Huh?
-				throw new RuntimeException();
-			}
-			
-			for (int attributeIndex = 0; attributeIndex < eventInstances.size(); attributeIndex++) {
-				predictionResults.put(predictions[attributeIndex],
-						getEventName(attributeIndex, attributes));
-			}
+		Classifier cModel = getEventModel(eventInstances);
+		Instance partialInstance = eventToInstance(new EventEntry(),
+				Calendar.getInstance(), attributes);
+		partialInstance.setDataset(eventInstances);
+		double[] predictions;
+		try {
+			predictions = cModel.distributionForInstance(partialInstance);
+		} catch (Exception e) {
+			// Huh?
+			throw new RuntimeException();
 		}
 
+		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
+				new OppositeDoubleComparator());
+		for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
+			predictionResults.put(predictions[attributeIndex],
+					getEventName(attributeIndex, attributes));
+		}
 		return predictionResults;
+	}
+
+	/**
+	 * Builds a classifier over the event data.
+	 * 
+	 * @param instancesToClassify
+	 *            the instances over which the build the classifier.
+	 * @return a <tt>Classifier</tt> built using the event data.
+	 */
+	private static Classifier getEventModel(Instances instancesToClassify) {
+		// Create a (naïve bayes) classifier
+		Classifier cModel = (Classifier) new NaiveBayes();
+		try {
+			cModel.buildClassifier(instancesToClassify);
+		} catch (Exception e) {
+			// TODO make more graceful
+			throw new RuntimeException();
+		}
+		return cModel;
+	}
+
+	/**
+	 * Builds a classifier over the event data.
+	 * 
+	 * @return a <tt>Classifier</tt> built using the event data.
+	 */
+	public static Classifier getEventModel() {
+		ArrayList<Attribute> attributes = getEventAttributes();
+		Instances eventInstances = dumpDbWeka(attributes);
+		return getEventModel(eventInstances);
+	}
+
+	/**
+	 * Serializes a classifier into a string.
+	 * 
+	 * @param classiferToSerialize
+	 *            the classifier to serialize.
+	 * @return the string-serialized form of the classifier/.
+	 * @throws IOException
+	 *             the classifier is invalid, or an unexpected serialization
+	 *             error occurred.
+	 */
+	public static String classifierToString(Classifier classiferToSerialize)
+			throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(os);
+
+		oos.writeObject(classiferToSerialize);
+		oos.flush();
+		return Base64.encodeToString(os.toByteArray(), 0);
+	}
+
+	/**
+	 * De-serializes a classifier serialized using the
+	 * <tt>classifierToString()</tt> method.
+	 * 
+	 * @param classiferToDeserialize
+	 *            the string-serialized form of the classifier to de-serialize.
+	 * @return the de-serialized <tt>Classifier</tt>.
+	 * @throws IOException
+	 *             the string is not a valid serialized classifier, or an
+	 *             unexpected de-serialization error occurred.
+	 */
+	public static Classifier stringToClassifer(String classiferToDeserialize)
+			throws IOException {
+		byte[] serializedClassifier = Base64.decode(classiferToDeserialize, 0);
+		ByteArrayInputStream is = new ByteArrayInputStream(serializedClassifier);
+		ObjectInputStream ois = new ObjectInputStream(is);
+		try {
+			return (Classifier) ois.readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException(e.getMessage());
+		}
 	}
 
 	/**
@@ -159,7 +224,7 @@ public class WekaInterface {
 	}
 
 	/**
-	 * A comparator that prioritizes higher values over lower ones.
+	 * A Double comparator that prioritizes higher values over lower ones.
 	 */
 	private static class OppositeDoubleComparator implements Comparator<Double> {
 
@@ -273,7 +338,7 @@ public class WekaInterface {
 		Set<String> names = new HashSet<String>();
 		Set<String> repeatedNames = new HashSet<String>();
 		EventCursor allEventsCursor = EventManager.getManager()
-				.fetchAllEvents();
+				.fetchUndeletedEvents();
 		EventEntry currentEvent;
 		while (allEventsCursor.moveToNext()) {
 			currentEvent = allEventsCursor.getEvent();
