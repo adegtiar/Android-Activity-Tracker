@@ -45,6 +45,9 @@ public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
 	private ProgressIndicatorSpinner myProgressTimer;
 
+	
+
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -61,6 +64,7 @@ public class TrackingMode extends AbstractEventEdit {
 		Settings.setPhoneNumber(this);
 		Networking.registerIfNeeded(this);
 
+		
 		// Attempts to send all the requests that are suppose to be sent
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);

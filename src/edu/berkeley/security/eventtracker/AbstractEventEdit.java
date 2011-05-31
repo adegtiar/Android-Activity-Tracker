@@ -61,6 +61,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
 	private static final int DIALOG_ENTER_TAG = 8;
 
+
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -397,4 +399,5 @@ abstract public class AbstractEventEdit extends EventActivity {
 		eventNameEditText.clearFocus();
 		dummy.requestFocus();
 	}
+
 }

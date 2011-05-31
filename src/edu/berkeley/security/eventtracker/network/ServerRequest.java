@@ -2,10 +2,11 @@ package edu.berkeley.security.eventtracker.network;
 
 public enum ServerRequest {
 	REGISTER("users/init"),
-	SENDDATA("events/upload"),
-	UPDATE("events/upload"), 
+	SENDDATA("events/upload_bulk"),
+	UPDATE("events/upload_bulk"), 
 	DELETE("events/delete"), 
 	POLL("events/poll");
+	
 	private String mUrl;
 	
 

@@ -38,6 +38,7 @@ public class Settings extends PreferenceActivity {
 	public static final String Registered = "registered";
 	private static final String isSychronizationEnabled = "enableSychronization";
 	private static final int DIALOG_TEXT_ENTRY = 0;
+	private static final String LAST_POLL_TIME = "lastPollTime";
 
 	private static CheckBoxPreference sychronizeDataEnabled;
 	private static CheckBoxPreference gpsEnabled;
@@ -175,6 +176,10 @@ public class Settings extends PreferenceActivity {
 	public static String getPollTime() {
 		return EventActivity.settings.getString(POLL_TIME, null);
 	}
+	
+	public static Long getLastPolledTime() {
+		return EventActivity.settings.getLong(LAST_POLL_TIME, 0);
+	}
 
 	protected static void setPassword(String passwd) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
@@ -203,6 +208,13 @@ public class Settings extends PreferenceActivity {
 		prefEditor.commit();
 	}
 
+	public static void setLastPolledTime(Long pollTime) {
+		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+		prefEditor.putLong(LAST_POLL_TIME, pollTime);
+		prefEditor.commit();
+	}
+
+	
 	public static void setPollTime(String pollTime) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putString(POLL_TIME, pollTime);
