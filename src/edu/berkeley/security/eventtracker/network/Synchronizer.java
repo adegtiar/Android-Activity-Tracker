@@ -1,6 +1,7 @@
 package edu.berkeley.security.eventtracker.network;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,8 +17,8 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
 public class Synchronizer extends IntentService {
-	public static final String EVENT_DATA_EXTRA = "EventData";
 	public static final String REQUEST_EXTRA = "Request";
+	public static final String EVENT_LIST_EXTRA = "EventList";
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss z");
 
@@ -39,39 +40,43 @@ public class Synchronizer extends IntentService {
 		manager = EventManager.getManager();
 		Bundle bundle = intent.getExtras();
 
-		EventEntry event = (EventEntry) bundle
-				.getSerializable(EVENT_DATA_EXTRA);
 		ServerRequest request = (ServerRequest) bundle
-				.getSerializable(REQUEST_EXTRA);
+		.getSerializable(REQUEST_EXTRA);	
 		
-		//hack
-		if(event !=null){
-			if(event.mTag != null){
-				if(event.mTag.equals("Select a tag")){
-					event.mTag="";
+		ArrayList<EventEntry> listOfEvents =(ArrayList<EventEntry>) bundle.getSerializable(EVENT_LIST_EXTRA);
+		if(listOfEvents != null){
+			for(EventEntry thisEvent:listOfEvents){
+				if(thisEvent !=null){
+					if(thisEvent.mTag != null){
+						if(thisEvent.mTag.equals("Select a tag")){
+							thisEvent.mTag="";
+						}
+					}
 				}
 			}
 		}
-		
+	
 		PostRequestResponse response;
 		switch (request) {
 		case SENDDATA:
-			response = Networking.sendPostRequest(event, request);
+			response = Networking.sendPostRequest(listOfEvents, request);
 			if (response.isSuccess()) {
-				manager.updateDatabase(event, true);
+				manager.updateDatabaseBulk(listOfEvents, true);
 			}
 			break;
 		case REGISTER:
 			response = Networking.sendPostRequest(ServerRequest.REGISTER);
-			if (response.isSuccess())
+			if (response.isSuccess()){
 				Settings.confirmRegistrationWithWebServer();
+				Networking.sendAllEvents(this);
+			}
 			break;
 		case UPDATE:
 		case DELETE:
-			response = Networking.sendPostRequest(event, request);
+			response = Networking.sendPostRequest(listOfEvents, request);
 			break;
 		case POLL:
-			response = Networking.sendPostRequest(event, request);
+			response = Networking.sendPostRequest(listOfEvents, request);
 			if (response.isSuccess())
 				try {
 					parseEventPollResponse(response.getContent());

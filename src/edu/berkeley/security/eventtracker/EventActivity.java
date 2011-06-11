@@ -1,5 +1,7 @@
 package edu.berkeley.security.eventtracker;
 
+import java.util.Set;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -58,6 +60,10 @@ abstract public class EventActivity extends Activity {
 
 	private GestureDetector gestureDetector;
 	private OnTouchListener flingListener;
+	
+	
+
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -369,5 +375,7 @@ abstract public class EventActivity extends Activity {
 		}
 
 	}
+
+	
 
 }

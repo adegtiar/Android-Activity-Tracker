@@ -117,6 +117,35 @@ public class EventManager {
 	}
 
 	/**
+	 * Creates or updates the database with the given list of events
+	 */
+	public void updateDatabaseBulk(ArrayList<EventEntry> listOfEvents, boolean receivedAtServer) {
+		if (listOfEvents == null)
+			return;
+		for(EventEntry event: listOfEvents){
+			if (event.mDbRowID == -1) {
+				event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
+						event.mStartTime, event.mEndTime, event.mUUID,
+						receivedAtServer, event.mTag);
+				event.persisted = event.mDbRowID != -1;
+			} else {
+				mDbHelper.updateEvent(event.mDbRowID, event.mName,
+						event.mNotes, event.mStartTime, event.mEndTime,
+						event.mUUID, event.deleted, receivedAtServer, event.mTag);
+			}
+		}
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
 	 * Mark the event with the given rowId as deleted.
 	 * 
 	 * @param rowId

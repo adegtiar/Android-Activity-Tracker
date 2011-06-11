@@ -5,6 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,9 +21,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.format.DateFormat;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
@@ -49,12 +56,16 @@ public class Networking {
 					.fetchPhoneOnlyEvents();
 			// send them all! LEAVE NO EVENT BEHIND
 			EventEntry nextEvent;
+			ArrayList<EventEntry> listOfEvents= new ArrayList<EventEntry>();
 			while (theCursor.moveToNext()) {
 				nextEvent = theCursor.getEvent();
 				if (nextEvent != null) {
-					Networking.sendToServer(ServerRequest.SENDDATA, nextEvent,
-							context);
+					listOfEvents.add(nextEvent);
 				}
+			}
+			if(!listOfEvents.isEmpty()){
+				Networking.sendToServerBulk(ServerRequest.SENDDATA, listOfEvents,
+					context);
 			}
 		}
 	}
@@ -82,7 +93,12 @@ public class Networking {
 	public static void pollServerIfAllowed(Context context) {
 		if (Settings.isSychronizationEnabled()) {
 			// poll the server for event data
-			Networking.sendToServer(ServerRequest.POLL, null, context);
+			Long lastTimePolled=Settings.getLastPolledTime();
+			Long currentTime=Calendar.getInstance().getTimeInMillis();
+			if(currentTime - lastTimePolled > 30000){
+				Settings.setLastPolledTime(currentTime);
+				Networking.sendToServer(ServerRequest.POLL, null, context);
+			}
 		}
 	}
 
@@ -100,14 +116,47 @@ public class Networking {
 	 */
 	public static void sendToServer(ServerRequest request, EventEntry data,
 			Context context) {
+		
 		// check to see if allowed to send data
 		if (Settings.isSychronizationEnabled()) {
+			ArrayList<EventEntry> listOfEvents=null;
+			if(data != null){
+				listOfEvents= new ArrayList<EventEntry>();
+				listOfEvents.add(data);
+			}
 			Intent intent = new Intent(context, Synchronizer.class);
-			intent.putExtra(Synchronizer.EVENT_DATA_EXTRA, data);
+			intent.putExtra(Synchronizer.EVENT_LIST_EXTRA, listOfEvents);
 			intent.putExtra(Synchronizer.REQUEST_EXTRA, request);
 			context.startService(intent);
 		}
 	}
+	
+	
+	/**
+	 * Sends intents to a service that sends the actual post requests Only does
+	 * this if permission to synchronize with web server is given
+	 * 
+	 * @param request
+	 *            - the type of post request to send(i.e., register, send data,
+	 *            update some event, delete some event)
+	 * @param data
+	 *            - the event to be send to the server
+	 * @param context
+	 *            - dont't worry about this.
+	 */
+	public static void sendToServerBulk(ServerRequest request, ArrayList<EventEntry> listOfEvents,
+			Context context) {
+		// check to see if allowed to send data
+		if (Settings.isSychronizationEnabled()) {
+			
+			Intent intent = new Intent(context, Synchronizer.class);
+			intent.putExtra(Synchronizer.EVENT_LIST_EXTRA, listOfEvents);
+			intent.putExtra(Synchronizer.REQUEST_EXTRA, request);
+			context.startService(intent);
+		}
+	}
+	
+
 
 	/**
 	 * Sends a post request with the given event entry and request type.
@@ -119,13 +168,13 @@ public class Networking {
 	 *            the type of request to send.
 	 * @return the response to the request.
 	 */
-	public static PostRequestResponse sendPostRequest(EventEntry data,
+	public static PostRequestResponse sendPostRequest(ArrayList<EventEntry> listOfEvents,
 			ServerRequest request) {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(request.getURL());
 
-		List<NameValuePair> params = getPostParams(request, data);
+		List<NameValuePair> params = getPostParams(request, listOfEvents);
 		try {
 			postMethod.setEntity(new UrlEncodedFormEntity(params));
 		} catch (UnsupportedEncodingException e) {
@@ -167,7 +216,7 @@ public class Networking {
 	 * @return a List of parameters to send.
 	 */
 	private static List<NameValuePair> getPostParams(ServerRequest request,
-			EventEntry data) {
+			ArrayList<EventEntry> listOfEvents) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		switch (request) {
 		case REGISTER:
@@ -178,16 +227,31 @@ public class Networking {
 			break;
 		case SENDDATA:
 		case UPDATE:
-			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
-			params.add(new BasicNameValuePair(EVENT_DATA_PARAM,
-					EventDataSerializer.encryptJSONObject(EventDataSerializer.toJSONObject(data)))); //private this
-			params.add(new BasicNameValuePair(EVENT_UPDATED_AT_PARAM,
-					Synchronizer.dateFormatter.format(data.mUpdateTime)));
-			params.add(new BasicNameValuePair(EVENT_DELETED_PARAM, String
-					.valueOf(data.deleted)));
+			try {
+				JSONArray EventData = new JSONArray();
+				for(EventEntry data: listOfEvents){
+					JSONObject eventJSON= new JSONObject();
+					eventJSON.accumulate(EVENT_UUID_PARAM, data.mUUID);
+					eventJSON.accumulate(EVENT_DELETED_PARAM, String
+							.valueOf(data.deleted));
+					eventJSON.accumulate(EVENT_UPDATED_AT_PARAM,
+							Synchronizer.dateFormatter.format(data.mUpdateTime));
+					eventJSON.accumulate(EVENT_DATA_PARAM, 
+							EventDataSerializer.encryptJSONObject(EventDataSerializer.toJSONObject(data)));
+					EventData.put(eventJSON);
+				}
+				params.add(new BasicNameValuePair(EVENT_DATA_PARAM, EventData.toString()));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			break;
+	
 		case DELETE:
-			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, data.mUUID));
+			//only delete one event at a time
+			EventEntry event= listOfEvents.get(0);
+			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, event.mUUID));
 			break;
 		case POLL:
 			String pollTime = Settings.getPollTime();
@@ -231,4 +295,6 @@ public class Networking {
 		}
 		return null;
 	}
+
+
 }

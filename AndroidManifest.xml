@@ -22,20 +22,14 @@
 		<service android:name=".GPSLoggerService" />
 		<activity android:name=".TimeDatePicker"></activity>
 
-		<activity android:name=".eventdata.EventDataSerializer">
-			<intent-filter>
-				<action android:name="edu.berkeley.security.eventtracker.GET_SERIALIZED_EVENT_DATA" />
-				<category android:name="android.intent.category.DEFAULT"></category>
-			</intent-filter>
-		</activity>
-	<activity android:name=".ServerActivity" android:launchMode="singleTask"></activity>
-<service android:name=".webserver.WebServerService"></service>
+		
+	
 
-<service android:name="network.Synchronizer"></service>
+
+<service android:name=".network.Synchronizer"></service>
 <activity android:name=".Debugging"></activity>
-<activity android:name="maps.HelloGoogleMaps"
-			 android:label="@string/app_name"
-    		 android:theme="@android:style/Theme.NoTitleBar">
+<activity android:label="@string/app_name"
+    		 android:theme="@android:style/Theme.NoTitleBar" android:name=".maps.HelloGoogleMaps">
 			</activity>
 </application>
 	<uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
