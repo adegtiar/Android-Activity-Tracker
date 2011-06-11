@@ -6,8 +6,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.SortedSet;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -21,11 +20,12 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
+import edu.berkeley.security.eventtracker.prediction.MachineLearningUtils.PredictedPair;
 import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 public class Debugging extends Activity {
 
-	private static final String TEST_DATA_PATH = "debug/event_test_data2.txt";
+	private static final String TEST_DATA_PATH = "debug/event_test_data3.txt";
 	private static final String datePattern = "MM/dd/yyyy hh:mma";
 	private static SimpleDateFormat dateFormatter;
 	private static Calendar localCalendar;
@@ -68,14 +68,13 @@ public class Debugging extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						Map<Double, String> eventPredictions = PredictionService
+						SortedSet<PredictedPair> eventPredictions = PredictionService
 								.getEventDistribution();
 						String debugText = "Predicted events: ";
-						for (Entry<Double, String> probNamePair : eventPredictions
-								.entrySet())
+						for (PredictedPair nameProbPair : eventPredictions)
 							debugText += String.format("\n%s: %.2f%%",
-									probNamePair.getValue(),
-									probNamePair.getKey() * 100);
+									nameProbPair.getName(),
+									nameProbPair.getLikelihood() * 100);
 						debugStatus.setText(debugText);
 					}
 				});
@@ -125,8 +124,8 @@ public class Debugging extends Activity {
 				EventActivity.mEventManager.addTag(tag);
 			}
 			EventEntry event = mgr.createEvent(eventParts[0], eventParts[1],
-					parseDate(eventParts[2]), parseDate(eventParts[3]), false,
-					tag);
+						parseDate(eventParts[2]), parseDate(eventParts[3]),
+						false, tag);
 			if (event != null) {
 				nSuccessful++;
 			}

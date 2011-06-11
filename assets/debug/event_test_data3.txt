@@ -1,0 +1,94 @@
+Gamescrafters	presentation today		04/08/2011 11:00AM		04/08/2011 12:03PM	Class
+
+Breakfast	NorthSide Cafe		04/11/2011 10:32AM	04/11/2011 10:54AM	food
+
+Tutoring	soda office		04/11/2011 3:00PM	04/11/2011 5:00PM	tutoring
+
+Taking a stroll		for gps data	04/10/2011 4:00PM		04/10/2011 4:39PM	
+37.875763,-122.259798,04/10/2011 4:01PM		37.873973,-122.260044,04/10/2011 4:03PM		37.872465,-122.260108,04/10/2011 4:06PM		37.871279,-122.259851,04/10/2011 4:09PM		37.869535,-122.259228,04/10/2011 4:11PM		37.867942,-122.256675,04/10/2011 4:19PM		37.868247,-122.254508,04/10/2011 4:22PM		37.868518,-122.252512,04/10/2011 4:24PM		37.86989,-122.252598,04/10/2011 4:26PM		37.871347,-122.253263,04/10/2011 4:29PM		37.872651,-122.253993,04/10/2011 4:32PM		37.874057,-122.255859,04/10/2011 4:33PM		37.874769,-122.258027,04/10/2011 4:36PM		37.875666,-122.258434,04/10/2011 4:39PM
+Math 110	at soda hall	04/10/2011 1:03PM		04/10/2011 5:05PM		homework
+
+Sleeping	in bed		04/10/2011 2:51AM		04/10/2011 11:01AM		sleep
+
+Research	more encryption		04/09/2011 11:00PM		04/10/2011 2:35AM	sleep
+
+Movie	Tangled		04/09/2011 9:00PM		04/09/2011 10:35PM	entertainment
+
+Ice Cream Social	sundae		04/09/2011 6:05PM		04/09/2011 8:35PM	HKN
+
+TBP initiation		O'Brien Hall		04/09/2011 2:25PM		04/09/2011 2:57PM	TBP	
+
+Gamescrafters	meeting		04/08/2011 11:12AM		04/08/2011 1:03PM	Class
+
+Sleep	time for bed			04/08/2011 11:17PM	04/09/2011 8:03AM	sleep
+
+Watching tv		House				04/08/2011 9:55PM	04/08/2011 10:47PM	entertainment
+
+Research	implementing encryption		04/08/2011 6:03PM	04/08/2011 9:55PM	research	
+
+Tutoring	java,scheme,C		04/08/2011 3:00PM	04/08/2011 5:00PM	tutoring
+
+CS 161		web attacks			04/08/2011 11:00AM	04/08/2011 12:30PM	class
+
+Breakfast	NorthSide Cafe		04/08/2011 9:32AM	04/08/2011 9:54AM	food
+
+Math 110	late for class		04/08/2011 8:11AM	04/08/2011 9:32AM	class
+37.875763,-122.259798,04/08/2011 8:11AM		37.875378,-122.259851,04/08/2011 8:12AM		37.874023,-122.259915,04/08/2011 8:14AM		37.872635,-122.259743,04/08/2011 8:15AM		37.871415,-122.259743,04/08/2011 8:17AM		37.870704,-122.260151,04/08/2011 8:19AM
+Research	Lots to do...		04/07/2011 05:00PM	04/07/2011 07:10PM	research
+
+Dinner		At a Spanish place	04/07/2011 03:00PM	04/07/2011 04:55PM	food
+
+Eating		Northside Cafe		04/07/2011 11:05AM	04/07/2011 12:00PM	food
+
+Sleeping	In my bed (+couch)	04/06/2011 11:59PM	04/07/2011 8:41AM	sleep
+
+Research	More Rails stuff	04/06/2011 10:00PM	04/06/2011 11:51PM	research
+
+Dinner		Aki's				04/06/2011 09:00PM	04/06/2011 10:00PM	food
+
+Research	Doing Rails stuff	04/06/2011 06:00PM	04/06/2011 09:00PM	research
+
+Studying	CS184				04/06/2011 03:30PM	04/06/2011 06:00PM	studying
+
+Interviews	Google				04/06/2011 01:30PM	04/06/2011 03:30PM	interviews
+
+Preparing	For interviews		04/06/2011 12:30PM	04/06/2011 01:10PM	interviews
+
+Class		Gamescrafters		04/06/2011 11:00AM	04/06/2011 12:00PM	class
+
+Work		First day! Orientation	05/24/2011 08:00AM	05/24/2011 08:00PM	work
+
+Sleeping	zzz...					05/24/2011 11:30PM	05/25/2011 07:00AM	sleep
+
+Work		More orientation		05/25/2011 08:00AM	05/25/2011 08:00PM	work
+
+Sleeping	zzz...					05/25/2011 11:30PM	05/26/2011 07:00AM	sleep
+
+Work		Training				05/26/2011 08:00AM	05/26/2011 08:00PM	work
+
+Sleeping	zzz...					05/26/2011 11:30PM	05/27/2011 07:00AM	sleep
+
+Movies		Thor. Okay movie... 	05/27/2011 06:30PM	05/27/2011 10:00PM	social
+
+Dinner		Too much sushi!			05/27/2011 10:00PM	05/27/2011 11:00PM	food
+
+Sleeping	zzz...					05/28/2011 12:00AM	05/28/2011 01:00PM	sleep
+
+Rock climbing	Justin's birthday!	05/28/2011 3:00PM	05/28/2011 6:30PM	social
+
+Dinner			pasta				05/28/2011 7:00PM	05/28/2011 9:30PM	food
+
+Hanging out		Justin's place		05/28/2011 10:00PM	05/29/2011 2:30AM	social
+
+Breakfast		pancakes			05/29/2011 11:00AM	05/29/2011 12:00PM	food
+
+Helping friends move	heavy stuff	05/29/2011 1:00PM	05/29/2011 03:00PM	other
+
+Research	machine learning		05/29/2011 3:00PM	05/29/2011 11:00PM	other
+
+Sleeping	zzz...					05/29/2011 11:55PM	05/30/2011 11:00AM	sleep
+
+Family stuff	etc					05/30/2011 12:00PM	05/30/2011 11:00PM	other
+
+Dinner	21st Birthday!				06/02/2011 8:00PM	06/02/2011 10:00PM	social	
+
