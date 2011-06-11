@@ -193,6 +193,7 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 		});
 	}
+	
 	@Override
 	protected void setNameText(String name) {
 		if (currentEvent == null) {

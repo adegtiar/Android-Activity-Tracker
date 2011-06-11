@@ -71,8 +71,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
 		initializeVoice();
-		
-		initializeAutoComplete();
 	}
 
 	/**
@@ -234,8 +232,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	/**
 	 * Refreshes the AutoComplete adapters with all events from the database.
 	 */
-	private void initializeAutoComplete() {
-		adapterActivities.clear();
+	protected void initializeAutoComplete() {
+		autoCompleteActivities.clear();
 		mActivityNames.clear();
 
 		// Add predicted events in order of likelihood
@@ -250,7 +248,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 			if (nextEvent.mName.length() == 0)
 				continue;
 			if (mActivityNames.add(nextEvent.mName))
-				adapterActivities.add(nextEvent.mName);
+				autoCompleteActivities.add(nextEvent.mName);
 		}
 	}
 
