@@ -90,5 +90,51 @@ Sleeping	zzz...					05/29/2011 11:55PM	05/30/2011 11:00AM	sleep
 
 Family stuff	etc					05/30/2011 12:00PM	05/30/2011 11:00PM	other
 
+Work		tutorials				05/31/2011 08:00AM	05/31/2011 08:00PM	work
+
+Sleeping	zzz...					05/31/2011 11:30PM	06/01/2011 07:00AM	sleep
+
+Work		tutorials				06/01/2011 08:00AM	06/01/2011 08:00PM	work
+
+Sleeping	zzz...					06/01/2011 11:30PM	06/02/2011 07:00AM	sleep
+
+Work		projects				06/02/2011 08:00AM	06/02/2011 07:30PM	work
+
 Dinner	21st Birthday!				06/02/2011 8:00PM	06/02/2011 10:00PM	social	
 
+Sleeping	zzz...					06/02/2011 11:30PM	06/03/2011 07:00AM	sleep
+
+Work		projects				06/03/2011 08:00AM	06/03/2011 07:30PM	work
+
+Sleeping	zzz...					06/04/2011 2:30AM	06/04/2011 12:30PM	sleep
+
+Relaxing	weekend!				06/04/2011 1:00PM	06/05/2011 1:30AM	other
+
+Sleeping	zzz...					06/05/2011 1:30AM	06/05/2011 12:30PM	sleep
+
+Research	misc					06/05/2011 1:00PM	06/05/2011 6:00PM	research
+
+Relaxing	misc					06/05/2011 6:00PM	06/06/2011 12:00AM	other
+
+Sleeping	zzz...					06/06/2011 12:00AM	06/06/2011 07:00AM	sleep
+
+Work		projects				06/06/2011 08:00AM	06/06/2011 08:00PM	work
+
+Sleeping	zzz...					06/06/2011 11:30PM	06/07/2011 07:00AM	sleep
+
+Work		projects				06/07/2011 08:00AM	06/07/2011 07:30PM	work
+
+Sleeping	zzz...					06/07/2011 11:30PM	06/08/2011 07:00AM	sleep
+
+Work		projects				06/08/2011 08:00AM	06/08/2011 07:30PM	work
+
+Sleeping	zzz...					06/09/2011 12:00AM	06/09/2011 7:30AM	sleep
+
+Work		projects				06/09/2011 08:40AM	06/09/2011 08:30PM	work
+
+Sleeping	zzz...					06/10/2011 12:00AM	06/10/2011 7:45AM	sleep
+
+Work		projects				06/10/2011 08:50AM	06/10/2011 05:30PM	work
+
+Research	machine learning		06/10/2011 05:50PM	06/10/2011 11:30PM	research
+	
