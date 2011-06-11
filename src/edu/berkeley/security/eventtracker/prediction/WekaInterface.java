@@ -112,7 +112,7 @@ public class WekaInterface {
 	public static SortedMap<Double, String> getEventDistribution() {
 		ArrayList<Attribute> attributes = getEventAttributes();
 		Instances eventInstances = dumpDbWeka(attributes);
-		
+
 		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
 				new OppositeDoubleComparator());
 
@@ -120,10 +120,10 @@ public class WekaInterface {
 			Instance partialInstance = eventToInstance(new EventEntry(),
 					Calendar.getInstance(), attributes);
 			partialInstance.setDataset(eventInstances);
-	
+
 			// Create a (naïve bayes) classifier
 			Classifier cModel = (Classifier) new NaiveBayes();
-	
+
 			double[] predictions;
 			try {
 				cModel.buildClassifier(eventInstances);
@@ -132,8 +132,7 @@ public class WekaInterface {
 				// Huh?
 				throw new RuntimeException();
 			}
-			
-			for (int attributeIndex = 0; attributeIndex < eventInstances.size(); attributeIndex++) {
+			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
 				predictionResults.put(predictions[attributeIndex],
 						getEventName(attributeIndex, attributes));
 			}
