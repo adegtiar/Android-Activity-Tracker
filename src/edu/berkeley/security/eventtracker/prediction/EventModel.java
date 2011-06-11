@@ -35,8 +35,14 @@ class EventModel {
 	 * @return the wrapped <tt>Classifier</tt>.
 	 */
 	NaiveBayesUpdateable getModel() {
-		if (mModel == null)
+		if (mModel == null) {
 			mModel = new NaiveBayesUpdateable();
+			try {
+				buildClassifier(PredictionService.getTrainingDataset());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return mModel;
 	}
 
@@ -66,6 +72,7 @@ class EventModel {
 	void updateModel(EventEntry newEvent) throws Exception {
 		isEmpty = false;
 		Instance newInstance = PredictionService.eventToInstance(newEvent);
+		newInstance.setDataset(PredictionService.getBlankTrainingDataset());
 //		if (mTrainingData != null)
 //			mTrainingData.add(newInstance);
 		getModel().updateClassifier(newInstance);

@@ -187,6 +187,7 @@ abstract public class EventActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
+		super.onPause();
 		PredictionService.syncModelToStorage();
 	}
 

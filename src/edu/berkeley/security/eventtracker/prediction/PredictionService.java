@@ -63,9 +63,10 @@ public class PredictionService {
 	 */
 	public static void updateEventModel(EventEntry newEvent) {
 		try {
-			if (mEventModel != null)
+			if (mEventModel != null) {
 				isDbUpdated = true;
-			getEventModel().updateModel(newEvent);
+				getEventModel().updateModel(newEvent);
+			}
 		} catch (Exception e) {
 			// TODO make more graceful
 			throw new RuntimeException(e);
@@ -78,21 +79,8 @@ public class PredictionService {
 
 	public static void markDbUnsupportedUpdated() {
 		// TODO implement
-		isDbUpdated = true;
-	}
-
-	/**
-	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
-	 * constructing the corresponding <tt>Instance</tt>.
-	 * 
-	 * @param event
-	 *            the <tt>EventEntry</tt> to convert.
-	 * @param attributes
-	 *            the list of attributes to extract.
-	 * @return the <tt>Instance</tt> corresponding to the <tt>EventEntry</tt>.
-	 */
-	static Instance eventToInstance(EventEntry event, List<Attribute> attributes) {
-		return eventToInstance(event, Calendar.getInstance(), attributes);
+		mEventModel = null;
+		mAttributes = null;
 	}
 
 	/**
@@ -151,7 +139,7 @@ public class PredictionService {
 			EventCursor events = EventManager.getManager()
 					.fetchUndeletedEvents();
 			Instances eventInstances = eventsToInstances(events);
-			mEventModel = getEventModel(eventInstances);
+			return getEventModel(eventInstances);
 		}
 		return mEventModel;
 	}
@@ -200,10 +188,9 @@ public class PredictionService {
 		}
 		return eventData;
 	}
-
-	private static Instances getTrainingData() {
-		EventCursor events = EventManager.getManager().fetchUndeletedEvents();
-		return eventsToInstances(events);
+	
+	static Instances getTrainingDataset() {
+		return eventsToInstances(EventManager.getManager().fetchUndeletedEvents());
 	}
 
 	static Instances getBlankTrainingDataset() {

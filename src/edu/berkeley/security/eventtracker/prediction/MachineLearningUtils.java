@@ -49,7 +49,7 @@ class MachineLearningUtils {
 	static SortedMap<Double, String> getEventDistribution(EventModel eModel,
 			List<Attribute> attributes) {
 		Instance partialInstance = PredictionService.eventToInstance(
-				new EventEntry(), attributes);
+				new EventEntry());
 		partialInstance.setDataset(PredictionService.getBlankTrainingDataset());
 		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
 				new OppositeDoubleComparator());
