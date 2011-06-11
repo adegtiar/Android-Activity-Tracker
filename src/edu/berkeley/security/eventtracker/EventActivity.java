@@ -1,6 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-import weka.classifiers.Classifier;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.network.Networking;
+import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 /**
  * The main activity that all event-related activities extend. It houses a
@@ -45,8 +45,7 @@ abstract public class EventActivity extends Activity {
 	protected TextView textViewIsTracking;
 
 	// Machine learning variables
-	public static boolean isDbUpdated;
-	protected static Classifier wekaModel;
+//	public static boolean isDbUpdated;
 
 	// Variables for Services
 	protected static Intent gpsServiceIntent;
@@ -89,6 +88,10 @@ abstract public class EventActivity extends Activity {
 		for (int view_id : viewsToAttachListener) {
 			findViewById(view_id).setOnTouchListener(flingListener);
 		}
+		
+		// Set up preferences
+		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
+				MODE_PRIVATE);
 	}
 
 	/**
@@ -180,6 +183,11 @@ abstract public class EventActivity extends Activity {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	protected void onPause() {
+		PredictionService.syncModelToStorage();
 	}
 
 	@Override
@@ -361,18 +369,4 @@ abstract public class EventActivity extends Activity {
 
 	}
 
-	public static void setWekaModel(Classifier wekaModel) {
-		EventActivity.wekaModel = wekaModel;
-	}
-
-	public static Classifier getWekaModel() {
-		if (wekaModel == null)
-			wekaModel = Settings.getWekaModel();
-		return wekaModel;
-	}
-	
-	public static void updateWekaModel(EventEntry newEvent) {
-		if (wekaModel != null)
-			wekaModel.
-	}
 }

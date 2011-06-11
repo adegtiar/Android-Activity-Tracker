@@ -212,6 +212,7 @@ public class EventEntry implements Serializable {
 	 * @return the integer at the column with the given name, or 0 it doesn't
 	 *         exist.
 	 */
+	@SuppressWarnings("unused")
 	private static int getInt(Cursor cursor, EventKey columnType) {
 		return cursor.getInt(cursor.getColumnIndex(columnType.columnName()));
 	}

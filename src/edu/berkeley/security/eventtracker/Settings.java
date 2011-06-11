@@ -1,9 +1,7 @@
 package edu.berkeley.security.eventtracker;
 
-import java.io.IOException;
 import java.util.UUID;
 
-import weka.classifiers.Classifier;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -21,7 +19,6 @@ import android.view.View;
 import android.widget.EditText;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
-import edu.berkeley.security.eventtracker.prediction.WekaInterface;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
@@ -200,51 +197,60 @@ public class Settings extends PreferenceActivity {
 		return EventActivity.settings.getString(password, "");
 	}
 
-	/**
-	 * Stores the given <tt>Classifier</tt> as the current WEKA model.
-	 * 
-	 * @param model
-	 *            the WEKA model to store.
-	 */
-	public static void setWekaModel(Classifier model) {
-		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
-		String modelString;
-		if (model == null)
-			modelString = null;
-		else {
-			try {
-				modelString = WekaInterface.classifierToString(model);
-			} catch (IOException e) {
-				modelString = null;
-			}
-		}
-		prefEditor.putString(WekaModel, modelString);
-		prefEditor.commit();
-	}
+//	/**
+//	 * Stores the given <tt>Classifier</tt> as the current WEKA model.
+//	 * 
+//	 * @param model
+//	 *            the WEKA model to store.
+//	 */
+//	public static void setWekaModel(Classifier model) {
+//		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+//		String modelString;
+//		if (model == null)
+//			modelString = null;
+//		else {
+//			try {
+//				modelString = PredictionService.classifierToString(model);
+//			} catch (IOException e) {
+//				modelString = null;
+//			}
+//		}
+//		prefEditor.putString(WekaModel, modelString);
+//		prefEditor.commit();
+//	}
+	
+//	/**
+//	 * Caches the classifier for persistent storage, if necessary.
+//	 */
+//	public static void syncWekaModel() {
+//		if (EventActivity.isDbUpdated && EventActivity.wekaModel != null)
+//			setWekaModel(EventActivity.wekaModel);
+//			
+//	}
 
-	/**
-	 * Retrieves the stored WEKA model.
-	 * 
-	 * @return the WEKA model for the current set of events.
-	 */
-	public static Classifier getWekaModel() {
-		String wekaModelString = null;
-		if (!EventActivity.isDbUpdated)
-			wekaModelString = EventActivity.settings.getString(WekaModel, null);
-		Classifier wekaModel;
-		if (wekaModelString == null) {
-			wekaModel = WekaInterface.getEventModel();
-		} else {
-			try {
-				wekaModel = WekaInterface.stringToClassifer(wekaModelString);
-			} catch (IOException e) {
-				// Had an invalid model stored. Better recalculate it.
-				wekaModel = WekaInterface.getEventModel();
-				setWekaModel(wekaModel);
-			}
-		}
-		return wekaModel;
-	}
+//	/**
+//	 * Retrieves the stored WEKA model.
+//	 * 
+//	 * @return the WEKA model for the current set of events.
+//	 */
+//	public static NaiveBayesUpdateable getWekaModel() {
+//		String wekaModelString = null;
+//		if (!EventActivity.isDbUpdated)
+//			wekaModelString = EventActivity.settings.getString(WekaModel, null);
+//		NaiveBayesUpdateable wekaModel;
+//		if (wekaModelString == null) {
+//			wekaModel = PredictionService.getEventModel();
+//		} else {
+//			try {
+//				wekaModel = PredictionService.stringToClassifer(wekaModelString);
+//			} catch (IOException e) {
+//				// Had an invalid model stored. Better recalculate it.
+//				wekaModel = PredictionService.getEventModel();
+//				setWekaModel(wekaModel);
+//			}
+//		}
+//		return wekaModel;
+//	}
 
 	protected static void setPhoneNumber(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context

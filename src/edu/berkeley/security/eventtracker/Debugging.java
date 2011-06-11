@@ -21,7 +21,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
-import edu.berkeley.security.eventtracker.prediction.WekaInterface;
+import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 public class Debugging extends Activity {
 
@@ -68,7 +68,7 @@ public class Debugging extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						Map<Double, String> eventPredictions = WekaInterface
+						Map<Double, String> eventPredictions = PredictionService
 								.getEventDistribution();
 						String debugText = "Predicted events: ";
 						for (Entry<Double, String> probNamePair : eventPredictions

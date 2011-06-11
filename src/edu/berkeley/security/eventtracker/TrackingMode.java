@@ -52,9 +52,6 @@ public class TrackingMode extends AbstractEventEdit {
 
 		gpsServiceIntent = new Intent(this, GPSLoggerService.class);
 		SynchronizerIntent = new Intent(this, Synchronizer.class);
-		// Set up preferences
-		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
-				MODE_PRIVATE);
 
 		myProgressTimer = new ProgressIndicatorSpinner(1000);
 
