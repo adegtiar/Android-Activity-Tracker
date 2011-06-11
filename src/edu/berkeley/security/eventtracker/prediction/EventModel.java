@@ -17,8 +17,10 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 class EventModel {
 
 	private NaiveBayesUpdateable mModel;
+	private boolean isEmpty;
 
 	EventModel() {
+		isEmpty = true;
 	}
 
 	private EventModel(NaiveBayesUpdateable model) {
@@ -44,7 +46,11 @@ class EventModel {
 	 * @throws Exception
 	 */
 	void buildClassifier(Instances eventsToClassify) throws Exception {
-		getModel().buildClassifier(eventsToClassify);
+		if (eventsToClassify.size() > 0) {
+			isEmpty = false;
+			getModel().buildClassifier(eventsToClassify);
+		}
+
 	}
 
 	/**
@@ -55,8 +61,18 @@ class EventModel {
 	 * @throws Exception
 	 */
 	void updateModel(EventEntry newEvent) throws Exception {
+		isEmpty = false;
 		getModel()
 				.updateClassifier(PredictionService.eventToInstance(newEvent));
+	}
+
+	/**
+	 * Whether the model has any instances classified.
+	 * 
+	 * @return true if the model has any instances classified, otherwise false;
+	 */
+	boolean isEmpty() {
+		return isEmpty;
 	}
 
 	/**
@@ -89,6 +105,8 @@ class EventModel {
 	 *             error occurred.
 	 */
 	String serializeToString() throws IOException {
+		if (isEmpty)
+			return null;
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(os);
 

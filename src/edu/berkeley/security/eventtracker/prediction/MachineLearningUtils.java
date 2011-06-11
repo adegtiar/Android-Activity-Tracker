@@ -51,19 +51,20 @@ class MachineLearningUtils {
 				new EventEntry(), attributes);
 		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
 				new OppositeDoubleComparator());
-
-		double[] predictions;
-		try {
-			predictions = eModel.getModel().distributionForInstance(
-					partialInstance);
-		} catch (Exception e) {
-			// Huh?
-			throw new RuntimeException();
-		}
-
-		for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
-			predictionResults.put(predictions[attributeIndex],
-					getEventName(attributeIndex, attributes));
+		if (!eModel.isEmpty()) {
+			double[] predictions;
+			try {
+				predictions = eModel.getModel().distributionForInstance(
+						partialInstance);
+			} catch (Exception e) {
+				// Huh?
+				throw new RuntimeException();
+			}
+	
+			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
+				predictionResults.put(predictions[attributeIndex],
+						getEventName(attributeIndex, attributes));
+			}
 		}
 		return predictionResults;
 	}

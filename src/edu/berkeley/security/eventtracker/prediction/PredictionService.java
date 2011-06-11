@@ -66,7 +66,7 @@ public class PredictionService {
 		try {
 			if (mEventModel != null)
 				isDbUpdated = true;
-				getEventModel().updateModel(newEvent);
+			getEventModel().updateModel(newEvent);
 		} catch (Exception e) {
 			// TODO make more graceful
 			throw new RuntimeException(e);
