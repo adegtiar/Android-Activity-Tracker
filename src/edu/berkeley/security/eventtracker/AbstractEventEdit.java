@@ -27,7 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.prediction.WekaInterface;
+import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 abstract public class AbstractEventEdit extends EventActivity {
 
@@ -68,14 +68,11 @@ abstract public class AbstractEventEdit extends EventActivity {
 		super.onCreate(savedInstanceState);
 
 		initializeEditTexts();
-		initializeAutoComplete();
 		initializeBottomBar();
 		initializeActivityButtons();
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
-
 		initializeVoice();
-
 	}
 
 	/**
@@ -237,12 +234,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 	/**
 	 * Refreshes the AutoComplete adapters with all events from the database.
 	 */
-	private void initializeAutoComplete() {
-		adapterActivities.clear();
+	protected void initializeAutoComplete() {
+		autoCompleteActivities.clear();
 		mActivityNames.clear();
 
 		// Add predicted events in order of likelihood
-		List<String> predictedEvents = WekaInterface.predictEventNames();
+		List<String> predictedEvents = PredictionService.predictEventNames();
 		mActivityNames.addAll(predictedEvents);
 		autoCompleteActivities.addAll(predictedEvents);
 
@@ -253,7 +250,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 			if (nextEvent.mName.length() == 0)
 				continue;
 			if (mActivityNames.add(nextEvent.mName))
-				adapterActivities.add(nextEvent.mName);
+				autoCompleteActivities.add(nextEvent.mName);
 		}
 	}
 

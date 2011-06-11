@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
+import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 /**
  * Manages the event data back-end and acts as a wrapper around a database
@@ -94,7 +95,7 @@ public class EventManager {
 	 * 
 	 * @param event
 	 *            The EventEntry to push to the database.
-	 * @return Whether or not the database was successfully updated.
+	 * @return whether or not the database was successfully updated.
 	 */
 	public boolean updateDatabase(EventEntry event, boolean receivedAtServer) {
 		if (event == null)
@@ -104,8 +105,11 @@ public class EventManager {
 					event.mStartTime, event.mEndTime, event.mUUID,
 					receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
+			if (event.persisted)
+				PredictionService.updateEventModel(event);
 			return event.persisted;
 		} else {
+			PredictionService.markDbUnsupportedUpdated();
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
 					event.mUUID, event.deleted, receivedAtServer, event.mTag);
@@ -149,6 +153,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean markEventDeleted(long rowId) {
+		PredictionService.markDbUnsupportedUpdated();
 		return mDbHelper.markDeleted(rowId);
 	}
 
@@ -160,6 +165,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(long rowId) {
+		PredictionService.markDbUnsupportedUpdated();
 		return mDbHelper.deleteEvent(rowId);
 	}
 
@@ -289,19 +295,11 @@ public class EventManager {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
-	
-	
+
 	public EventEntry fetchEvents(String name) throws SQLException {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvents(name), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	/**
 	 * Either finds the given event in the database, or a creates a new
