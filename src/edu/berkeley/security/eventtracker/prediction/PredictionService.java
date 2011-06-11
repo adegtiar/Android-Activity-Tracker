@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedMap;
+import java.util.SortedSet;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -15,6 +15,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
+import edu.berkeley.security.eventtracker.prediction.MachineLearningUtils.PredictedPair;
 
 /**
  * Provides some public methods to predict which events may be starting.
@@ -51,7 +52,7 @@ public class PredictionService {
 	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
 	 *         from highest to lowest probability.
 	 */
-	public static SortedMap<Double, String> getEventDistribution() {
+	public static SortedSet<PredictedPair> getEventDistribution() {
 		return MachineLearningUtils.getEventDistribution(getEventModel(),
 				getEventAttributes());
 	}

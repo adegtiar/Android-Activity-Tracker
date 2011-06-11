@@ -1,7 +1,5 @@
 package edu.berkeley.security.eventtracker;
 
-import java.util.Set;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;

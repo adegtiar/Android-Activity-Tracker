@@ -5,11 +5,9 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -19,7 +17,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
  * Utility class with core machine learning methods that act on
  * <tt>EventModel</tt>s.
  */
-class MachineLearningUtils {
+public class MachineLearningUtils {
 
 	/**
 	 * Retrieves the event names to classify on from the given list of
@@ -45,13 +43,13 @@ class MachineLearningUtils {
 	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
 	 *         from highest to lowest probability.
 	 */
-	static SortedMap<Double, String> getEventDistribution(EventModel eModel,
+	static SortedSet<PredictedPair> getEventDistribution(EventModel eModel,
 			List<Attribute> attributes) {
-		Instance partialInstance = PredictionService.eventToInstance(
-				new EventEntry());
+		Instance partialInstance = PredictionService
+				.eventToInstance(new EventEntry());
 		partialInstance.setDataset(PredictionService.getBlankTrainingDataset());
-		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
-				new OppositeDoubleComparator());
+		SortedSet<PredictedPair> predictionResults = new TreeSet<PredictedPair>(
+				new PredictedPairComparator());
 		if (!eModel.isEmpty()) {
 			double[] predictions;
 			try {
@@ -63,8 +61,9 @@ class MachineLearningUtils {
 			}
 
 			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
-				predictionResults.put(predictions[attributeIndex],
-						getEventName(attributeIndex, attributes));
+				predictionResults.add(new PredictedPair(getEventName(
+						attributeIndex, attributes),
+						predictions[attributeIndex]));
 			}
 		}
 		return predictionResults;
@@ -80,27 +79,57 @@ class MachineLearningUtils {
 	 */
 	static List<String> predictEventNames(EventModel eventModel,
 			List<Attribute> attributes) {
-		Map<Double, String> predictionResults = getEventDistribution(
+		SortedSet<PredictedPair> predictionResults = getEventDistribution(
 				eventModel, attributes);
 
 		List<String> eventNames = new ArrayList<String>(
 				predictionResults.size());
-		for (Entry<Double, String> predictedResult : predictionResults
-				.entrySet())
-			eventNames.add(predictedResult.getValue());
+		for (PredictedPair predictedResult : predictionResults)
+			eventNames.add(predictedResult.getName());
 		return eventNames;
 	}
 
-	/**
-	 * A Double comparator that prioritizes higher values over lower ones.
-	 */
-	private static class OppositeDoubleComparator implements Comparator<Double> {
+	private static class PredictedPairComparator implements
+			Comparator<PredictedPair> {
 
 		@Override
-		public int compare(Double arg0, Double arg1) {
-			return arg1.compareTo(arg0);
+		public int compare(PredictedPair arg0, PredictedPair arg1) {
+			return Double.compare(arg0.getLikelihood(), arg1.getLikelihood());
 		}
 
+	}
+
+	public static class PredictedPair {
+
+		private String mName;
+		private double mLikelihood;
+
+		PredictedPair(String name, double likelihood) {
+			mName = name;
+			mLikelihood = likelihood;
+		}
+
+		public String getName() {
+			return mName;
+		}
+
+		public double getLikelihood() {
+			return mLikelihood;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (!this.getClass().equals(other.getClass()))
+				return false;
+			PredictedPair otherPair = (PredictedPair) other;
+			return mName.equals(otherPair.mName)
+					&& mLikelihood == otherPair.mLikelihood;
+		}
+
+		@Override
+		public String toString() {
+			return "{" + getName() + ":" + " " + getLikelihood() + "}";
+		}
 	}
 
 	/**
