@@ -41,7 +41,8 @@
         android:autoText="false"
         android:capitalize="none"
         android:gravity="fill_horizontal"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:inputType="textFilter"/>
      <TextView
         android:id="@+id/password_description"
         android:layout_height="wrap_content"

@@ -106,10 +106,10 @@ public class Synchronizer extends IntentService {
 		for (int eventIndex = 0; eventIndex < events.length(); eventIndex++) {
 			JSONObject eventData=events.getJSONObject(eventIndex);
 			String encryptedData=eventData.getString("content");
-			char[] passwd=Settings.getPassword().toCharArray();
+			String passwd=Settings.getPassword();
 			String unencryptedData=null;
 			try {
-				unencryptedData=GibberishAESCrypto.decrypt(encryptedData, passwd);
+				unencryptedData=GibberishAESCrypto.decrypt(encryptedData, Encryption.hashPassword(passwd).toCharArray());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
