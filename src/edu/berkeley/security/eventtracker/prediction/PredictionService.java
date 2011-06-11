@@ -14,6 +14,7 @@ import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
 /**
  * Provides some public methods to predict which events may be starting.
@@ -105,6 +106,12 @@ public class PredictionService {
 		if (mAttributes == null) {
 			// Declare a numeric hourOfDay
 			Attribute attrHourOfDay = new Attribute("hourOfDay");
+			
+			// Declare a numeric Longitude
+			Attribute attrLongitude = new Attribute("longitude");
+			
+			// Declare a numeric Longitude
+			Attribute attrLatitude = new Attribute("latitude");
 
 			// Declare a nominal dayOfWeek attribute along with its values
 			ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
@@ -120,9 +127,11 @@ public class PredictionService {
 					namesNominal);
 
 			// Declare the feature vector
-			ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(3);
+			ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
 			eventAttributes.add(attrHourOfDay);
 			eventAttributes.add(attrDayOfWeek);
+			eventAttributes.add(attrLatitude);
+			eventAttributes.add(attrLongitude);
 			eventAttributes.add(attrNamesNominal);
 			mAttributes = eventAttributes;
 		}
@@ -212,13 +221,27 @@ public class PredictionService {
 	private static Instance eventToInstance(EventEntry event,
 			Calendar localCal, List<Attribute> attributes) {
 		// Create the instance
-		Instance eventInstance = new DenseInstance(3);
+		Instance eventInstance = new DenseInstance(5);
+		
+		// Add start hour
 		localCal.setTimeInMillis(event.mStartTime);
 		eventInstance.setValue(attributes.get(0),
 				localCal.get(Calendar.HOUR_OF_DAY));
+		
+		// Add start day of week
 		eventInstance.setValue(attributes.get(1), getDay(localCal).toString());
+		
+		// Add starting position (if exists)
+		List<GPSCoordinates> eventCoords = event.getGPSCoordinates();
+		if (eventCoords.size() > 0) {
+			GPSCoordinates startPos = eventCoords.get(0);
+			eventInstance.setValue(attributes.get(2), startPos.getLatitude());
+			eventInstance.setValue(attributes.get(3), startPos.getLongitude());
+		}
+		
+		// Add name (if exists)
 		if (event.mName != null && event.mName.length() != 0)
-			eventInstance.setValue(attributes.get(2), event.mName);
+			eventInstance.setValue(attributes.get(4), event.mName);
 		return eventInstance;
 	}
 

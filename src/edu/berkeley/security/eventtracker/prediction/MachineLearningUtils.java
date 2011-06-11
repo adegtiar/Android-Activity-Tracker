@@ -13,7 +13,6 @@ import java.util.TreeMap;
 
 import weka.core.Attribute;
 import weka.core.Instance;
-import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
 /**

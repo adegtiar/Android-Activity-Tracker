@@ -11,6 +11,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import android.util.Base64;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
 /**
  * Wrapper for the Machine Learning <tt>Classifier</tt>.
