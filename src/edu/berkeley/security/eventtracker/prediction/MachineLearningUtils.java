@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import weka.core.Attribute;
 import weka.core.Instance;
+import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 
 /**
@@ -49,6 +50,7 @@ class MachineLearningUtils {
 			List<Attribute> attributes) {
 		Instance partialInstance = PredictionService.eventToInstance(
 				new EventEntry(), attributes);
+		partialInstance.setDataset(PredictionService.getBlankTrainingDataset());
 		TreeMap<Double, String> predictionResults = new TreeMap<Double, String>(
 				new OppositeDoubleComparator());
 		if (!eModel.isEmpty()) {
@@ -60,7 +62,7 @@ class MachineLearningUtils {
 				// Huh?
 				throw new RuntimeException();
 			}
-	
+
 			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
 				predictionResults.put(predictions[attributeIndex],
 						getEventName(attributeIndex, attributes));

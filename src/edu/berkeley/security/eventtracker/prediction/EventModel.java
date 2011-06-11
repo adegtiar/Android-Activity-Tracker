@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import weka.classifiers.bayes.NaiveBayesUpdateable;
+import weka.core.Instance;
 import weka.core.Instances;
 import android.util.Base64;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
@@ -17,6 +18,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 class EventModel {
 
 	private NaiveBayesUpdateable mModel;
+	private Instances mTrainingData;
 	private boolean isEmpty;
 
 	EventModel() {
@@ -48,6 +50,7 @@ class EventModel {
 	void buildClassifier(Instances eventsToClassify) throws Exception {
 		if (eventsToClassify.size() > 0) {
 			isEmpty = false;
+			mTrainingData = eventsToClassify;
 			getModel().buildClassifier(eventsToClassify);
 		}
 
@@ -62,10 +65,16 @@ class EventModel {
 	 */
 	void updateModel(EventEntry newEvent) throws Exception {
 		isEmpty = false;
-		getModel()
-				.updateClassifier(PredictionService.eventToInstance(newEvent));
+		Instance newInstance = PredictionService.eventToInstance(newEvent);
+//		if (mTrainingData != null)
+//			mTrainingData.add(newInstance);
+		getModel().updateClassifier(newInstance);
 	}
-
+	
+	Instances getInstances() {
+		return mTrainingData;
+	}
+	
 	/**
 	 * Whether the model has any instances classified.
 	 * 

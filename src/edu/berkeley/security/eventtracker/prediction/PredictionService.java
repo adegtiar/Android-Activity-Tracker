@@ -28,7 +28,6 @@ public class PredictionService {
 	 */
 	private static EventModel mEventModel;
 
-	@SuppressWarnings("unused")
 	private static ArrayList<Attribute> mAttributes;
 
 	@SuppressWarnings("unused")
@@ -78,7 +77,7 @@ public class PredictionService {
 	}
 
 	public static void markDbUnsupportedUpdated() {
-		// TODO implemented
+		// TODO implement
 		isDbUpdated = true;
 	}
 
@@ -115,25 +114,31 @@ public class PredictionService {
 	 * @return an <tt>ArrayList</tt> of event attributes.
 	 */
 	static ArrayList<Attribute> getEventAttributes() {
-		// Declare a numeric hourOfDay
-		Attribute attrHourOfDay = new Attribute("hourOfDay");
+		if (mAttributes == null) {
+			// Declare a numeric hourOfDay
+			Attribute attrHourOfDay = new Attribute("hourOfDay");
 
-		// Declare a nominal dayOfWeek attribute along with its values
-		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
-		for (DayOfWeek day : DayOfWeek.values())
-			daysOfWeekNominal.add(day.toString());
-		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
+			// Declare a nominal dayOfWeek attribute along with its values
+			ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
+			for (DayOfWeek day : DayOfWeek.values())
+				daysOfWeekNominal.add(day.toString());
+			Attribute attrDayOfWeek = new Attribute("dayOfWeek",
+					daysOfWeekNominal);
 
-		// Declare the event name attribute along with its values
-		ArrayList<String> namesNominal = new ArrayList<String>(getEventNames());
-		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
+			// Declare the event name attribute along with its values
+			ArrayList<String> namesNominal = new ArrayList<String>(
+					getEventNames());
+			Attribute attrNamesNominal = new Attribute("eventNames",
+					namesNominal);
 
-		// Declare the feature vector
-		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(3);
-		eventAttributes.add(attrHourOfDay);
-		eventAttributes.add(attrDayOfWeek);
-		eventAttributes.add(attrNamesNominal);
-		return eventAttributes;
+			// Declare the feature vector
+			ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(3);
+			eventAttributes.add(attrHourOfDay);
+			eventAttributes.add(attrDayOfWeek);
+			eventAttributes.add(attrNamesNominal);
+			mAttributes = eventAttributes;
+		}
+		return mAttributes;
 	}
 
 	/**
@@ -143,10 +148,9 @@ public class PredictionService {
 	 */
 	private static EventModel getEventModel() {
 		if (mEventModel == null) {
-			ArrayList<Attribute> attributes = getEventAttributes();
 			EventCursor events = EventManager.getManager()
 					.fetchUndeletedEvents();
-			Instances eventInstances = eventsToInstances(events, attributes);
+			Instances eventInstances = eventsToInstances(events);
 			mEventModel = getEventModel(eventInstances);
 		}
 		return mEventModel;
@@ -163,8 +167,7 @@ public class PredictionService {
 		// Create a new model
 		EventModel eModel = new EventModel();
 		try {
-			if (instancesToClassify.size() > 0)
-				eModel.buildClassifier(instancesToClassify);
+			eModel.buildClassifier(instancesToClassify);
 		} catch (Exception e) {
 			// TODO make more graceful
 			throw new RuntimeException();
@@ -181,22 +184,30 @@ public class PredictionService {
 	 *            the attributes/features to classify on.
 	 * @return a collection of <tt>Instances</tt> to classify.
 	 */
-	private static Instances eventsToInstances(EventCursor eventCursor,
-			ArrayList<Attribute> eventAttributes) {
+	private static Instances eventsToInstances(EventCursor eventCursor) {
 		Calendar calendar = Calendar.getInstance();
 
-		Instances eventData = new Instances("EventData", eventAttributes, 0);
+		Instances eventData = getBlankTrainingDataset();
 		eventData.setClassIndex(eventData.numAttributes() - 1);
 		Set<String> classifiedNames = MachineLearningUtils
-				.getClassifiedNames(eventAttributes);
+				.getClassifiedNames(getEventAttributes());
 
 		while (eventCursor.moveToNext()) {
 			EventEntry nextEvent = eventCursor.getEvent();
 			if (classifiedNames.contains(nextEvent.mName))
 				eventData.add(eventToInstance(nextEvent, calendar,
-						eventAttributes));
+						getEventAttributes()));
 		}
 		return eventData;
+	}
+
+	private static Instances getTrainingData() {
+		EventCursor events = EventManager.getManager().fetchUndeletedEvents();
+		return eventsToInstances(events);
+	}
+
+	static Instances getBlankTrainingDataset() {
+		return new Instances("EventData", getEventAttributes(), 0);
 	}
 
 	/**
