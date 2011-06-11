@@ -200,7 +200,9 @@ public class EventManager {
 		}
 
 	}
+	
 
+	
 	/**
 	 * Gets the earliest time corresponding to the same day as date
 	 * 

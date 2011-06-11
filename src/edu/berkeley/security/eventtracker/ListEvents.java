@@ -227,9 +227,12 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (position < 1)
+				if(position < 1){
 					return;
-				else if (position == 1 && isTracking())
+				}
+				boolean sameAsCurrentDate=isToday(dateListed);
+														
+				if (position == 1 && isTracking() && sameAsCurrentDate) 
 					finish(); // trying to edit event in progress
 				else
 					startEditEventActivity(id);
@@ -315,8 +318,9 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			case ROW_ID:
 				// Initializing the delete button
 				long rowId = cursor.getLong(columnIndex);
-				boolean isInProgress = cursor.getLong(cursor
-						.getColumnIndex(EventKey.END_TIME.columnName())) == 0;
+				boolean selectedFirst = cursor.getLong(cursor
+						.getColumnIndex(EventKey.END_TIME.columnName())) == 0; //TODO fix this
+				boolean isInProgress= isToday(dateListed) && selectedFirst;
 				view.setOnClickListener(new DeleteRowListener(rowId,
 						isInProgress));
 				return true;
