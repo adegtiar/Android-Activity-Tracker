@@ -1,6 +1,7 @@
 package edu.berkeley.security.eventtracker.eventdata;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -187,6 +188,18 @@ public class EventEntry implements Serializable {
 		SimpleDateFormat dateFormat = new SimpleDateFormat();
 		return dateFormat.format(new Date(dateLong));
 	}
+	
+	/**
+	 * Formats a long date in a time only format.
+	 */
+	public String getTimeString(EventKey colType) {
+		long dateLong = (Long) getValue(colType);
+		if (dateLong == 0)
+			return "In Progress";
+		SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT);
+		return dateFormat.format(new Date(dateLong));
+	}
+	
 
 	/**
 	 * Gets the value of the long column with the given columnName.

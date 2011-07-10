@@ -57,8 +57,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	 * to.
 	 */
 	private int[] to = new int[] { R.id.row_event_title,
-			R.id.row_event_start_time, R.id.row_event_end_time,
-			R.id.row_event_delete_button };
+			R.id.row_event_start_time, R.id.row_event_end_time};
 
 	private EventCursor mEventsCursor;
 	private ListView eventList;
@@ -327,9 +326,10 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			case START_TIME:
 			case END_TIME:
 				EventEntry event = eCursor.getEvent();
+				String timeString = event.getTimeString(colType);
 				String dateString = event.formatColumn(eCursor
 						.getColumnType(columnIndex));
-				((TextView) view).setText(dateString);
+				((TextView) view).setText(timeString);
 				return true;
 			default:
 				return false;
