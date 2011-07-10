@@ -12,4 +12,9 @@
 		android:textSize="17sp"
 		android:layout_weight="1" android:layout_width="30dip"
 		android:id="@+id/row_event_end_time"></TextView>
+	<TextView 
+		android:text="" android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:id="@+id/row_id_container">
+	</TextView>
 </LinearLayout>

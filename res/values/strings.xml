@@ -53,5 +53,7 @@
 <string name="alert_dialog_notes_title">Enter a note:</string>
 <string name="delete_dialog_title">Confirmation</string>
 <string name="delete_dialog_yes">Yes</string>
+<string name="rowIDContainer">rowIDContainer</string>
+<string name="isInProgressContainer">isInProgressContainer</string>
 
 </resources>

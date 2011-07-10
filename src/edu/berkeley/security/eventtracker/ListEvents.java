@@ -18,11 +18,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -57,7 +60,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	 * to.
 	 */
 	private int[] to = new int[] { R.id.row_event_title,
-			R.id.row_event_start_time, R.id.row_event_end_time};
+			R.id.row_event_start_time, R.id.row_event_end_time, R.id.row_id_container};
 
 	private EventCursor mEventsCursor;
 	private ListView eventList;
@@ -237,6 +240,25 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 					startEditEventActivity(id);
 			}
 		});
+		eventList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+			
+				long rowId = (Long) view.findViewById(R.id.row_id_container).getTag(R.string.rowIDContainer);
+				boolean isInProgress = (Boolean) view.findViewById(R.id.row_id_container).getTag(R.string.isInProgressContainer);
+				Bundle bundle = new Bundle();
+				bundle.putString("nameOfEvent",
+						mEventManager.fetchEvent(rowId).mName);
+				bundle.putLong("rowId", rowId);
+				bundle.putBoolean("isInProgress", isInProgress);
+				showDialog(DIALOG_DELETE_EVENT, bundle);
+				return true;
+			}
+			
+		});
 
 		eventList.setAdapter(eventsCursorAdapter);
 
@@ -278,31 +300,6 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	}
 
 	/**
-	 * The listener associated with a delete button. Deletes the event
-	 * corresponding to the row the button is in.
-	 */
-	private class DeleteRowListener implements OnClickListener {
-		private long rowId;
-		private boolean isInProgress;
-
-		private DeleteRowListener(long rowId, boolean isInProgress) {
-			this.rowId = rowId;
-			this.isInProgress = isInProgress;
-		}
-
-		@Override
-		public void onClick(View v) {
-			Bundle bundle = new Bundle();
-			bundle.putString("nameOfEvent",
-					mEventManager.fetchEvent(rowId).mName);
-			bundle.putLong("rowId", rowId);
-			bundle.putBoolean("isInProgress", isInProgress);
-			showDialog(DIALOG_DELETE_EVENT, bundle);
-
-		}
-	}
-
-	/**
 	 * Helps interface the Cursor with the view, updating the views of a row
 	 * with values in the DB.
 	 */
@@ -313,15 +310,18 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 				int columnIndex) {
 			EventCursor eCursor = new EventCursor(cursor, mEventManager);
 			EventKey colType = eCursor.getColumnType(columnIndex);
+			
 			switch (colType) {
 			case ROW_ID:
 				// Initializing the delete button
+				
 				long rowId = cursor.getLong(columnIndex);
+				view.setTag(R.string.rowIDContainer, rowId);
+						
 				boolean selectedFirst = cursor.getLong(cursor
 						.getColumnIndex(EventKey.END_TIME.columnName())) == 0; //TODO fix this
 				boolean isInProgress= isToday(dateListed) && selectedFirst;
-				view.setOnClickListener(new DeleteRowListener(rowId,
-						isInProgress));
+				view.setTag(R.string.isInProgressContainer, isInProgress);
 				return true;
 			case START_TIME:
 			case END_TIME:
