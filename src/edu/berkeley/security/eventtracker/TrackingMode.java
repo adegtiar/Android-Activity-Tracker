@@ -65,6 +65,8 @@ public class TrackingMode extends AbstractEventEdit {
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
 
+	
+		
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -224,18 +226,22 @@ public class TrackingMode extends AbstractEventEdit {
 		public void afterTextChanged(Editable s) {
 
 			
-			if (currentEvent != null)
+			if (currentEvent != null) {
 				updateTrackingNotification();
+				updateToolbarMessage();
+			}
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
 				updateDatabase(currentEvent);
 				updateStartTimeUI();
 				updateTrackingStatus();
 			}
-			if (justResumed)
+			if (justResumed) {
 				justResumed = false;
-			else
+			}
+			else {
 				myProgressTimer.spin();
+			}
 				
 		}
 
@@ -492,6 +498,7 @@ public class TrackingMode extends AbstractEventEdit {
 		//
 		dropDown.setSelection(position, true);
 	}
+
 
 	@Override
 	protected Class<?> getLeftActivityClass() {

@@ -1,5 +1,7 @@
 package edu.berkeley.security.eventtracker;
 
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
@@ -58,10 +61,6 @@ abstract public class EventActivity extends Activity {
 
 	private GestureDetector gestureDetector;
 	private OnTouchListener flingListener;
-	
-	
-
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +95,8 @@ abstract public class EventActivity extends Activity {
 		// Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
+		
+		startTrackingDuration();
 	}
 
 	/**
@@ -193,6 +194,7 @@ abstract public class EventActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		PredictionService.syncModelToStorage();
+		mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
 	}
 
 	@Override
@@ -202,6 +204,7 @@ abstract public class EventActivity extends Activity {
 		updateTrackingStatus();
 		// updateToolbarGUI();
 		Networking.pollServerIfAllowed(this);
+		startTrackingDuration();
 	}
 
 	/**
@@ -255,6 +258,7 @@ abstract public class EventActivity extends Activity {
 		if (!isTracking || !Settings.areNotificationsEnabled()) {
 			disableTrackingNotification(this);
 		}
+		startTrackingDuration();
 	}
 
 	protected void startUpService() {
@@ -277,6 +281,9 @@ abstract public class EventActivity extends Activity {
 	protected void updateTrackingUI(boolean isTracking) {
 		textViewIsTracking.setText(isTracking ? trackingStringID
 				: notTrackingStringID);
+		if(isTracking){
+			textViewIsTracking.append(mEventManager.getCurrentEvent().mName);
+		}
 	}
 
 	/**
@@ -375,5 +382,71 @@ abstract public class EventActivity extends Activity {
 	}
 
 	
+	private Handler mHandlerDuration = new Handler();
+	private Runnable mUpdateTimeTaskDuration = new Runnable() {
+		   public void run() {
+			   updateToolbarMessage();
+			   mHandlerDuration.postDelayed(this, 60000);  
+		   }
+	};
+	
+	/*
+	 * Updates the toolbar message using the latest duration and name
+	 */
+	public void updateToolbarMessage() {
+		 if(isTracking()) {
+		     long currentTime = System.currentTimeMillis();
+		     long duration = currentTime - mEventManager.getCurrentEvent().mStartTime;
+		     textViewIsTracking.setText(trackingStringID);
+		     textViewIsTracking.append(" " + mEventManager.getCurrentEvent().mName + " ");
+		     textViewIsTracking.append(" (" + calculateDuration(duration) + ")");
+	        
+		   }
+	}
+	
+	/*
+	 * Returns a string representation of the duration(given in ms)
+	 * ex: sec ago, 6 min, 1.5 hr
+	 */
+	private String calculateDuration(long duration){
+		long durationInSeconds = duration / 1000;
+		
+		//between 0 and 60
+		long numOfSeconds = durationInSeconds % 60; 
+		//between 0 and 60
+		long numOfMinutes = (durationInSeconds / 60) % 60;
+		//no limit on the number of hours
+		long numOfHours = durationInSeconds / 3600;
+		
+		
+		//duration is between 0 and 60 seconds
+		if (numOfHours == 0 && numOfMinutes == 0) {
+			return "secs ago";
+		}
+		//between 0 and 1 hour
+		else if (numOfHours == 0) {
+			return Long.toString(numOfMinutes) + " min";
+		}else if (numOfHours < 10) {
+			//returns the number of hours rounded to one decimal place
+			double hoursInDecimal = durationInSeconds/3600.0;
+			DecimalFormat df = new DecimalFormat("#.#");
+		    return df.format(hoursInDecimal) + " hr";
+		}else{
+			//greater than 10 hours. so don't display any decimals
+			return Long.toString(numOfHours) + " hr";
+		}
+		
+	}
+	/*
+	 * If tracking, then start modifying the toolbar to keep track of the duration of the activity
+	 */
+	private void startTrackingDuration(){
+		 mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
+		 if(isTracking()){
+			 //if Tracking, then start tracking the duration in the toolbar
+			 mHandlerDuration.postDelayed(mUpdateTimeTaskDuration, 100);
+		 }
+		
+	}
 
 }
