@@ -228,7 +228,6 @@ public class TrackingMode extends AbstractEventEdit {
 			
 			if (currentEvent != null) {
 				updateTrackingNotification();
-				updateToolbarMessage();
 			}
 			if (s.length() != 0 && currentEvent == null) {
 				currentEvent = new EventEntry();
@@ -449,19 +448,11 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			synchronized public void onFinish() {
+				showToastStatusMessage();
 				setSpinning(false);
 				resetTimer();
-
-				Context context = getApplicationContext();
-				CharSequence text = "Saving... done.";
-				int duration = Toast.LENGTH_SHORT;
-
-				Toast toast = Toast.makeText(context, text, duration);
-				// toast.setGravity(Gravity.BOTTOM, 0, 0);
-				toast.setGravity(Gravity.CENTER, 0, -15);
-				// toast.setGravity(Gravity.TOP, 0, 15);
-				// toast.setGravity(Gravity.TOP | Gravity.RIGHT, 0, 0);
-				toast.show();
+				
+				
 			}
 
 			@Override
@@ -472,6 +463,25 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
+	/*
+	 * Display the toast relating to the updating and starting of events
+	 */
+	private void showToastStatusMessage() {
+		Context context = getApplicationContext();
+		if (isTracking()) {
+			String currentEventName = eventNameEditText.getText().toString();
+			String durationString = calculateDuration();
+			CharSequence text = "Updating activity " + currentEventName +
+			                    "\n" + "Started " + durationString + " ago";
+			int duration = Toast.LENGTH_SHORT;
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.setGravity(Gravity.CENTER, 0, -15);
+			toast.show();
+		}
+	
+	}
+	
+	
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu.
 	 */

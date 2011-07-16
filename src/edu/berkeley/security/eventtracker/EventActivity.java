@@ -398,8 +398,7 @@ abstract public class EventActivity extends Activity {
 		     long currentTime = System.currentTimeMillis();
 		     long duration = currentTime - mEventManager.getCurrentEvent().mStartTime;
 		     textViewIsTracking.setText(trackingStringID);
-		     textViewIsTracking.append(" " + mEventManager.getCurrentEvent().mName + " ");
-		     textViewIsTracking.append(" (" + calculateDuration(duration) + ")");
+		     textViewIsTracking.append(" (" + calculateDuration() + ")");
 	        
 		   }
 	}
@@ -408,7 +407,10 @@ abstract public class EventActivity extends Activity {
 	 * Returns a string representation of the duration(given in ms)
 	 * ex: sec ago, 6 min, 1.5 hr
 	 */
-	private String calculateDuration(long duration){
+	protected String calculateDuration() {
+		
+		long currentTime = System.currentTimeMillis();
+	    long duration = currentTime - mEventManager.getCurrentEvent().mStartTime;
 		long durationInSeconds = duration / 1000;
 		
 		//between 0 and 60
