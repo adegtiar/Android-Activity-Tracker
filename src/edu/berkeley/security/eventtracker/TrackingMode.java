@@ -485,7 +485,7 @@ public class TrackingMode extends AbstractEventEdit {
 	private void showToastStatusMessage() {
 		if (isTracking()) {
 			String currentEventName = eventNameEditText.getText().toString();
-			if(currentEventName.length() < 2){
+			if (currentEventName.length() < 2){
 				return;
 			}
 			String durationString = calculateDuration();

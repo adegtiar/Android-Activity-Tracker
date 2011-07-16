@@ -31,9 +31,9 @@
 				android:id="@+id/NextActivityButton" android:text="@string/nextActivity"
 				android:textSize="8pt" android:focusable="true"
 				android:layout_width="70dip"></Button>
-			<Button android:layout_height="100dip" android:layout_weight="3"
+			<Button android:layout_height="75dip" android:layout_weight="3"
 				android:id="@+id/StopTrackingButton" android:text="@string/stopTracking"
-				android:textSize="8pt" android:layout_width="50dip"></Button>
+				android:textSize="8pt" android:layout_width="30dip"></Button>
 		</LinearLayout>
 		<View android:id="@+id/firstDivider" android:layout_height="2dp"
 			android:layout_width="fill_parent" android:background="#888"
