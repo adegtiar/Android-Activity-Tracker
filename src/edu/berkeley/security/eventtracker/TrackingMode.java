@@ -470,10 +470,13 @@ public class TrackingMode extends AbstractEventEdit {
 		if (isTracking()) {
 			String currentEventName = eventNameEditText.getText().toString();
 			String durationString = calculateDuration();
-			CharSequence text = "Updating activity " + currentEventName +
-			                    "\n" + "Started " + durationString + " ago";
+			CharSequence toastMsg = "Updating activity " + currentEventName +
+			                    "\n" + "Started " + durationString;
+			if ( !durationString.equals("secs ago")){
+				toastMsg = toastMsg + " ago";
+			}
 			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, text, duration);
+			Toast toast = Toast.makeText(context, toastMsg, duration);
 			toast.setGravity(Gravity.CENTER, 0, -15);
 			toast.show();
 		}
