@@ -233,6 +233,7 @@ public class TrackingMode extends AbstractEventEdit {
 				updateDatabase(currentEvent);
 				updateStartTimeUI();
 				updateTrackingStatus();
+				showStartingToastMessage();
 			}
 			if (justResumed) {
 				justResumed = false;
@@ -290,8 +291,11 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				if (currentEventHasName() || timePassedThreshold())
+				if (currentEventHasName() || timePassedThreshold()) {
+					showStartingToastMessage();
 					finishCurrentActivity(true);
+				}
+				
 				eventNameEditText.requestFocus();
 				
 			}
@@ -301,6 +305,8 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
+				//no longer tracking
+				showEndingToastMessage();
 				finishCurrentActivity(false);
 				focusOnNothing();
 			}
@@ -462,27 +468,45 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
+	private void showStartingToastMessage() {
+		displayToast("Starting a new activity");
+	}
+	/*
+	 * Display the toast message saying that an activity is no longer being tracked
+	 */
+	private void showEndingToastMessage() {
+		CharSequence toastMsg= "No longer tracking";
+		displayToast(toastMsg);
+	}
+	
 	/*
 	 * Display the toast relating to the updating and starting of events
 	 */
 	private void showToastStatusMessage() {
-		Context context = getApplicationContext();
 		if (isTracking()) {
 			String currentEventName = eventNameEditText.getText().toString();
+			if(currentEventName.length() < 2){
+				return;
+			}
 			String durationString = calculateDuration();
 			CharSequence toastMsg = "Updating activity " + currentEventName +
-			                    "\n" + "Started " + durationString;
-			if ( !durationString.equals("secs ago")){
-				toastMsg = toastMsg + " ago";
-			}
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, toastMsg, duration);
-			toast.setGravity(Gravity.CENTER, 0, -15);
-			toast.show();
-		}
+			                    "\n" + "(started " + durationString + ")";
 	
+			displayToast(toastMsg);
+		}
 	}
 	
+	
+	/*
+	 * Displays the msg as a toast 
+	 */
+	private void displayToast(CharSequence msg) {
+		Context context = getApplicationContext();
+		int duration = Toast.LENGTH_SHORT;
+		Toast toast = Toast.makeText(context, msg, duration);
+		toast.setGravity(Gravity.CENTER, 0, -15);
+		toast.show();	
+	}
 	
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu.

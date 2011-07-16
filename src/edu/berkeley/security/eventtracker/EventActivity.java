@@ -431,15 +431,15 @@ abstract public class EventActivity extends Activity {
 		}
 		//between 0 and 1 hour
 		else if (numOfHours == 0) {
-			return Long.toString(numOfMinutes) + " min";
+			return Long.toString(numOfMinutes) + " mins ago";
 		}else if (numOfHours < 10) {
 			//returns the number of hours rounded to one decimal place
 			double hoursInDecimal = durationInSeconds/3600.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-		    return df.format(hoursInDecimal) + " hr";
+		    return df.format(hoursInDecimal) + " hrs ago";
 		}else{
 			//greater than 10 hours. so don't display any decimals
-			return Long.toString(numOfHours) + " hr";
+			return Long.toString(numOfHours) + " hrs ago";
 		}
 		
 	}
