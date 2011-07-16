@@ -281,8 +281,8 @@ abstract public class EventActivity extends Activity {
 	protected void updateTrackingUI(boolean isTracking) {
 		textViewIsTracking.setText(isTracking ? trackingStringID
 				: notTrackingStringID);
-		if(isTracking){
-			textViewIsTracking.append(mEventManager.getCurrentEvent().mName);
+		if(isTracking && getCurrentEvent() != null){
+			textViewIsTracking.append(getCurrentEvent().mName);
 		}
 	}
 
@@ -394,9 +394,10 @@ abstract public class EventActivity extends Activity {
 	 * Updates the toolbar message using the latest duration and name
 	 */
 	public void updateToolbarMessage() {
-		 if(isTracking()) {
+		EventEntry thisCurrentEvent = getCurrentEvent();
+		 if(isTracking() && thisCurrentEvent != null) {
 		     long currentTime = System.currentTimeMillis();
-		     long duration = currentTime - mEventManager.getCurrentEvent().mStartTime;
+		     long duration = currentTime - thisCurrentEvent.mStartTime;
 		     textViewIsTracking.setText(trackingStringID);
 		     textViewIsTracking.append(" (" + calculateDuration() + ")");
 	        
@@ -409,8 +410,11 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected String calculateDuration() {
 		
+		if(getCurrentEvent() == null){
+			return "";
+		}
 		long currentTime = System.currentTimeMillis();
-	    long duration = currentTime - mEventManager.getCurrentEvent().mStartTime;
+	    long duration = currentTime - getCurrentEvent().mStartTime;
 		long durationInSeconds = duration / 1000;
 		
 		//between 0 and 60
