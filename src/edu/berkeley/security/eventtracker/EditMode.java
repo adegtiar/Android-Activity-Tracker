@@ -103,7 +103,6 @@ public class EditMode extends AbstractEventEdit {
 					Toast.makeText(getApplicationContext(), "No data yet",
 							Toast.LENGTH_SHORT).show();
 				} else {
-
 					Intent myIntent = new Intent(EditMode.this,
 							HelloGoogleMaps.class);
 					myIntent.putExtra("EventData", editingEvent);
@@ -195,7 +194,6 @@ public class EditMode extends AbstractEventEdit {
 		if (editingEvent != null) {
 			editingEvent.mNotes = notes;
 			updateDatabase(editingEvent);
-
 		}
 	}
 
@@ -231,24 +229,21 @@ public class EditMode extends AbstractEventEdit {
 	 * Queries the tag database in order to populate the tag drop down menu.
 	 */
 	protected void initializeTags() {
-
 		dropDown = (Spinner) findViewById(R.id.tagSpinner);
-
 		LinkedHashSet<String> tagSet = EventActivity.mEventManager.getTags();
 		ArrayList<String> mTagList = new ArrayList<String>();
+
 		for (String tag : tagSet) {
 			mTagList.add(tag);
 		}
 		mTagList.add(0, "Select a tag");
+
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, mTagList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		dropDown.setAdapter(adapter);
 		int position = mTagList.indexOf(editingEvent.mTag);
-
-		//
 		dropDown.setSelection(position, true);
-
 	}
 
 	/**
@@ -348,6 +343,11 @@ public class EditMode extends AbstractEventEdit {
 	@Override
 	protected Class<?> getRightActivityClass() {
 		return ListEvents.class;
+	}
+
+	@Override
+	protected EventEntry getFocussedEvent() {
+		return editingEvent;
 	}
 
 }

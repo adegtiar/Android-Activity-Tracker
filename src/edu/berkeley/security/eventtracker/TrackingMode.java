@@ -535,4 +535,9 @@ public class TrackingMode extends AbstractEventEdit {
 	protected Class<?> getRightActivityClass() {
 		return null;
 	}
+
+	@Override
+	protected EventEntry getFocussedEvent() {
+		return currentEvent;
+	}
 }

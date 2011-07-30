@@ -60,6 +60,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
 	private static final int DIALOG_ENTER_TAG = 8;
+	protected static final int DIALOG_NOTE_ENTRY = 9;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -304,7 +305,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 		ArrayList<String> matches = data
 				.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 		if (requestCode == VOICE_RECOGNITION_REQUEST_CODE_NAME) {
-
 			setNameText(matches.get(0));
 		} else if (requestCode == VOICE_RECOGNITION_REQUEST_CODE_NOTES) {
 			setNotesText(matches.get(0));
@@ -357,7 +357,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 					R.layout.alert_dialog_note_entry, null);
 			final EditText noteEditText = (EditText) noteEntryView
 					.findViewById(R.id.notes_edit);
-			noteEditText.setText(currentEvent.mNotes);
+			final EventEntry eventInFocus = getFocussedEvent();
+			noteEditText.setText(eventInFocus.mNotes);
 			return new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.alert_dialog_notes_title)
@@ -371,10 +372,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 									String notes = noteEditText.getText()
 											.toString();
 
-									AbstractEventEdit.this.currentEvent.mNotes = notes;
-									AbstractEventEdit.this.syncToEventFromUI();
-									AbstractEventEdit.this
-											.updateDatabase(currentEvent);
+									eventInFocus.mNotes = notes;
+									syncToEventFromUI();
+									updateDatabase(eventInFocus);
 								}
 
 							})
@@ -399,5 +399,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		eventNameEditText.clearFocus();
 		dummy.requestFocus();
 	}
+
+	protected abstract EventEntry getFocussedEvent();
 
 }

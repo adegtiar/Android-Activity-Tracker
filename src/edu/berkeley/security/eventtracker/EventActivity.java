@@ -43,8 +43,7 @@ abstract public class EventActivity extends Activity {
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
-
-	protected static final int DIALOG_NOTE_ENTRY = 9;
+	
 	protected TextView textViewIsTracking;
 
 	// Machine learning variables
