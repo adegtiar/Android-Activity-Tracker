@@ -50,7 +50,7 @@ public class EditMode extends AbstractEventEdit {
 					EditMode.this);
 		}
 	}
-	
+
 	@Override
 	protected void updateTrackingUI(boolean isTracking) {
 		bottomBar.setText(getCurrentEventString());

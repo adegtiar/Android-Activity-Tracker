@@ -17,18 +17,19 @@
 package edu.berkeley.security.eventtracker;
 
 import java.util.Calendar;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
-import android.widget.ViewSwitcher;
-import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TimePicker.OnTimeChangedListener;
+import android.widget.ViewSwitcher;
 
 public class DateTimePicker extends RelativeLayout implements
 		View.OnClickListener, OnDateChangedListener, OnTimeChangedListener {

@@ -64,7 +64,7 @@ public class NumberPicker extends LinearLayout {
 	private final int MAXIMUM = 999;
 
 	public Integer value;
-	
+
 	public EditText valueText;
 
 	private Handler repeatUpdateHandler = new Handler();

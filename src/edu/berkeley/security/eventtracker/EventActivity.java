@@ -48,7 +48,7 @@ abstract public class EventActivity extends Activity {
 	protected TextView textViewIsTracking;
 
 	// Machine learning variables
-//	public static boolean isDbUpdated;
+	// public static boolean isDbUpdated;
 
 	// Variables for Services
 	protected static Intent gpsServiceIntent;
@@ -91,11 +91,11 @@ abstract public class EventActivity extends Activity {
 		for (int view_id : viewsToAttachListener) {
 			findViewById(view_id).setOnTouchListener(flingListener);
 		}
-		
+
 		// Set up preferences
 		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
 				MODE_PRIVATE);
-		
+
 		startTrackingDuration();
 	}
 
@@ -189,7 +189,7 @@ abstract public class EventActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -281,7 +281,7 @@ abstract public class EventActivity extends Activity {
 	protected void updateTrackingUI(boolean isTracking) {
 		textViewIsTracking.setText(isTracking ? trackingStringID
 				: notTrackingStringID);
-		if(isTracking && getCurrentEvent() != null){
+		if (isTracking && getCurrentEvent() != null) {
 			textViewIsTracking.append(getCurrentEvent().mName);
 		}
 	}
@@ -381,78 +381,78 @@ abstract public class EventActivity extends Activity {
 
 	}
 
-	
 	private Handler mHandlerDuration = new Handler();
 	private Runnable mUpdateTimeTaskDuration = new Runnable() {
-		   public void run() {
-			   updateToolbarMessage();
-			   mHandlerDuration.postDelayed(this, 60000);  
-		   }
+		public void run() {
+			updateToolbarMessage();
+			mHandlerDuration.postDelayed(this, 60000);
+		}
 	};
-	
+
 	/*
 	 * Updates the toolbar message using the latest duration and name
 	 */
 	public void updateToolbarMessage() {
 		EventEntry thisCurrentEvent = getCurrentEvent();
-		 if(isTracking() && thisCurrentEvent != null) {
-		     long currentTime = System.currentTimeMillis();
-		     long duration = currentTime - thisCurrentEvent.mStartTime;
-		     textViewIsTracking.setText(trackingStringID);
-		     textViewIsTracking.append(" (" + calculateDuration() + ")");
-	        
-		   }
+		if (isTracking() && thisCurrentEvent != null) {
+			long currentTime = System.currentTimeMillis();
+			long duration = currentTime - thisCurrentEvent.mStartTime;
+			textViewIsTracking.setText(trackingStringID);
+			textViewIsTracking.append(" (" + calculateDuration() + ")");
+
+		}
 	}
-	
+
 	/*
-	 * Returns a string representation of the duration(given in ms)
-	 * ex: sec ago, 6 min, 1.5 hr
+	 * Returns a string representation of the duration(given in ms) ex: sec ago,
+	 * 6 min, 1.5 hr
 	 */
 	protected String calculateDuration() {
-		
-		if(getCurrentEvent() == null){
+
+		if (getCurrentEvent() == null) {
 			return "";
 		}
 		long currentTime = System.currentTimeMillis();
-	    long duration = currentTime - getCurrentEvent().mStartTime;
+		long duration = currentTime - getCurrentEvent().mStartTime;
 		long durationInSeconds = duration / 1000;
-		
-		//between 0 and 60
-		long numOfSeconds = durationInSeconds % 60; 
-		//between 0 and 60
+
+		// between 0 and 60
+		long numOfSeconds = durationInSeconds % 60;
+		// between 0 and 60
 		long numOfMinutes = (durationInSeconds / 60) % 60;
-		//no limit on the number of hours
+		// no limit on the number of hours
 		long numOfHours = durationInSeconds / 3600;
-		
-		
-		//duration is between 0 and 60 seconds
+
+		// duration is between 0 and 60 seconds
 		if (numOfHours == 0 && numOfMinutes == 0) {
 			return "secs ago";
 		}
-		//between 0 and 1 hour
+		// between 0 and 1 hour
 		else if (numOfHours == 0) {
 			return Long.toString(numOfMinutes) + " mins ago";
-		}else if (numOfHours < 10) {
-			//returns the number of hours rounded to one decimal place
-			double hoursInDecimal = durationInSeconds/3600.0;
+		} else if (numOfHours < 10) {
+			// returns the number of hours rounded to one decimal place
+			double hoursInDecimal = durationInSeconds / 3600.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-		    return df.format(hoursInDecimal) + " hrs ago";
-		}else{
-			//greater than 10 hours. so don't display any decimals
+			return df.format(hoursInDecimal) + " hrs ago";
+		} else {
+			// greater than 10 hours. so don't display any decimals
 			return Long.toString(numOfHours) + " hrs ago";
 		}
-		
+
 	}
+
 	/*
-	 * If tracking, then start modifying the toolbar to keep track of the duration of the activity
+	 * If tracking, then start modifying the toolbar to keep track of the
+	 * duration of the activity
 	 */
-	private void startTrackingDuration(){
-		 mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
-		 if(isTracking()){
-			 //if Tracking, then start tracking the duration in the toolbar
-			 mHandlerDuration.postDelayed(mUpdateTimeTaskDuration, 100);
-		 }
-		
+	private void startTrackingDuration() {
+		mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
+		if (isTracking()) {
+			// if Tracking, then start tracking the duration in the toolbar
+			mHandlerDuration.postDelayed(mUpdateTimeTaskDuration, 100);
+		}
+
 	}
 
 }

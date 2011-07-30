@@ -124,8 +124,8 @@ public class Debugging extends Activity {
 				EventActivity.mEventManager.addTag(tag);
 			}
 			EventEntry event = mgr.createEvent(eventParts[0], eventParts[1],
-						parseDate(eventParts[2]), parseDate(eventParts[3]),
-						false, tag);
+					parseDate(eventParts[2]), parseDate(eventParts[3]), false,
+					tag);
 			if (event != null) {
 				nSuccessful++;
 			}

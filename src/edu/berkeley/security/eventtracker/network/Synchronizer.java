@@ -29,33 +29,28 @@ public class Synchronizer extends IntentService {
 	}
 
 	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
-	}
-
-	@Override
 	protected void onHandleIntent(Intent intent) {
 
 		manager = EventManager.getManager();
 		Bundle bundle = intent.getExtras();
 
 		ServerRequest request = (ServerRequest) bundle
-		.getSerializable(REQUEST_EXTRA);	
-		
-		ArrayList<EventEntry> listOfEvents =(ArrayList<EventEntry>) bundle.getSerializable(EVENT_LIST_EXTRA);
-		if(listOfEvents != null){
-			for(EventEntry thisEvent:listOfEvents){
-				if(thisEvent !=null){
-					if(thisEvent.mTag != null){
-						if(thisEvent.mTag.equals("Select a tag")){
-							thisEvent.mTag="";
+				.getSerializable(REQUEST_EXTRA);
+
+		ArrayList<EventEntry> listOfEvents = (ArrayList<EventEntry>) bundle
+				.getSerializable(EVENT_LIST_EXTRA);
+		if (listOfEvents != null) {
+			for (EventEntry thisEvent : listOfEvents) {
+				if (thisEvent != null) {
+					if (thisEvent.mTag != null) {
+						if (thisEvent.mTag.equals("Select a tag")) {
+							thisEvent.mTag = "";
 						}
 					}
 				}
 			}
 		}
-	
+
 		PostRequestResponse response;
 		switch (request) {
 		case SENDDATA:
@@ -66,7 +61,7 @@ public class Synchronizer extends IntentService {
 			break;
 		case REGISTER:
 			response = Networking.sendPostRequest(ServerRequest.REGISTER);
-			if (response.isSuccess()){
+			if (response.isSuccess()) {
 				Settings.confirmRegistrationWithWebServer();
 				Networking.sendAllEvents(this);
 			}
@@ -100,16 +95,17 @@ public class Synchronizer extends IntentService {
 	void parseEventPollResponse(String jsonResponseString) throws JSONException {
 		EventManager manager = EventManager.getManager();
 		JSONObject jsonResponse = new JSONObject(jsonResponseString);
-		
+
 		String pollTime = jsonResponse.getString("pollTime");
 		JSONArray events = jsonResponse.getJSONArray("events");
 		for (int eventIndex = 0; eventIndex < events.length(); eventIndex++) {
-			JSONObject eventData=events.getJSONObject(eventIndex);
-			String encryptedData=eventData.getString("content");
-			String passwd=Settings.getPassword();
-			String unencryptedData=null;
+			JSONObject eventData = events.getJSONObject(eventIndex);
+			String encryptedData = eventData.getString("content");
+			String passwd = Settings.getPassword();
+			String unencryptedData = null;
 			try {
-				unencryptedData=GibberishAESCrypto.decrypt(encryptedData, Encryption.hashPassword(passwd).toCharArray());
+				unencryptedData = GibberishAESCrypto.decrypt(encryptedData,
+						Encryption.hashPassword(passwd).toCharArray());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -125,8 +121,8 @@ public class Synchronizer extends IntentService {
 				event.mStartTime = eventContents.getLong("startTime");
 				event.mEndTime = eventContents.getLong("endTime");
 				event.deleted = eventData.getBoolean("deleted");
-				event.mTag=eventContents.getString("tag");
-				if(event.mTag != null && event.mTag.length() != 0)
+				event.mTag = eventContents.getString("tag");
+				if (event.mTag != null && event.mTag.length() != 0)
 					EventActivity.mEventManager.addTag(event.mTag);
 				if (event.deleted && !event.persisted)
 					break; // trying to create a deleted event!

@@ -34,7 +34,8 @@ public class EventDataSerializer {
 		String password = Settings.getPassword();
 		String encryptedJSON = null;
 		try {
-			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, Encryption.hashPassword(password).toCharArray());
+			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, Encryption
+					.hashPassword(password).toCharArray());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -11,7 +11,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import android.util.Base64;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
 /**
  * Wrapper for the Machine Learning <tt>Classifier</tt>.
@@ -74,15 +73,15 @@ class EventModel {
 		isEmpty = false;
 		Instance newInstance = PredictionService.eventToInstance(newEvent);
 		newInstance.setDataset(PredictionService.getBlankTrainingDataset());
-//		if (mTrainingData != null)
-//			mTrainingData.add(newInstance);
+		// if (mTrainingData != null)
+		// mTrainingData.add(newInstance);
 		getModel().updateClassifier(newInstance);
 	}
-	
+
 	Instances getInstances() {
 		return mTrainingData;
 	}
-	
+
 	/**
 	 * Whether the model has any instances classified.
 	 * 

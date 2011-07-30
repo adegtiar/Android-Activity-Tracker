@@ -34,11 +34,10 @@ public abstract class AbstractDbAdapter {
 			+ "latitude real,"
 			+ "longitude real,"
 			+ "timeOfRecording Long);";
-	
-	protected static final String TABLE_CREATE_TAGDATA = "create table tagData (_id integer primary key autoincrement, "
-		+ "tag string);";
 
-	
+	protected static final String TABLE_CREATE_TAGDATA = "create table tagData (_id integer primary key autoincrement, "
+			+ "tag string);";
+
 	protected static final String DATABASE_NAME = "data";
 	protected static final int DATABASE_VERSION = 4;
 

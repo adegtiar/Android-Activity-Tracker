@@ -61,8 +61,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
 	private static final int DIALOG_ENTER_TAG = 8;
 
-
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -240,14 +238,19 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 		// Add predicted events in order of likelihood
 		List<String> predictedEvents = PredictionService.predictEventNames();
-		mActivityNames.addAll(predictedEvents);
-		autoCompleteActivities.addAll(predictedEvents);
+		for (String predictedEvent : predictedEvents) {
+			if (predictedEvent == null || predictedEvent.length() == 0) {
+				continue;
+			}
+			mActivityNames.add(predictedEvent);
+			autoCompleteActivities.add(predictedEvent);
+		}
 
 		// Add the rest of the events
 		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry nextEvent = allEventsCursor.getEvent();
-			if (nextEvent.mName.length() == 0)
+			if (nextEvent.mName == null || nextEvent.mName.length() == 0)
 				continue;
 			if (mActivityNames.add(nextEvent.mName))
 				autoCompleteActivities.add(nextEvent.mName);

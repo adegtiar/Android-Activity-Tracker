@@ -24,7 +24,7 @@ public class EventEntry implements Serializable {
 	public long mDbRowID = -1;
 	public String mName = "";
 	public String mNotes = "";
-	public String mTag="";
+	public String mTag = "";
 	public long mStartTime;
 	public long mEndTime;
 	public long mUpdateTime;
@@ -62,7 +62,7 @@ public class EventEntry implements Serializable {
 		mUpdateTime = mStartTime = startTime;
 		mEndTime = endTime;
 		mUUID = Networking.createUUID();
-		mTag=tag;
+		mTag = tag;
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class EventEntry implements Serializable {
 		deleted = isDeleted;
 		this.receivedAtServer = receivedAtServer;
 		this.persisted = persisted;
-		this.mTag=tag;
+		this.mTag = tag;
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class EventEntry implements Serializable {
 		long endTime = getLong(eventCursor, EventKey.END_TIME);
 		long updateTime = getLong(eventCursor, EventKey.UPDATE_TIME);
 		String uuid = getString(eventCursor, EventKey.UUID);
-		String mTag=getString(eventCursor, EventKey.TAG);
+		String mTag = getString(eventCursor, EventKey.TAG);
 		boolean recievedAtServer = getBoolean(eventCursor,
 				EventKey.RECEIVED_AT_SERVER);
 		boolean isDeleted = getBoolean(eventCursor, EventKey.IS_DELETED);
@@ -188,7 +188,7 @@ public class EventEntry implements Serializable {
 		SimpleDateFormat dateFormat = new SimpleDateFormat();
 		return dateFormat.format(new Date(dateLong));
 	}
-	
+
 	/**
 	 * Formats a long date in a time only format.
 	 */
@@ -196,10 +196,10 @@ public class EventEntry implements Serializable {
 		long dateLong = (Long) getValue(colType);
 		if (dateLong == 0)
 			return "In Progress";
-		SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT);
+		SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
+				.getTimeInstance(DateFormat.SHORT);
 		return dateFormat.format(new Date(dateLong));
 	}
-	
 
 	/**
 	 * Gets the value of the long column with the given columnName.

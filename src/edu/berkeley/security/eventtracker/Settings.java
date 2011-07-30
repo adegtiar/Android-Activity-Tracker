@@ -186,7 +186,7 @@ public class Settings extends PreferenceActivity {
 	public static String getPollTime() {
 		return EventActivity.settings.getString(POLL_TIME, null);
 	}
-	
+
 	public static Long getLastPolledTime() {
 		return EventActivity.settings.getLong(LAST_POLL_TIME, 0);
 	}
@@ -202,60 +202,60 @@ public class Settings extends PreferenceActivity {
 		return EventActivity.settings.getString(password, "");
 	}
 
-//	/**
-//	 * Stores the given <tt>Classifier</tt> as the current WEKA model.
-//	 * 
-//	 * @param model
-//	 *            the WEKA model to store.
-//	 */
-//	public static void setWekaModel(Classifier model) {
-//		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
-//		String modelString;
-//		if (model == null)
-//			modelString = null;
-//		else {
-//			try {
-//				modelString = PredictionService.classifierToString(model);
-//			} catch (IOException e) {
-//				modelString = null;
-//			}
-//		}
-//		prefEditor.putString(WekaModel, modelString);
-//		prefEditor.commit();
-//	}
-	
-//	/**
-//	 * Caches the classifier for persistent storage, if necessary.
-//	 */
-//	public static void syncWekaModel() {
-//		if (EventActivity.isDbUpdated && EventActivity.wekaModel != null)
-//			setWekaModel(EventActivity.wekaModel);
-//			
-//	}
+	// /**
+	// * Stores the given <tt>Classifier</tt> as the current WEKA model.
+	// *
+	// * @param model
+	// * the WEKA model to store.
+	// */
+	// public static void setWekaModel(Classifier model) {
+	// SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+	// String modelString;
+	// if (model == null)
+	// modelString = null;
+	// else {
+	// try {
+	// modelString = PredictionService.classifierToString(model);
+	// } catch (IOException e) {
+	// modelString = null;
+	// }
+	// }
+	// prefEditor.putString(WekaModel, modelString);
+	// prefEditor.commit();
+	// }
 
-//	/**
-//	 * Retrieves the stored WEKA model.
-//	 * 
-//	 * @return the WEKA model for the current set of events.
-//	 */
-//	public static NaiveBayesUpdateable getWekaModel() {
-//		String wekaModelString = null;
-//		if (!EventActivity.isDbUpdated)
-//			wekaModelString = EventActivity.settings.getString(WekaModel, null);
-//		NaiveBayesUpdateable wekaModel;
-//		if (wekaModelString == null) {
-//			wekaModel = PredictionService.getEventModel();
-//		} else {
-//			try {
-//				wekaModel = PredictionService.stringToClassifer(wekaModelString);
-//			} catch (IOException e) {
-//				// Had an invalid model stored. Better recalculate it.
-//				wekaModel = PredictionService.getEventModel();
-//				setWekaModel(wekaModel);
-//			}
-//		}
-//		return wekaModel;
-//	}
+	// /**
+	// * Caches the classifier for persistent storage, if necessary.
+	// */
+	// public static void syncWekaModel() {
+	// if (EventActivity.isDbUpdated && EventActivity.wekaModel != null)
+	// setWekaModel(EventActivity.wekaModel);
+	//
+	// }
+
+	// /**
+	// * Retrieves the stored WEKA model.
+	// *
+	// * @return the WEKA model for the current set of events.
+	// */
+	// public static NaiveBayesUpdateable getWekaModel() {
+	// String wekaModelString = null;
+	// if (!EventActivity.isDbUpdated)
+	// wekaModelString = EventActivity.settings.getString(WekaModel, null);
+	// NaiveBayesUpdateable wekaModel;
+	// if (wekaModelString == null) {
+	// wekaModel = PredictionService.getEventModel();
+	// } else {
+	// try {
+	// wekaModel = PredictionService.stringToClassifer(wekaModelString);
+	// } catch (IOException e) {
+	// // Had an invalid model stored. Better recalculate it.
+	// wekaModel = PredictionService.getEventModel();
+	// setWekaModel(wekaModel);
+	// }
+	// }
+	// return wekaModel;
+	// }
 
 	protected static void setPhoneNumber(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context
@@ -279,7 +279,6 @@ public class Settings extends PreferenceActivity {
 		prefEditor.commit();
 	}
 
-	
 	public static void setPollTime(String pollTime) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putString(POLL_TIME, pollTime);

@@ -19,7 +19,6 @@ public class TimeDatePicker extends Activity {
 		super.onResume();
 	}
 
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +38,8 @@ public class TimeDatePicker extends Activity {
 
 		date = ((DatePicker) findViewById(R.id.datePicker));
 
-		date.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal
-				.get(Calendar.DAY_OF_MONTH));
+		date.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+				cal.get(Calendar.DAY_OF_MONTH));
 
 		findViewById(R.id.setTimeDate).setOnClickListener(
 				new View.OnClickListener() {

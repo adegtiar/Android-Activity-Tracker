@@ -12,20 +12,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -60,7 +57,8 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	 * to.
 	 */
 	private int[] to = new int[] { R.id.row_event_title,
-			R.id.row_event_start_time, R.id.row_event_end_time, R.id.row_id_container};
+			R.id.row_event_start_time, R.id.row_event_end_time,
+			R.id.row_id_container };
 
 	private EventCursor mEventsCursor;
 	private ListView eventList;
@@ -73,15 +71,14 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 	private static final int DATE_DIALOG_ID = 0;
 	private static final int DIALOG_DELETE_EVENT = 1;
-	
-	//Used for deleting events 
+
+	// Used for deleting events
 	private static long deleteROWID;
 	private static boolean deletedRowInProgress;
-	
-	//gesture stuff
+
+	// gesture stuff
 	GestureDetector mDetector;
-	
-	
+
 	// the callback received when the user "sets" the date in the dialog
 	private DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -109,21 +106,20 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	
-		mDetector= new GestureDetector(this, this);
+
+		mDetector = new GestureDetector(this, this);
 
 		// Decide which date to show
 		dateListed = EventManager.getManager().fetchDateOfLatestEvent();
 
 		eventList = (ListView) findViewById(R.id.events_list_view);
 		eventList.setOnTouchListener(new OnTouchListener() {
-	    public boolean onTouch(View view, MotionEvent e) {
-	        mDetector.onTouchEvent(e);
-	        return false;
-	    }
-	});
-		
-		
+			public boolean onTouch(View view, MotionEvent e) {
+				mDetector.onTouchEvent(e);
+				return false;
+			}
+		});
+
 		ImageView leftArrow = (ImageView) findViewById(R.id.leftArrow);
 		ImageView rightArrow = (ImageView) findViewById(R.id.rightArrow);
 		fillData();
@@ -131,7 +127,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 		leftArrow.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				previousListOfEvents();
-				
+
 			}
 		});
 
@@ -155,13 +151,13 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 	}
 
-	private void previousListOfEvents(){
+	private void previousListOfEvents() {
 		// dateListed.setDate(dateListed.getDate()-1);
 		Date possibleDate = EventManager.getManager().fetchDateBefore(
 				dateListed);
 		if (possibleDate == null) {
-			Toast.makeText(getApplicationContext(),
-					"No further events", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "No further events",
+					Toast.LENGTH_SHORT).show();
 			return;
 		} else {
 			dateListed = possibleDate;
@@ -177,13 +173,14 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 		fillData();
 	}
-	private void nextListOfEvents(){
 
-		Date possibleDate = EventManager.getManager().fetchDateAfter(
-				dateListed);
+	private void nextListOfEvents() {
+
+		Date possibleDate = EventManager.getManager()
+				.fetchDateAfter(dateListed);
 		if (possibleDate == null) {
-			Toast.makeText(getApplicationContext(),
-					"No further events", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "No further events",
+					Toast.LENGTH_SHORT).show();
 			return;
 		} else {
 			dateListed = possibleDate;
@@ -198,7 +195,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 		fillData();
 	}
-	
+
 	@Override
 	protected int getLayoutResource() {
 		return R.layout.events_list;
@@ -209,8 +206,6 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	 */
 	private void fillData() {
 
-
-		
 		mEventsCursor = mEventManager.fetchSortedEvents(dateListed);
 
 		// Get all of the rows from the database and create the item list
@@ -229,12 +224,12 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(position < 1){
+				if (position < 1) {
 					return;
 				}
-				boolean sameAsCurrentDate=isToday(dateListed);
-														
-				if (position == 1 && isTracking() && sameAsCurrentDate) 
+				boolean sameAsCurrentDate = isToday(dateListed);
+
+				if (position == 1 && isTracking() && sameAsCurrentDate)
 					finish(); // trying to edit event in progress
 				else
 					startEditEventActivity(id);
@@ -246,9 +241,12 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-			
-				long rowId = (Long) view.findViewById(R.id.row_id_container).getTag(R.string.rowIDContainer);
-				boolean isInProgress = (Boolean) view.findViewById(R.id.row_id_container).getTag(R.string.isInProgressContainer);
+
+				long rowId = (Long) view.findViewById(R.id.row_id_container)
+						.getTag(R.string.rowIDContainer);
+				boolean isInProgress = (Boolean) view.findViewById(
+						R.id.row_id_container).getTag(
+						R.string.isInProgressContainer);
 				Bundle bundle = new Bundle();
 				bundle.putString("nameOfEvent",
 						mEventManager.fetchEvent(rowId).mName);
@@ -257,7 +255,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 				showDialog(DIALOG_DELETE_EVENT, bundle);
 				return true;
 			}
-			
+
 		});
 
 		eventList.setAdapter(eventsCursorAdapter);
@@ -273,7 +271,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	private void initializeHeaders(ListView list) {
 		int headerCount = list.getHeaderViewsCount();
 		TextView titleHeader = (TextView) findViewById(R.id.titleHeader);
-		
+
 		String titleForList = "Activites for ";
 
 		titleForList += (isToday(dateListed)) ? "Today" : DateFormat
@@ -310,17 +308,19 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 				int columnIndex) {
 			EventCursor eCursor = new EventCursor(cursor, mEventManager);
 			EventKey colType = eCursor.getColumnType(columnIndex);
-			
+
 			switch (colType) {
 			case ROW_ID:
 				// Initializing the delete button
-				
+
 				long rowId = cursor.getLong(columnIndex);
 				view.setTag(R.string.rowIDContainer, rowId);
-						
+
 				boolean selectedFirst = cursor.getLong(cursor
-						.getColumnIndex(EventKey.END_TIME.columnName())) == 0; //TODO fix this
-				boolean isInProgress= isToday(dateListed) && selectedFirst;
+						.getColumnIndex(EventKey.END_TIME.columnName())) == 0; // TODO
+																				// fix
+																				// this
+				boolean isInProgress = isToday(dateListed) && selectedFirst;
 				view.setTag(R.string.isInProgressContainer, isInProgress);
 				return true;
 			case START_TIME:
@@ -363,9 +363,9 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 					.findViewById(R.id.delete_description);
 			deleteEvent.setText("Are you sure you want to delete the event "
 					+ bundle.getString("nameOfEvent") + "?");
-			deleteROWID=bundle.getLong("rowId");
-			deletedRowInProgress=bundle.getBoolean("isInProgress");
-			
+			deleteROWID = bundle.getLong("rowId");
+			deletedRowInProgress = bundle.getBoolean("isInProgress");
+
 			break;
 		}
 	}
@@ -392,12 +392,11 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									
 
 									mEventManager.markEventDeleted(deleteROWID);
 									Networking.sendToServer(
-											ServerRequest.DELETE,
-											mEventManager.fetchEvent(deleteROWID),
+											ServerRequest.DELETE, mEventManager
+													.fetchEvent(deleteROWID),
 											ListEvents.this);
 									mEventsCursor.requery();
 									if (deletedRowInProgress) {
@@ -450,7 +449,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 					&& Math.abs(velocityX) > FlingDetector.SWIPE_THRESHOLD_VELOCITY) {
 				// left to right swipe
 				previousListOfEvents();
-				
+
 			}
 		} catch (Exception e) {
 			// nothing
@@ -461,7 +460,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	@Override
 	public void onLongPress(MotionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -474,7 +473,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	@Override
 	public void onShowPress(MotionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -483,5 +482,4 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 		return false;
 	}
 
-	
 }

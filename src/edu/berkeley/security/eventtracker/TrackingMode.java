@@ -44,9 +44,6 @@ public class TrackingMode extends AbstractEventEdit {
 	private TextView textViewStartTime;
 	private ProgressIndicatorSpinner myProgressTimer;
 
-	
-
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -60,13 +57,10 @@ public class TrackingMode extends AbstractEventEdit {
 		Settings.setPhoneNumber(this);
 		Networking.registerIfNeeded(this);
 
-		
 		// Attempts to send all the requests that are suppose to be sent
 		// but for some reason did not make it to the web server.
 		Networking.sendAllEvents(this);
 
-	
-		
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -147,7 +141,6 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setEnabled(isTracking);
 		newTagButton.setEnabled(isTracking);
 		dropDown.setSelection(0);
-		
 
 	}
 
@@ -158,14 +151,13 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 	}
 
-	
 	private Handler mHandler = new Handler();
 	private Runnable mUpdateTimeTask = new Runnable() {
-		   public void run() {
-		     eventNameEditText.showDropDown();
-		   }
-		};
-	
+		public void run() {
+			eventNameEditText.showDropDown();
+		}
+	};
+
 	@Override
 	protected void initializeEditTexts() {
 		super.initializeEditTexts();
@@ -174,12 +166,12 @@ public class TrackingMode extends AbstractEventEdit {
 		eventNameEditText.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				
-						if(event.getAction()==0){
-							mHandler.removeCallbacks(mUpdateTimeTask);
-				            mHandler.postDelayed(mUpdateTimeTask, 200);
-						}				
-						return false;
+
+				if (event.getAction() == 0) {
+					mHandler.removeCallbacks(mUpdateTimeTask);
+					mHandler.postDelayed(mUpdateTimeTask, 200);
+				}
+				return false;
 			}
 		});
 		eventNameEditText.setOnItemClickListener(new OnItemClickListener() {
@@ -188,16 +180,18 @@ public class TrackingMode extends AbstractEventEdit {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				// TODO Auto-generated method stub
-				String activityName= (String) ((TextView)arg1).getText();
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(), 0);
-				EventEntry thisEvent=EventManager.getManager().fetchEvents(activityName);
-				currentEvent.mTag=thisEvent.mTag;
+				String activityName = (String) ((TextView) arg1).getText();
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(),
+						0);
+				EventEntry thisEvent = EventManager.getManager().fetchEvents(
+						activityName);
+				currentEvent.mTag = thisEvent.mTag;
 				initializeTags();
 			}
 		});
 	}
-	
+
 	@Override
 	protected void setNameText(String name) {
 		if (currentEvent == null) {
@@ -224,7 +218,6 @@ public class TrackingMode extends AbstractEventEdit {
 		@Override
 		public void afterTextChanged(Editable s) {
 
-			
 			if (currentEvent != null) {
 				updateTrackingNotification();
 			}
@@ -237,11 +230,10 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 			if (justResumed) {
 				justResumed = false;
-			}
-			else {
+			} else {
 				myProgressTimer.spin();
 			}
-				
+
 		}
 
 		@Override
@@ -252,7 +244,7 @@ public class TrackingMode extends AbstractEventEdit {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-			
+
 		}
 	}
 
@@ -295,9 +287,9 @@ public class TrackingMode extends AbstractEventEdit {
 					showStartingToastMessage();
 					finishCurrentActivity(true);
 				}
-				
+
 				eventNameEditText.requestFocus();
-				
+
 			}
 		});
 
@@ -305,7 +297,7 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				//no longer tracking
+				// no longer tracking
 				showEndingToastMessage();
 				finishCurrentActivity(false);
 				focusOnNothing();
@@ -358,7 +350,6 @@ public class TrackingMode extends AbstractEventEdit {
 	 */
 	private void finishCurrentActivity(boolean createNewActivity) {
 
-		
 		currentEvent.mEndTime = System.currentTimeMillis();
 		updateAutoComplete();
 		syncToEventFromUI();
@@ -456,8 +447,7 @@ public class TrackingMode extends AbstractEventEdit {
 				showToastStatusMessage();
 				setSpinning(false);
 				resetTimer();
-				
-				
+
 			}
 
 			@Override
@@ -471,43 +461,44 @@ public class TrackingMode extends AbstractEventEdit {
 	private void showStartingToastMessage() {
 		displayToast("Starting a new activity");
 	}
+
 	/*
-	 * Display the toast message saying that an activity is no longer being tracked
+	 * Display the toast message saying that an activity is no longer being
+	 * tracked
 	 */
 	private void showEndingToastMessage() {
-		CharSequence toastMsg= "No longer tracking";
+		CharSequence toastMsg = "No longer tracking";
 		displayToast(toastMsg);
 	}
-	
+
 	/*
 	 * Display the toast relating to the updating and starting of events
 	 */
 	private void showToastStatusMessage() {
 		if (isTracking()) {
 			String currentEventName = eventNameEditText.getText().toString();
-			if (currentEventName.length() < 2){
+			if (currentEventName.length() < 2) {
 				return;
 			}
 			String durationString = calculateDuration();
-			CharSequence toastMsg = "Updating activity " + currentEventName +
-			                    "\n" + "(started " + durationString + ")";
-	
+			CharSequence toastMsg = "Updating activity " + currentEventName
+					+ "\n" + "(started " + durationString + ")";
+
 			displayToast(toastMsg);
 		}
 	}
-	
-	
+
 	/*
-	 * Displays the msg as a toast 
+	 * Displays the msg as a toast
 	 */
 	private void displayToast(CharSequence msg) {
 		Context context = getApplicationContext();
 		int duration = Toast.LENGTH_SHORT;
 		Toast toast = Toast.makeText(context, msg, duration);
 		toast.setGravity(Gravity.CENTER, 0, -15);
-		toast.show();	
+		toast.show();
 	}
-	
+
 	/**
 	 * Queries the tag database in order to populate the tag drop down menu.
 	 */
@@ -534,7 +525,6 @@ public class TrackingMode extends AbstractEventEdit {
 		//
 		dropDown.setSelection(position, true);
 	}
-
 
 	@Override
 	protected Class<?> getLeftActivityClass() {

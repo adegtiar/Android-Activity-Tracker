@@ -7,7 +7,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.format.DateFormat;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
@@ -56,16 +54,16 @@ public class Networking {
 					.fetchPhoneOnlyEvents();
 			// send them all! LEAVE NO EVENT BEHIND
 			EventEntry nextEvent;
-			ArrayList<EventEntry> listOfEvents= new ArrayList<EventEntry>();
+			ArrayList<EventEntry> listOfEvents = new ArrayList<EventEntry>();
 			while (theCursor.moveToNext()) {
 				nextEvent = theCursor.getEvent();
 				if (nextEvent != null) {
 					listOfEvents.add(nextEvent);
 				}
 			}
-			if(!listOfEvents.isEmpty()){
-				Networking.sendToServerBulk(ServerRequest.SENDDATA, listOfEvents,
-					context);
+			if (!listOfEvents.isEmpty()) {
+				Networking.sendToServerBulk(ServerRequest.SENDDATA,
+						listOfEvents, context);
 			}
 		}
 	}
@@ -93,9 +91,9 @@ public class Networking {
 	public static void pollServerIfAllowed(Context context) {
 		if (Settings.isSychronizationEnabled()) {
 			// poll the server for event data
-			Long lastTimePolled=Settings.getLastPolledTime();
-			Long currentTime=Calendar.getInstance().getTimeInMillis();
-			if(currentTime - lastTimePolled > 30000){
+			Long lastTimePolled = Settings.getLastPolledTime();
+			Long currentTime = Calendar.getInstance().getTimeInMillis();
+			if (currentTime - lastTimePolled > 30000) {
 				Settings.setLastPolledTime(currentTime);
 				Networking.sendToServer(ServerRequest.POLL, null, context);
 			}
@@ -116,12 +114,12 @@ public class Networking {
 	 */
 	public static void sendToServer(ServerRequest request, EventEntry data,
 			Context context) {
-		
+
 		// check to see if allowed to send data
 		if (Settings.isSychronizationEnabled()) {
-			ArrayList<EventEntry> listOfEvents=null;
-			if(data != null){
-				listOfEvents= new ArrayList<EventEntry>();
+			ArrayList<EventEntry> listOfEvents = null;
+			if (data != null) {
+				listOfEvents = new ArrayList<EventEntry>();
 				listOfEvents.add(data);
 			}
 			Intent intent = new Intent(context, Synchronizer.class);
@@ -130,8 +128,7 @@ public class Networking {
 			context.startService(intent);
 		}
 	}
-	
-	
+
 	/**
 	 * Sends intents to a service that sends the actual post requests Only does
 	 * this if permission to synchronize with web server is given
@@ -144,19 +141,17 @@ public class Networking {
 	 * @param context
 	 *            - dont't worry about this.
 	 */
-	public static void sendToServerBulk(ServerRequest request, ArrayList<EventEntry> listOfEvents,
-			Context context) {
+	public static void sendToServerBulk(ServerRequest request,
+			ArrayList<EventEntry> listOfEvents, Context context) {
 		// check to see if allowed to send data
 		if (Settings.isSychronizationEnabled()) {
-			
+
 			Intent intent = new Intent(context, Synchronizer.class);
 			intent.putExtra(Synchronizer.EVENT_LIST_EXTRA, listOfEvents);
 			intent.putExtra(Synchronizer.REQUEST_EXTRA, request);
 			context.startService(intent);
 		}
 	}
-	
-
 
 	/**
 	 * Sends a post request with the given event entry and request type.
@@ -168,8 +163,8 @@ public class Networking {
 	 *            the type of request to send.
 	 * @return the response to the request.
 	 */
-	public static PostRequestResponse sendPostRequest(ArrayList<EventEntry> listOfEvents,
-			ServerRequest request) {
+	public static PostRequestResponse sendPostRequest(
+			ArrayList<EventEntry> listOfEvents, ServerRequest request) {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(request.getURL());
@@ -222,35 +217,39 @@ public class Networking {
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			params.add(new BasicNameValuePair(PASSWORD_PARAM, Encryption.hashPassword(Settings
-					.getPassword())));
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, Encryption
+					.hashPassword(Settings.getPassword())));
 			break;
 		case SENDDATA:
 		case UPDATE:
 			try {
 				JSONArray EventData = new JSONArray();
-				for(EventEntry data: listOfEvents){
-					JSONObject eventJSON= new JSONObject();
+				for (EventEntry data : listOfEvents) {
+					JSONObject eventJSON = new JSONObject();
 					eventJSON.accumulate(EVENT_UUID_PARAM, data.mUUID);
-					eventJSON.accumulate(EVENT_DELETED_PARAM, String
-							.valueOf(data.deleted));
-					eventJSON.accumulate(EVENT_UPDATED_AT_PARAM,
-							Synchronizer.dateFormatter.format(data.mUpdateTime));
-					eventJSON.accumulate(EVENT_DATA_PARAM, 
-							EventDataSerializer.encryptJSONObject(EventDataSerializer.toJSONObject(data)));
+					eventJSON.accumulate(EVENT_DELETED_PARAM,
+							String.valueOf(data.deleted));
+					eventJSON
+							.accumulate(EVENT_UPDATED_AT_PARAM,
+									Synchronizer.dateFormatter
+											.format(data.mUpdateTime));
+					eventJSON.accumulate(EVENT_DATA_PARAM, EventDataSerializer
+							.encryptJSONObject(EventDataSerializer
+									.toJSONObject(data)));
 					EventData.put(eventJSON);
 				}
-				params.add(new BasicNameValuePair(EVENT_DATA_PARAM, EventData.toString()));
+				params.add(new BasicNameValuePair(EVENT_DATA_PARAM, EventData
+						.toString()));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			break;
-	
+
 		case DELETE:
-			//only delete one event at a time
-			EventEntry event= listOfEvents.get(0);
+			// only delete one event at a time
+			EventEntry event = listOfEvents.get(0);
 			params.add(new BasicNameValuePair(EVENT_UUID_PARAM, event.mUUID));
 			break;
 		case POLL:
@@ -295,6 +294,5 @@ public class Networking {
 		}
 		return null;
 	}
-
 
 }
