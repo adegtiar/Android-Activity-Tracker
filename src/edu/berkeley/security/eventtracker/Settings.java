@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -105,7 +106,14 @@ public class Settings extends PreferenceActivity {
 								&& sychronizeDataEnabled.isChecked()) {
 							sychronizeDataEnabled.setChecked(false);
 
-							showDialog(DIALOG_TEXT_ENTRY);
+//							showDialog(DIALOG_TEXT_ENTRY);
+							ProgressDialog creatingAcctDialog;
+							creatingAcctDialog = new ProgressDialog(Settings.this);
+							creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+							creatingAcctDialog.setMessage("Creating an account...");
+							creatingAcctDialog.setCancelable(true);
+							creatingAcctDialog.show();
+
 						}
 						return true;
 
@@ -312,7 +320,6 @@ public class Settings extends PreferenceActivity {
 		switch (id) {
 
 		case DIALOG_TEXT_ENTRY:
-			// This example shows how to add a custom layout to an AlertDialog
 			LayoutInflater te_factory = LayoutInflater.from(this);
 			final View textEntryView = te_factory.inflate(
 					R.layout.alert_dialog_text_entry, null);
