@@ -53,6 +53,20 @@ public class Synchronizer extends IntentService {
 
 		PostRequestResponse response;
 		switch (request) {
+		case CHECKACCOUNT:
+			response = Networking.sendPostRequest(ServerRequest.CHECKACCOUNT);
+			String message = response.getContent();
+			if(message.equals("true")){
+		      // An account with the provided phone number already exists
+				
+			} else {
+				Settings.creatingAcctDialog.dismiss();
+				
+			}
+//			if (response.isSuccess()) {
+//				Settings.creatingAcctDialog.dismiss();
+//			}
+			break;
 		case SENDDATA:
 			response = Networking.sendPostRequest(listOfEvents, request);
 			if (response.isSuccess()) {

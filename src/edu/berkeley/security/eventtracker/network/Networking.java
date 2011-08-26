@@ -83,6 +83,20 @@ public class Networking {
 	}
 
 	/**
+	 * Contacts the server to see if an account has already been set up. This is 
+	 * done in order to recover data in case the user registers an account, but 
+	 * then clears the application data.
+	 * 
+	 * @param context
+	 *            the context from which to send the request.
+	 */
+	public static void checkIfAlreadyRegistered(Context context) {
+		Networking.sendToServer(ServerRequest.CHECKACCOUNT, null, context); 
+	}
+	
+	
+	
+	/**
 	 * Attempts to poll the server for data, if preferences permit.
 	 * 
 	 * @param context
@@ -115,8 +129,8 @@ public class Networking {
 	public static void sendToServer(ServerRequest request, EventEntry data,
 			Context context) {
 
-		// check to see if allowed to send data
-		if (Settings.isSychronizationEnabled()) {
+		// check to see if allowed to send data or we are verifying the existence of an account
+		if (Settings.isSychronizationEnabled() || request == ServerRequest.CHECKACCOUNT) {
 			ArrayList<EventEntry> listOfEvents = null;
 			if (data != null) {
 				listOfEvents = new ArrayList<EventEntry>();
@@ -214,6 +228,10 @@ public class Networking {
 			ArrayList<EventEntry> listOfEvents) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		switch (request) {
+		case CHECKACCOUNT:
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
+					.getPhoneNumber()));
+			break;
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
@@ -294,5 +312,7 @@ public class Networking {
 		}
 		return null;
 	}
+
+	
 
 }

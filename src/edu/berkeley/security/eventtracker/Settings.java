@@ -46,6 +46,10 @@ public class Settings extends PreferenceActivity {
 	private static CheckBoxPreference gpsEnabled;
 	private static CheckBoxPreference notificationsEnabled;
 
+	// Accessed by the Synchronizer service
+	public static ProgressDialog creatingAcctDialog;
+	
+	
 	// don't access these directly
 	private static boolean gpsPreference;
 	private static boolean notificationPreferences;
@@ -107,13 +111,13 @@ public class Settings extends PreferenceActivity {
 							sychronizeDataEnabled.setChecked(false);
 
 //							showDialog(DIALOG_TEXT_ENTRY);
-							ProgressDialog creatingAcctDialog;
+							
 							creatingAcctDialog = new ProgressDialog(Settings.this);
 							creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 							creatingAcctDialog.setMessage("Creating an account...");
 							creatingAcctDialog.setCancelable(true);
 							creatingAcctDialog.show();
-
+							Networking.checkIfAlreadyRegistered(getApplicationContext());
 						}
 						return true;
 
