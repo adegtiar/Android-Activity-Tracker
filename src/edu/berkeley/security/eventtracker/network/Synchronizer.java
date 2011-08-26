@@ -55,17 +55,17 @@ public class Synchronizer extends IntentService {
 		switch (request) {
 		case CHECKACCOUNT:
 			response = Networking.sendPostRequest(ServerRequest.CHECKACCOUNT);
+		
+		
 			String message = response.getContent();
 			if(message.equals("true")){
 		      // An account with the provided phone number already exists
-				
-			} else {
-				Settings.creatingAcctDialog.dismiss();
-				
+			  // The web server believes an account is registered. The phone does not.
+			  // This method is called to tell the phone that the device is actually registered.
+			  Settings.confirmRegistrationWithWebServer();
 			}
-//			if (response.isSuccess()) {
-//				Settings.creatingAcctDialog.dismiss();
-//			}
+			Settings.creatingAcctDialog.dismiss();
+
 			break;
 		case SENDDATA:
 			response = Networking.sendPostRequest(listOfEvents, request);
