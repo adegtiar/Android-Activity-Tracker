@@ -19,6 +19,7 @@ import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
@@ -38,11 +39,13 @@ public class Settings extends PreferenceActivity {
 	public static final String Registered = "registered";
 	public static final String WekaModel = "wekaModel";
 	private static final String isSychronizationEnabled = "enableSychronization";
+	private static final String RegisteredServerOnly = "RegisteredServerOnly";
 	private static final int DIALOG_ENTER_PASSWORD = 0;
 	private static final int DIALOG_ACCOUNT_FOUND = 1;
 	private static final int DIALOG_DELETE_DATA = 2;
 	private static final int DIALOG_SUCCESS_NOW_SYNCING = 3;
 	private static final int DIALOG_SHOW_CREDENTIALS = 4;
+	private static final int DIALOG_ENTER_CORRECT_PASSWORD = 5;
 	private static final String LAST_POLL_TIME = "lastPollTime";
 
 	private static CheckBoxPreference sychronizeDataEnabled;
@@ -51,6 +54,14 @@ public class Settings extends PreferenceActivity {
 
 	// Accessed by the Synchronizer service
 	public static ProgressDialog creatingAcctDialog;
+	
+	// This enum is used in order to communicate between the Synchronizer and this activity
+	//   when the user has clicked "Enable Web view" and the device believes it is not registered
+	// NOT_REGISTERED means that this device is not registered with the server
+	// REGISTERED means the device is registered with the server, but the device itself
+	//   does not know it
+	// COULD_NOT_CONTACT means that the server was not reached.
+	public enum ServerAccoutStatus { NOT_REGISTERED, REGISTERED, COULD_NOT_CONTACT}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +132,16 @@ public class Settings extends PreferenceActivity {
 			public void onDismiss(DialogInterface dialog) {
 				// If no account already exists on the web server, prompt the
 				// user to create a new one
-				if (!Settings.registeredAlready()) {
+				if (Settings.accountRegisteredOnlyServer() == ServerAccoutStatus.NOT_REGISTERED) {
 					showDialog(DIALOG_ENTER_PASSWORD);
-				} else {
+				} else if (Settings.accountRegisteredOnlyServer() == ServerAccoutStatus.REGISTERED){
 				// An account already exists. Ask user if they wish to link to it.
 				    showDialog(DIALOG_ACCOUNT_FOUND);	
-					
+				} else {
+					CharSequence text = "Could not contact server\nTry again later";
+					int duration = Toast.LENGTH_SHORT;
+					Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+					toast.show();
 				}
 			}
 
@@ -248,6 +263,7 @@ public class Settings extends PreferenceActivity {
 
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
+									showDialog(DIALOG_ENTER_CORRECT_PASSWORD);
 								
 								}
 							}).setNegativeButton(R.string.dialog_no,
@@ -310,6 +326,37 @@ public class Settings extends PreferenceActivity {
 								
 								}
 							}).create();
+		case DIALOG_ENTER_CORRECT_PASSWORD:
+			te_factory = LayoutInflater.from(this);
+			textEntryView = te_factory.inflate(
+					R.layout.dialog_enter_correct_password, null);
+
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(
+					R.string.enter_same_password).setView(textEntryView)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									/* User entered a password and clicked OK */
+									EditText passwdEditText = (EditText) textEntryView
+											.findViewById(R.id.password_edit);
+									String password = passwdEditText.getText()
+											.toString();
+									Settings.setPassword(password);
+
+									Settings.updatePasswordSettings();
+									showDialog(DIALOG_SUCCESS_NOW_SYNCING);
+								}
+							}).setNegativeButton(R.string.alert_dialog_cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									/* User clicked cancel so do some stuff */
+								}
+							}).create();
 		default:
 			return super.onCreateDialog(id, bundle);
 		}
@@ -355,6 +402,15 @@ public class Settings extends PreferenceActivity {
 
 	public static boolean registeredAlready() {
 		return EventActivity.settings.getBoolean(Registered, false);
+	}
+	/**
+	 * Returns true if according to the device, the phone is unregistered. But 
+	 *   according to the web server, it is registered. False otherwise
+	 * @return 
+	 */
+	public static ServerAccoutStatus accountRegisteredOnlyServer() {
+		int position = EventActivity.settings.getInt(RegisteredServerOnly, ServerAccoutStatus.NOT_REGISTERED.ordinal());
+		return ServerAccoutStatus.values()[position];  
 	}
 
 	protected static void setPassword(String passwd) {
@@ -404,4 +460,10 @@ public class Settings extends PreferenceActivity {
 		prefEditor.commit();
 
 	}
+	public static void setAccountRegisteredOnlyServer(ServerAccoutStatus serverOnly) {
+		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+		prefEditor.putInt(RegisteredServerOnly, serverOnly.ordinal());
+		prefEditor.commit();
+	}
+
 }

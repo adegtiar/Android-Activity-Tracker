@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
+import edu.berkeley.security.eventtracker.Settings.ServerAccoutStatus;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
@@ -55,14 +56,18 @@ public class Synchronizer extends IntentService {
 		switch (request) {
 		case CHECKACCOUNT:
 			response = Networking.sendPostRequest(ServerRequest.CHECKACCOUNT);
-		
-		
-			String message = response.getContent();
-			if(message.equals("true")){
-		      // An account with the provided phone number already exists
-			  // The web server believes an account is registered. The phone does not.
-			  // This method is called to tell the phone that the device is actually registered.
-			  Settings.confirmRegistrationWithWebServer();
+			if (response.isSuccess()) {
+				if (response.getContent().equals("true")) {
+					// An account with the provided phone number already exists
+					// The web server believes an account is registered. The
+					// phone does not.
+					Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.REGISTERED);
+				} else {
+					Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.NOT_REGISTERED);
+				}
+
+			} else{
+				Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.COULD_NOT_CONTACT);
 			}
 			Settings.creatingAcctDialog.dismiss();
 
