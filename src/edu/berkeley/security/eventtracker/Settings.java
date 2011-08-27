@@ -19,7 +19,6 @@ import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
@@ -124,6 +123,10 @@ public class Settings extends PreferenceActivity {
 				// user to create a new one
 				if (!Settings.registeredAlready()) {
 					showDialog(DIALOG_ENTER_PASSWORD);
+				} else {
+				// An account already exists. Ask user if they wish to link to it.
+				    showDialog(DIALOG_ACCOUNT_FOUND);	
+					
 				}
 			}
 
@@ -179,6 +182,7 @@ public class Settings extends PreferenceActivity {
 		if (isPasswordSet() && isSychronizationEnabled()) {
 			if (!registeredAlready()) {
 				// attempt to register with the server
+				//TODO send registration earlier??
 				Networking.sendToServer(ServerRequest.REGISTER, null, this);
 
 			}
@@ -233,6 +237,48 @@ public class Settings extends PreferenceActivity {
 									/* User clicked cancel so do some stuff */
 								}
 							}).create();
+			
+		case DIALOG_ACCOUNT_FOUND:
+			username = Settings.getPhoneNumber();
+			message = "Account with phone number " + username + " found. Do you want to link?";
+			
+			return new AlertDialog.Builder(this).setMessage(message)
+					.setPositiveButton(R.string.dialog_yes,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+								
+								}
+							}).setNegativeButton(R.string.dialog_no,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									showDialog(DIALOG_DELETE_DATA);
+								}
+							}).create();
+		case DIALOG_DELETE_DATA:
+			
+			message = "Are you sure? This will delete all data associated with this account.";
+			
+			return new AlertDialog.Builder(this).setMessage(message)
+					.setPositiveButton(R.string.dialog_yes,
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									showDialog(DIALOG_ENTER_PASSWORD);
+								
+								}
+							}).setNegativeButton(R.string.dialog_no,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									showDialog(DIALOG_ACCOUNT_FOUND);
+								}
+							}).create();
+			
 		case DIALOG_SHOW_CREDENTIALS:
 			url = "Visit eventtracker.heroku.com with username ";
 			username = Settings.getPhoneNumber();

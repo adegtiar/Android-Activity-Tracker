@@ -55,5 +55,7 @@
 <string name="delete_dialog_yes">Yes</string>
 <string name="rowIDContainer">rowIDContainer</string>
 <string name="isInProgressContainer">isInProgressContainer</string>
+<string name="dialog_yes">Yes</string>
+<string name="dialog_no">No</string>
 
 </resources>
