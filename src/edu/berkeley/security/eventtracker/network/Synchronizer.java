@@ -54,6 +54,15 @@ public class Synchronizer extends IntentService {
 
 		PostRequestResponse response;
 		switch (request) {
+		case VERIFYPASSWORD:
+			//TODO fix this
+			response = Networking.sendPostRequest(ServerRequest.VERIFYPASSWORD);
+			if (response.isSuccess() && response.getContent().equals("verified")) {
+					// Password was verified. Account is valid
+					Settings.confirmRegistrationWithWebServer();
+			}
+			Settings.verifyingPwdDialog.dismiss();
+			break;
 		case CHECKACCOUNT:
 			response = Networking.sendPostRequest(ServerRequest.CHECKACCOUNT);
 			if (response.isSuccess()) {

@@ -54,6 +54,9 @@ public class Settings extends PreferenceActivity {
 
 	// Accessed by the Synchronizer service
 	public static ProgressDialog creatingAcctDialog;
+	public static ProgressDialog verifyingPwdDialog;
+	
+	public static String possiblePassword;
 	
 	// This enum is used in order to communicate between the Synchronizer and this activity
 	//   when the user has clicked "Enable Web view" and the device believes it is not registered
@@ -72,6 +75,7 @@ public class Settings extends PreferenceActivity {
 		gpsEnabled = (CheckBoxPreference) findPreference("gpsPref");
 		notificationsEnabled = (CheckBoxPreference) findPreference("notificationsPref");
 		creatingAcctDialog = new ProgressDialog(Settings.this);
+		verifyingPwdDialog = new ProgressDialog(Settings.this);
 		if (getDeviceUUID().length() == 0) {
 			setDeviceUUID();
 		}
@@ -146,6 +150,28 @@ public class Settings extends PreferenceActivity {
 			}
 
 		});
+		verifyingPwdDialog.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				// Device is registered which means that the correct password was entered.
+				if (Settings.registeredAlready()) {
+					// success!
+					Settings.setPassword(possiblePassword);
+					Settings.updatePasswordSettings();
+					//Display success dialog
+					showDialog(DIALOG_SUCCESS_NOW_SYNCING);
+				} else {
+					showDialog(DIALOG_ENTER_CORRECT_PASSWORD);
+					CharSequence text = "Wrong Password. Try again";
+					int duration = Toast.LENGTH_SHORT;
+					Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+					toast.show();
+				}
+			}
+
+		});
+
 
 		Preference showCredentials = (Preference) findPreference("webCredentials");
 		showCredentials
@@ -161,7 +187,6 @@ public class Settings extends PreferenceActivity {
 	}
 
 	private void showCreatingAcctDialog() {
-
 		creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		creatingAcctDialog.setMessage("Creating an account...");
 		creatingAcctDialog.setCancelable(true);
@@ -169,7 +194,15 @@ public class Settings extends PreferenceActivity {
 		Networking.checkIfAlreadyRegistered(getApplicationContext());
 
 	}
+	private void showVerifyingPwdDialog() {
+		
+		verifyingPwdDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		verifyingPwdDialog.setMessage("Verifying password...");
+		verifyingPwdDialog.setCancelable(true);
+		verifyingPwdDialog.show();
+		Networking.verifyPassword(getApplicationContext());
 
+	}
 	private void updatePreferences() {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getBaseContext());
@@ -240,8 +273,8 @@ public class Settings extends PreferenceActivity {
 									String password = passwdEditText.getText()
 											.toString();
 									Settings.setPassword(password);
-
 									Settings.updatePasswordSettings();
+									
 									showDialog(DIALOG_SUCCESS_NOW_SYNCING);
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
@@ -339,15 +372,15 @@ public class Settings extends PreferenceActivity {
 
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									/* User entered a password and clicked OK */
+									// User entered a password and clicked OK
+									
 									EditText passwdEditText = (EditText) textEntryView
 											.findViewById(R.id.password_edit);
 									String password = passwdEditText.getText()
 											.toString();
-									Settings.setPassword(password);
-
-									Settings.updatePasswordSettings();
-									showDialog(DIALOG_SUCCESS_NOW_SYNCING);
+									possiblePassword = password;
+									showVerifyingPwdDialog();
+							
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {

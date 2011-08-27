@@ -94,6 +94,15 @@ public class Networking {
 		Networking.sendToServer(ServerRequest.CHECKACCOUNT, null, context); 
 	}
 	
+	/**
+	 * In order to link an account with the server, this method is called in order to 
+	 * verify that the password the user entered is the same as the one the server knows
+	 * @param context
+	 *            the context from which to send the request.
+	 */
+	public static void verifyPassword(Context context) {
+		Networking.sendToServer(ServerRequest.VERIFYPASSWORD, null, context); 
+	}
 	
 	
 	/**
@@ -130,7 +139,8 @@ public class Networking {
 			Context context) {
 
 		// check to see if allowed to send data or we are verifying the existence of an account
-		if (Settings.isSychronizationEnabled() || request == ServerRequest.CHECKACCOUNT) {
+		if (Settings.isSychronizationEnabled() || request == ServerRequest.CHECKACCOUNT ||
+				request == ServerRequest.VERIFYPASSWORD) {
 			ArrayList<EventEntry> listOfEvents = null;
 			if (data != null) {
 				listOfEvents = new ArrayList<EventEntry>();
@@ -228,6 +238,12 @@ public class Networking {
 			ArrayList<EventEntry> listOfEvents) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		switch (request) {
+		case VERIFYPASSWORD:
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
+					.getPhoneNumber()));
+			String possiblePassword = Encryption.hashPassword(Settings.possiblePassword);
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, possiblePassword));
+			break;
 		case CHECKACCOUNT:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
