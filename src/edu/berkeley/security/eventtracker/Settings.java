@@ -468,6 +468,11 @@ public class Settings extends PreferenceActivity {
 		prefEditor.putString(UUIDOfDevice, uuid.toString());
 		prefEditor.commit();
 	}
+	public static void setDeviceUUID(String uuid) {
+		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
+		prefEditor.putString(UUIDOfDevice, uuid);
+		prefEditor.commit();
+	}
 
 	public static void setLastPolledTime(Long pollTime) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();

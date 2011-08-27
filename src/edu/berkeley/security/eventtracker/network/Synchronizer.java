@@ -57,9 +57,21 @@ public class Synchronizer extends IntentService {
 		case VERIFYPASSWORD:
 			//TODO fix this
 			response = Networking.sendPostRequest(ServerRequest.VERIFYPASSWORD);
-			if (response.isSuccess() && response.getContent().equals("verified")) {
-					// Password was verified. Account is valid
-					Settings.confirmRegistrationWithWebServer();
+			try {
+				if (response.isSuccess()) {
+					JSONObject jsonResponse = new JSONObject(response.getContent());
+					String status = jsonResponse.getString("status");
+					if (status.equals("verified")) {
+						String uuid = jsonResponse.getString("uuid");
+						Settings.setDeviceUUID(uuid);
+						Settings.confirmRegistrationWithWebServer();
+					}
+					
+				}
+		
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			Settings.verifyingPwdDialog.dismiss();
 			break;
