@@ -27,6 +27,7 @@ class EventModel {
 
 	private EventModel(NaiveBayesUpdateable model) {
 		mModel = model;
+		// TODO fix isEmpty serialization
 	}
 
 	/**
