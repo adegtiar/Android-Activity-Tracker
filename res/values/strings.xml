@@ -55,5 +55,9 @@
 <string name="delete_dialog_yes">Yes</string>
 <string name="rowIDContainer">rowIDContainer</string>
 <string name="isInProgressContainer">isInProgressContainer</string>
+<string name="dialog_yes">Yes</string>
+<string name="dialog_no">No</string>
+<string name="dialog_enter_password_description">In order to link account, enter the same password as before.  </string>
+<string name="enter_same_password">Enter Password</string>
 
 </resources>

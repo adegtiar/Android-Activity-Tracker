@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import edu.berkeley.security.eventtracker.EventActivity;
 import edu.berkeley.security.eventtracker.Settings;
+import edu.berkeley.security.eventtracker.Settings.ServerAccoutStatus;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
@@ -53,6 +54,46 @@ public class Synchronizer extends IntentService {
 
 		PostRequestResponse response;
 		switch (request) {
+		case VERIFYPASSWORD:
+			//TODO fix this
+			response = Networking.sendPostRequest(ServerRequest.VERIFYPASSWORD);
+			try {
+				if (response.isSuccess()) {
+					JSONObject jsonResponse = new JSONObject(response.getContent());
+					String status = jsonResponse.getString("status");
+					if (status.equals("verified")) {
+						String uuid = jsonResponse.getString("uuid");
+						Settings.setDeviceUUID(uuid);
+						Settings.confirmRegistrationWithWebServer();
+						
+					}
+					
+				}
+		
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Settings.verifyingPwdDialog.dismiss();
+			break;
+		case CHECKACCOUNT:
+			response = Networking.sendPostRequest(ServerRequest.CHECKACCOUNT);
+			if (response.isSuccess()) {
+				if (response.getContent().equals("true")) {
+					// An account with the provided phone number already exists
+					// The web server believes an account is registered. The
+					// phone does not.
+					Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.REGISTERED);
+				} else {
+					Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.NOT_REGISTERED);
+				}
+
+			} else{
+				Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.COULD_NOT_CONTACT);
+			}
+			Settings.creatingAcctDialog.dismiss();
+
+			break;
 		case SENDDATA:
 			response = Networking.sendPostRequest(listOfEvents, request);
 			if (response.isSuccess()) {

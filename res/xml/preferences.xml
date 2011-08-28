@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory
-                android:title="GPS Settings">
-                <CheckBoxPreference
-                        android:title="Track GPS"
-                        android:defaultValue="false"
-                        android:summary="Track your location via GPS"
-                        android:key="gpsPref" />
-                
-        </PreferenceCategory>
-        <PreferenceCategory
-                android:title="Notification Settings">
-                  <CheckBoxPreference
-                  		android:title="Toolbar"
-                        android:summary="Enable Toolbar Notifications"
-                        android:defaultValue="false"
-                        android:key="notificationsPref" />
-        </PreferenceCategory>
-           <PreferenceCategory
-                android:title="Web Settings">
-                 <CheckBoxPreference
-                        android:title="Enable Web View"
-                        android:defaultValue="false"
-                         android:summary="View your events online"
-                        android:key="webPref" />
-        </PreferenceCategory>
+	<PreferenceCategory android:title="GPS Settings">
+		<CheckBoxPreference android:title="Track GPS"
+			android:defaultValue="false" android:summary="Track your location via GPS"
+			android:key="gpsPref" />
+
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Notification Settings">
+		<CheckBoxPreference android:title="Toolbar"
+			android:summary="Enable Toolbar Notifications" android:defaultValue="false"
+			android:key="notificationsPref" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Web Settings">
+		<CheckBoxPreference android:title="Enable Web View"
+			android:defaultValue="false" android:summary="View your events online"
+			android:key="webPref" />
+		<Preference android:title="Show Credentials"
+			android:summary="Click here for login information" android:key="webCredentials"
+			android:dependency="webPref" />
+	</PreferenceCategory>
 </PreferenceScreen>
