@@ -159,6 +159,11 @@ public class Settings extends PreferenceActivity {
 					// success!
 					Settings.setPassword(possiblePassword);
 					Settings.updatePasswordSettings();
+					updatePreferences();
+					// Get the already existing data from the web server
+					Networking.pollServerIfAllowed(Settings.this);
+					// Send all phone only events to the server
+					Networking.sendAllEvents(Settings.this);
 					//Display success dialog
 					showDialog(DIALOG_SUCCESS_NOW_SYNCING);
 				} else {
@@ -215,10 +220,12 @@ public class Settings extends PreferenceActivity {
 		prefEditor.commit();
 	}
 
+	/*
+	 * Updates password and registers with the server
+	 */
 	protected static void updatePasswordSettings() {
 		if (isPasswordSet()) {
 			sychronizeDataEnabled.setChecked(true);
-
 		}
 	}
 
@@ -226,15 +233,6 @@ public class Settings extends PreferenceActivity {
 	protected void onPause() {
 		super.onPause();
 		updatePreferences();
-		boolean isPass = isPasswordSet();
-		if (isPasswordSet() && isSychronizationEnabled()) {
-			if (!registeredAlready()) {
-				// attempt to register with the server
-				//TODO send registration earlier??
-				Networking.sendToServer(ServerRequest.REGISTER, null, this);
-
-			}
-		}
 		if (!areNotificationsEnabled()) {
 			EventActivity.disableTrackingNotification(this);
 		}
@@ -274,7 +272,9 @@ public class Settings extends PreferenceActivity {
 											.toString();
 									Settings.setPassword(password);
 									Settings.updatePasswordSettings();
-									
+									updatePreferences();
+									// Register with server now
+								    Networking.sendToServer(ServerRequest.REGISTER, null, Settings.this);
 									showDialog(DIALOG_SUCCESS_NOW_SYNCING);
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,

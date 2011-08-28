@@ -65,6 +65,7 @@ public class Synchronizer extends IntentService {
 						String uuid = jsonResponse.getString("uuid");
 						Settings.setDeviceUUID(uuid);
 						Settings.confirmRegistrationWithWebServer();
+						
 					}
 					
 				}
