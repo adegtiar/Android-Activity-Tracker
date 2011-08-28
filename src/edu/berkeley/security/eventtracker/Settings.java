@@ -194,7 +194,7 @@ public class Settings extends PreferenceActivity {
 	private void showCreatingAcctDialog() {
 		creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		creatingAcctDialog.setMessage("Creating an account...");
-		creatingAcctDialog.setCancelable(true);
+		creatingAcctDialog.setCancelable(false);
 		creatingAcctDialog.show();
 		Networking.checkIfAlreadyRegistered(getApplicationContext());
 
