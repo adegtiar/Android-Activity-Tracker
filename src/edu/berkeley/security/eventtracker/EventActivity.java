@@ -397,7 +397,7 @@ abstract public class EventActivity extends Activity {
 			long currentTime = System.currentTimeMillis();
 			long duration = currentTime - thisCurrentEvent.mStartTime;
 			textViewIsTracking.setText(trackingStringID);
-			textViewIsTracking.append(" (" + calculateDuration() + ")");
+			textViewIsTracking.append(" " + calculateDuration());
 
 		}
 	}
