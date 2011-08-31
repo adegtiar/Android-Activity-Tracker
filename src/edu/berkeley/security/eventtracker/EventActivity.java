@@ -394,11 +394,14 @@ abstract public class EventActivity extends Activity {
 	public void updateToolbarMessage() {
 		EventEntry thisCurrentEvent = getCurrentEvent();
 		if (isTracking() && thisCurrentEvent != null) {
-			long currentTime = System.currentTimeMillis();
-			long duration = currentTime - thisCurrentEvent.mStartTime;
-			textViewIsTracking.setText(trackingStringID);
-			textViewIsTracking.append(" " + calculateDuration());
-
+		    String durationString = calculateDurationString();
+		    // Event just started so there is no duration yet
+		    if (durationString.length() == 0) {
+		    	textViewIsTracking.setText("Just Started Tracking");
+		    } else{
+		    	textViewIsTracking.setText(trackingStringID);
+		    	textViewIsTracking.append(" " + durationString);
+		    }
 		}
 	}
 
@@ -406,17 +409,13 @@ abstract public class EventActivity extends Activity {
 	 * Returns a string representation of the duration(given in ms) ex: sec ago,
 	 * 6 min, 1.5 hr
 	 */
-	protected String calculateDuration() {
+	protected String calculateDurationString() {
 
-		if (getCurrentEvent() == null) {
-			return "";
-		}
+		
 		long currentTime = System.currentTimeMillis();
 		long duration = currentTime - getCurrentEvent().mStartTime;
 		long durationInSeconds = duration / 1000;
 
-		// between 0 and 60
-		long numOfSeconds = durationInSeconds % 60;
 		// between 0 and 60
 		long numOfMinutes = (durationInSeconds / 60) % 60;
 		// no limit on the number of hours
@@ -424,8 +423,9 @@ abstract public class EventActivity extends Activity {
 
 		// duration is between 0 and 60 seconds
 		if (numOfHours == 0 && numOfMinutes == 0) {
-			return "secs ago";
+			return "";
 		}
+		
 		// between 0 and 1 hour
 		else if (numOfHours == 0) {
 			return Long.toString(numOfMinutes) + " mins ago";

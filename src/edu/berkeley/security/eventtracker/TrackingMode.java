@@ -482,11 +482,12 @@ public class TrackingMode extends AbstractEventEdit {
 			if (currentEventName.length() < 2) {
 				return;
 			}
-			String durationString = calculateDuration();
-			CharSequence toastMsg = "Updating activity " + currentEventName
-					+ "\n" + "(started " + durationString + ")";
-
-			displayToast(toastMsg);
+			String durationString = calculateDurationString();
+			String updateMsg = "Updating activity " + currentEventName + "\n";
+			String durationMsg = durationString.length() == 0 ? "Just started tracking" :
+				                                               "(started " + durationString + ")";
+			
+			displayToast(updateMsg + durationMsg);
 		}
 	}
 
