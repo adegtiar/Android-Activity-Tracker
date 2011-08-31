@@ -137,7 +137,16 @@ abstract public class EventActivity extends Activity {
 	private void setToolbarButton(ImageView button, final boolean isLeft) {
 		final Class<?> activityClass = isLeft ? getLeftActivityClass()
 				: getRightActivityClass();
-
+		TextView centerText = (TextView) findViewById(R.id.toolbar_center);
+		
+		// In order to center the the toolbar text, padding is dynamically added/removed.
+		if (getRightActivityClass() == null){
+			centerText.setPadding(20, 0, 0, 0);
+		}
+		if (getLeftActivityClass() == null) {
+			centerText.setPadding(0, 0, 20, 0);
+		}
+		
 		if (activityClass == null)
 			button.setVisibility(View.INVISIBLE);
 		else {
@@ -278,11 +287,13 @@ abstract public class EventActivity extends Activity {
 	 *            Whether or not an event is being tracked.
 	 */
 	protected void updateTrackingUI(boolean isTracking) {
-		textViewIsTracking.setText(isTracking ? trackingStringID
-				: notTrackingStringID);
-		if (isTracking && getCurrentEvent() != null) {
-			textViewIsTracking.append(getCurrentEvent().mName);
+		if (!isTracking) {
+			textViewIsTracking.setText(notTrackingStringID);
 		}
+	
+//		if (isTracking && getCurrentEvent() != null) {
+//			textViewIsTracking.append(getCurrentEvent().mName);
+//		}
 	}
 
 	/**
@@ -411,7 +422,9 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected String calculateDurationString() {
 
-		
+		if (getCurrentEvent() == null) {
+			return "";
+		}
 		long currentTime = System.currentTimeMillis();
 		long duration = currentTime - getCurrentEvent().mStartTime;
 		long durationInSeconds = duration / 1000;
