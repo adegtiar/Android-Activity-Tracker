@@ -397,10 +397,10 @@ abstract public class EventActivity extends Activity {
 		    String durationString = calculateDurationString();
 		    // Event just started so there is no duration yet
 		    if (durationString.length() == 0) {
-		    	textViewIsTracking.setText("Just Started Tracking");
+		    	textViewIsTracking.setText("Just started tracking");
 		    } else{
-		    	textViewIsTracking.setText(trackingStringID);
-		    	textViewIsTracking.append(" " + durationString);
+		    	textViewIsTracking.setText("Tracking for ");
+		    	textViewIsTracking.append(durationString);
 		    }
 		}
 	}
@@ -428,15 +428,15 @@ abstract public class EventActivity extends Activity {
 		
 		// between 0 and 1 hour
 		else if (numOfHours == 0) {
-			return Long.toString(numOfMinutes) + " mins ago";
+			return Long.toString(numOfMinutes) + " mins";
 		} else if (numOfHours < 10) {
 			// returns the number of hours rounded to one decimal place
 			double hoursInDecimal = durationInSeconds / 3600.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-			return df.format(hoursInDecimal) + " hrs ago";
+			return df.format(hoursInDecimal) + " hrs";
 		} else {
 			// greater than 10 hours. so don't display any decimals
-			return Long.toString(numOfHours) + " hrs ago";
+			return Long.toString(numOfHours) + " hrs";
 		}
 
 	}

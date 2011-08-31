@@ -334,7 +334,13 @@ public class EditMode extends AbstractEventEdit {
 		// Display the dialog
 		mDateTimeDialog.show();
 	}
-
+	/*
+	 * This is blank in order to override the method in EventActivity
+	 */
+	public void updateToolbarMessage() {
+		
+	}
+	
 	@Override
 	protected Class<?> getLeftActivityClass() {
 		return null;
