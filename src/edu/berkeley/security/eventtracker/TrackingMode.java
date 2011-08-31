@@ -96,7 +96,9 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				startEditEventActivity(previousEvent.mDbRowID);
+				if (previousEvent != null) {
+				  startEditEventActivity(previousEvent.mDbRowID);
+				}
 			}
 		});
 	}
