@@ -120,8 +120,16 @@ public class Settings extends PreferenceActivity {
 								&& sychronizeDataEnabled.isChecked()) {
 							sychronizeDataEnabled.setChecked(false);
 
-							// showDialog(DIALOG_TEXT_ENTRY);
-							showCreatingAcctDialog();
+							if (Settings.getPhoneNumber() == null){
+								CharSequence text = "Could not determine phone number\nA phone number is needed in order to access data online";
+								int duration = Toast.LENGTH_LONG;
+								Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+								toast.show();
+							} else {
+								showCreatingAcctDialog();
+							}
+							
+						
 
 						}
 						return true;
