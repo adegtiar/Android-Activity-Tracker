@@ -61,10 +61,12 @@
 				<TextView android:id="@+id/startTimeLabel"
 					android:focusable="true" android:textStyle="bold"
 					android:layout_height="wrap_content" android:text="@string/startTime"
-					android:layout_width="wrap_content"></TextView>
+					android:layout_width="wrap_content"
+					android:textSize="18sp"></TextView>
 				<TextView android:id="@+id/startTime"
 					android:layout_height="fill_parent" android:text="@string/defaultStartTime"
-					android:layout_gravity="bottom" android:layout_width="wrap_content"></TextView>
+					android:layout_gravity="bottom" android:layout_width="wrap_content"
+					android:textSize="18sp"></TextView>
 			</LinearLayout>
 			<Button android:layout_width="wrap_content" android:id="@+id/notes_button"
 				android:text="@string/notesButton" android:focusable="true"
