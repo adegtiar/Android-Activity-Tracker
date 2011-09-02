@@ -83,7 +83,10 @@ abstract public class EventActivity extends Activity {
 				return false;
 			}
 		};
-
+		//TODO remove this debugging statement once everything works.
+		EventCursor events = EventManager.getManager()
+		.fetchUndeletedEvents();
+		int count = events.getCount();
 		// Attach fling listeners to the views in the top toolbar
 		findViewById(R.id.toolbar_center).setOnClickListener(detector);
 		int[] viewsToAttachListener = new int[] { R.id.toolbar_left_option,
