@@ -23,6 +23,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.network.Networking;
@@ -434,23 +435,44 @@ abstract public class EventActivity extends Activity {
 		// no limit on the number of hours
 		long numOfHours = durationInSeconds / 3600;
 
+		String durationString = "";
 		// duration is between 0 and 60 seconds
 		if (numOfHours == 0 && numOfMinutes == 0) {
 			return "";
+
 		}
 		
 		// between 0 and 1 hour
 		else if (numOfHours == 0) {
-			return Long.toString(numOfMinutes) + " mins";
+			durationString = Long.toString(numOfMinutes) + " min";
+			// making the duration string plural
+			if (numOfMinutes > 1) {
+				durationString += "s";
+			}
 		} else if (numOfHours < 10) {
 			// returns the number of hours rounded to one decimal place
 			double hoursInDecimal = durationInSeconds / 3600.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-			return df.format(hoursInDecimal) + " hrs";
-		} else {
+			durationString = df.format(hoursInDecimal) + " hr";
+			// making the duration string plural
+			if (hoursInDecimal > 1) {
+				durationString += "s";
+			}
+		} else if (numOfHours >= 10 && numOfHours < 24){
 			// greater than 10 hours. so don't display any decimals
-			return Long.toString(numOfHours) + " hrs";
+			durationString = Long.toString(numOfHours) + " hr";
+			// making the duration string plural
+			if (numOfHours > 1) {
+				durationString += "s";
+			}
+		} else {
+			// Its more than 24 hours. Show the duration in terms of days
+			durationString = Long.toString(numOfHours/24) + " day";
+			if (numOfHours/24 > 1) {
+				durationString += "s";
+			}
 		}
+		return durationString;
 
 	}
 
