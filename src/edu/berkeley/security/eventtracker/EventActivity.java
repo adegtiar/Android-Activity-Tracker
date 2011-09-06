@@ -43,14 +43,15 @@ abstract public class EventActivity extends Activity {
 
 	// TODO not sure if static declaration is right.
 	public static Intent SynchronizerIntent;
-	public static EventManager mEventManager; 
+	public static EventManager mEventManager;
 	public static PredictionService mPredictionService;
 	private static ServiceConnection mPredictionConnection;
+	private static boolean predictionConnectRequested;
 
 	// Variables for preferences
 	public static SharedPreferences settings;
 	public static SharedPreferences serverSettings;
-	
+
 	protected TextView textViewIsTracking;
 
 	// Machine learning variables
@@ -79,7 +80,7 @@ abstract public class EventActivity extends Activity {
 
 		mEventManager = EventManager.getManager(this);
 		mPredictionConnection = new PredictionConnection();
-		
+
 		FlingDetector detector = new FlingDetector(getLeftActivityClass(),
 				getRightActivityClass());
 		gestureDetector = new GestureDetector(detector);
@@ -106,13 +107,16 @@ abstract public class EventActivity extends Activity {
 
 		startTrackingDuration();
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// Bind to PredictionService
-		Intent intent = new Intent(this, PredictionService.class);
-		bindService(intent, mPredictionConnection, Context.BIND_AUTO_CREATE);
+		if (!predictionConnectRequested) {
+			predictionConnectRequested = true;
+			// Bind to PredictionService
+			Intent intent = new Intent(this, PredictionService.class);
+			bindService(intent, mPredictionConnection, Context.BIND_AUTO_CREATE);
+		}
 	}
 
 	/**
@@ -209,7 +213,9 @@ abstract public class EventActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mPredictionService.syncModelToStorage();
+		if (mPredictionService != null) {
+			mPredictionService.syncModelToStorage();
+		}
 		mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
 	}
 
@@ -222,7 +228,7 @@ abstract public class EventActivity extends Activity {
 		Networking.pollServerIfAllowed(this);
 		startTrackingDuration();
 	}
-	
+
 	protected void onPredictionServiceConnected() {
 	}
 
@@ -473,23 +479,23 @@ abstract public class EventActivity extends Activity {
 		}
 
 	}
-	
+
 	/** Defines callbacks for service binding, passed to bindService() */
-     private class PredictionConnection implements ServiceConnection {
+	private class PredictionConnection implements ServiceConnection {
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            PredictionBinder binder = (PredictionBinder) service;
-            mPredictionService = binder.getService();
-            EventActivity.this.onPredictionServiceConnected();
-        }
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			PredictionBinder binder = (PredictionBinder) service;
+			mPredictionService = binder.getService();
+			EventActivity.this.onPredictionServiceConnected();
+		}
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mPredictionService = null;
-        }
-    };
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mPredictionService = null;
+		}
+	};
 
 }

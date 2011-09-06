@@ -108,6 +108,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line,
 				autoCompleteActivities);
+		adapterActivities.setNotifyOnChange(true);
 
 		eventNameEditText.setAdapter(adapterActivities);
 
@@ -131,7 +132,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 		super.onResume();
 		justResumed = true;
 
-		initializeAutoComplete();
 		initializeTags();
 		fillViewWithEventInfo();
 		focusOnNothing();
@@ -198,8 +198,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	protected void updateAutoComplete() {
 		String activityName = eventNameEditText.getText().toString();
-		if (mActivityNames.add(activityName))
+		if (activityName.length() != 0 && mActivityNames.add(activityName)) {
 			adapterActivities.add(activityName);
+		}
 	}
 
 	/**
@@ -211,8 +212,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 * @return Whether or not the update occured without error.
 	 */
 	protected boolean updateDatabase(EventEntry event) {
-		if (event == null)
+		if (event == null) {
 			return true;
+		}
 		// Networking.sendData(event);
 		return mEventManager.updateDatabase(event, false);
 	}
@@ -229,25 +231,22 @@ abstract public class AbstractEventEdit extends EventActivity {
 		return currentEvent;
 	}
 
+	@Override
+	protected void onPredictionServiceConnected() {
+		initializeAutoComplete();
+	}
+
 	/**
 	 * Refreshes the AutoComplete adapters with all events from the database.
 	 */
-	protected void initializeAutoComplete() {
+	private void initializeAutoComplete() {
 		autoCompleteActivities.clear();
 		mActivityNames.clear();
-	}
-	
-	@Override
-	protected void onPredictionServiceConnected() {
-		populateAutocomplete();
-	}
-	
-	private void populateAutocomplete() {
-		// Add predicted events in order of likelihood
+		// // Add predicted events in order of likelihood
 		List<String> predictedEvents = mPredictionService.predictEventNames();
 		for (String predictedEvent : predictedEvents) {
 			if (predictedEvent == null || predictedEvent.length() == 0) {
-				continue;
+				throw new IllegalStateException("Predicted event not valid");
 			}
 			mActivityNames.add(predictedEvent);
 			autoCompleteActivities.add(predictedEvent);
@@ -257,10 +256,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry nextEvent = allEventsCursor.getEvent();
-			if (nextEvent.mName == null || nextEvent.mName.length() == 0)
-				continue;
-			if (mActivityNames.add(nextEvent.mName))
+			if (nextEvent.mName != null && nextEvent.mName.length() != 0
+					&& mActivityNames.add(nextEvent.mName)) {
 				autoCompleteActivities.add(nextEvent.mName);
+			}
 		}
 	}
 

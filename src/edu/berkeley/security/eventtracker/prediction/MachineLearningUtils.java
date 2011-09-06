@@ -61,8 +61,9 @@ public class MachineLearningUtils {
 
 		List<String> eventNames = new ArrayList<String>(
 				predictionResults.size());
-		for (PredictedPair predictedResult : predictionResults)
+		for (PredictedPair predictedResult : predictionResults) {
 			eventNames.add(predictedResult.getName());
+		}
 		return eventNames;
 	}
 
