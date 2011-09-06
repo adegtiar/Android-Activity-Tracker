@@ -27,6 +27,7 @@
 		<activity android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar"
 			android:name=".maps.HelloGoogleMaps">
 		</activity>
+		<service android:name=".prediction.PredictionService"></service>
 	</application>
 	<uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
 

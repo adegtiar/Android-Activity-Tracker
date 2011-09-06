@@ -27,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.prediction.PredictionService;
 
 abstract public class AbstractEventEdit extends EventActivity {
 
@@ -236,9 +235,16 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected void initializeAutoComplete() {
 		autoCompleteActivities.clear();
 		mActivityNames.clear();
-
+	}
+	
+	@Override
+	protected void onPredictionServiceConnected() {
+		populateAutocomplete();
+	}
+	
+	private void populateAutocomplete() {
 		// Add predicted events in order of likelihood
-		List<String> predictedEvents = PredictionService.predictEventNames();
+		List<String> predictedEvents = mPredictionService.predictEventNames();
 		for (String predictedEvent : predictedEvents) {
 			if (predictedEvent == null || predictedEvent.length() == 0) {
 				continue;
@@ -322,7 +328,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 					R.layout.alert_dialog_tag_entry, null);
 			return new AlertDialog.Builder(AbstractEventEdit.this)
 
-			.setTitle(R.string.alert_dialog_tag_entry).setView(textEntryView)
+					.setTitle(R.string.alert_dialog_tag_entry)
+					.setView(textEntryView)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
@@ -340,7 +347,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 									/* User entered in a new tag. Do stuff here */
 
 								}
-							}).setNegativeButton(R.string.alert_dialog_cancel,
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -357,9 +365,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 					.findViewById(R.id.notes_edit);
 			final EventEntry eventInFocus = getFocussedEvent();
 			noteEditText.setText(eventInFocus.mNotes);
-			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(
-					R.string.alert_dialog_notes_title).setView(noteEntryView)
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.alert_dialog_notes_title)
+					.setView(noteEntryView)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
@@ -374,7 +383,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 									updateDatabase(eventInFocus);
 								}
 
-							}).setNegativeButton(R.string.alert_dialog_cancel,
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {

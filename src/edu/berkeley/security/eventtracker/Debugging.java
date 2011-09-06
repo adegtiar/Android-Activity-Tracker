@@ -20,8 +20,7 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
-import edu.berkeley.security.eventtracker.prediction.MachineLearningUtils.PredictedPair;
-import edu.berkeley.security.eventtracker.prediction.PredictionService;
+import edu.berkeley.security.eventtracker.prediction.PredictedPair;
 
 public class Debugging extends Activity {
 
@@ -68,7 +67,7 @@ public class Debugging extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						SortedSet<PredictedPair> eventPredictions = PredictionService
+						SortedSet<PredictedPair> eventPredictions = EventActivity.mPredictionService
 								.getEventDistribution();
 						String debugText = "Predicted events: ";
 						for (PredictedPair nameProbPair : eventPredictions)

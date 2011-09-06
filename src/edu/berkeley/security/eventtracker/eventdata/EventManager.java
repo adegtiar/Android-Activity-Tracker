@@ -106,10 +106,10 @@ public class EventManager {
 					receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
 			if (event.persisted)
-				PredictionService.updateEventModel(event);
+				getPredictionService().updateEventModel(event);
 			return event.persisted;
 		} else {
-			PredictionService.markDbUnsupportedUpdated();
+			getPredictionService().markDbUnsupportedUpdated();
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
 					event.mNotes, event.mStartTime, event.mEndTime,
 					event.mUUID, event.deleted, receivedAtServer, event.mTag);
@@ -147,7 +147,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean markEventDeleted(long rowId) {
-		PredictionService.markDbUnsupportedUpdated();
+		getPredictionService().markDbUnsupportedUpdated();
 		return mDbHelper.markDeleted(rowId);
 	}
 
@@ -159,7 +159,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(long rowId) {
-		PredictionService.markDbUnsupportedUpdated();
+		getPredictionService().markDbUnsupportedUpdated();
 		return mDbHelper.deleteEvent(rowId);
 	}
 
@@ -434,5 +434,9 @@ public class EventManager {
 	 */
 	public void addTag(String tag) {
 		mTagHelper.createTagEntry(tag);
+	}
+	
+	private PredictionService getPredictionService() {
+		return EventActivity.mPredictionService;
 	}
 }
