@@ -23,7 +23,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
-import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.network.Networking;
@@ -56,7 +55,6 @@ abstract public class EventActivity extends Activity {
 
 	static final int TRACKING_NOTIFICATION = 1;
 
-	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 
 	private GestureDetector gestureDetector;
@@ -83,10 +81,6 @@ abstract public class EventActivity extends Activity {
 				return false;
 			}
 		};
-		//TODO remove this debugging statement once everything works.
-		EventCursor events = EventManager.getManager()
-		.fetchUndeletedEvents();
-		int count = events.getCount();
 		// Attach fling listeners to the views in the top toolbar
 		findViewById(R.id.toolbar_center).setOnClickListener(detector);
 		int[] viewsToAttachListener = new int[] { R.id.toolbar_left_option,

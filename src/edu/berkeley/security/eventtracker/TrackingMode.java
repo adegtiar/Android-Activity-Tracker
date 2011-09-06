@@ -28,7 +28,7 @@ import android.widget.Toast;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
-import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
+import edu.berkeley.security.eventtracker.maps.GoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
@@ -316,7 +316,7 @@ public class TrackingMode extends AbstractEventEdit {
 				} else {
 
 					Intent myIntent = new Intent(TrackingMode.this,
-							HelloGoogleMaps.class);
+							GoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
 				}

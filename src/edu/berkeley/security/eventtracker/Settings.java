@@ -25,6 +25,8 @@ import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
  * Manages the settings/miscellaneous parts of the Event Tracker.
+ * This class is responsible for both managing the settings activity of the app
+ * as well as various pieces of information such as the password and UUIDOfDevice.
  */
 public class Settings extends PreferenceActivity {
 
@@ -76,6 +78,8 @@ public class Settings extends PreferenceActivity {
 		notificationsEnabled = (CheckBoxPreference) findPreference("notificationsPref");
 		creatingAcctDialog = new ProgressDialog(Settings.this);
 		verifyingPwdDialog = new ProgressDialog(Settings.this);
+		// Sets the device uuid in case it hasn't been set before.
+		// This device uuid is used by the web server in order to identify users.
 		if (getDeviceUUID().length() == 0) {
 			setDeviceUUID();
 		}
@@ -104,8 +108,6 @@ public class Settings extends PreferenceActivity {
 
 					public boolean onPreferenceClick(Preference preference) {
 						// TODO fix this
-						SharedPreferences prefs = PreferenceManager
-								.getDefaultSharedPreferences(getBaseContext());
 						updatePreferences();
 						return true;
 					}
@@ -121,7 +123,8 @@ public class Settings extends PreferenceActivity {
 							sychronizeDataEnabled.setChecked(false);
 
 							if (Settings.getPhoneNumber() == null){
-								CharSequence text = "Could not determine phone number\nA phone number is needed in order to access data online";
+								CharSequence text = "Could not determine phone number\nA phone number is needed in order to " +
+										            "access data online";
 								int duration = Toast.LENGTH_LONG;
 								Toast toast = Toast.makeText(getApplicationContext(), text, duration);
 								toast.show();
@@ -199,6 +202,10 @@ public class Settings extends PreferenceActivity {
 				});
 	}
 
+	/**
+	 * First Step in registering an account only. This method contacts the web server
+	 *  in order to check to see if an accout with the same phone number is also in use. 
+	 */
 	private void showCreatingAcctDialog() {
 		creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		creatingAcctDialog.setMessage("Creating an account...");
@@ -207,6 +214,12 @@ public class Settings extends PreferenceActivity {
 		Networking.checkIfAlreadyRegistered(getApplicationContext());
 
 	}
+	/**
+	 * In order to link an account with an already existing account,
+	 * the user must verify their password. They must enter in the same 
+	 * password used with the previous account. This method brings up the dialog
+	 * box that does that.
+	 */
 	private void showVerifyingPwdDialog() {
 		
 		verifyingPwdDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -216,6 +229,9 @@ public class Settings extends PreferenceActivity {
 		Networking.verifyPassword(getApplicationContext());
 
 	}
+	/**
+	 * Copies the settings preferences over so that the EventActivity/other activies can access them
+	 */
 	private void updatePreferences() {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getBaseContext());
@@ -251,8 +267,9 @@ public class Settings extends PreferenceActivity {
 		}
 	}
 
-	/*
-	 * Dialog box for password entry
+	/**	
+	 *  onCreateDialog is responsible for the logic involved with displaying dialog boxes.
+	 *  These dialog boxes are used in order to register a user with the web server 
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {

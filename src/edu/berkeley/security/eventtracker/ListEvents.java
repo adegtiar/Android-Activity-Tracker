@@ -327,8 +327,6 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			case END_TIME:
 				EventEntry event = eCursor.getEvent();
 				String timeString = event.getTimeString(colType);
-				String dateString = event.formatColumn(eCursor
-						.getColumnType(columnIndex));
 				((TextView) view).setText(timeString);
 				return true;
 			default:

@@ -37,10 +37,6 @@ public class GibberishAESCrypto {
 			throws Exception {
 		byte[] input = Base64.decode(cipherText, 0);
 
-		String prefixText = new String(input, 0, 8, UTF_8);
-		// Validate.isTrue(prefixText.equals(PREFIX), "Invalid prefix: ",
-		// prefixText);
-
 		byte[] salt = new byte[8];
 		System.arraycopy(input, 8, salt, 0, salt.length);
 

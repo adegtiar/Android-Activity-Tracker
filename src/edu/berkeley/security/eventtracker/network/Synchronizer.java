@@ -55,7 +55,6 @@ public class Synchronizer extends IntentService {
 		PostRequestResponse response;
 		switch (request) {
 		case VERIFYPASSWORD:
-			//TODO fix this
 			response = Networking.sendPostRequest(ServerRequest.VERIFYPASSWORD);
 			try {
 				if (response.isSuccess()) {
@@ -71,7 +70,6 @@ public class Synchronizer extends IntentService {
 				}
 		
 			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			Settings.verifyingPwdDialog.dismiss();
@@ -146,9 +144,8 @@ public class Synchronizer extends IntentService {
 			String unencryptedData = null;
 			try {
 				unencryptedData = GibberishAESCrypto.decrypt(encryptedData,
-						Encryption.hashPassword(passwd).toCharArray());
+						HashingUtils.hashPassword(passwd).toCharArray());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			JSONObject eventContents = new JSONObject(unencryptedData);
