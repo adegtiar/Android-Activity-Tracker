@@ -48,8 +48,33 @@ public class EventInstances extends Instances {
 	 *            the <tt>EventEntry</tt> to convert
 	 * @return the new {@link Instance}, or null if the event was invalid
 	 */
+	Instance newInstance() {
+		return newInstance(new EventEntry(), false);
+	}
+
+	/**
+	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
+	 * constructing the corresponding <tt>Instance</tt>.
+	 * 
+	 * @param event
+	 *            the <tt>EventEntry</tt> to convert
+	 * @return the new {@link Instance}, or null if the event was invalid
+	 */
 	Instance newInstance(EventEntry event) {
-		return eventToInstance(event, Calendar.getInstance(), getAttributes());
+		return newInstance(event, true);
+	}
+
+	/**
+	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
+	 * constructing the corresponding <tt>Instance</tt>.
+	 * 
+	 * @param event
+	 *            the <tt>EventEntry</tt> to convert
+	 * @return the new {@link Instance}, or null if the event was invalid
+	 */
+	private Instance newInstance(EventEntry event, boolean checkValidEvent) {
+		return eventToInstance(event, Calendar.getInstance(), getAttributes(),
+				checkValidEvent);
 	}
 
 	static enum DayOfWeek {
@@ -80,25 +105,22 @@ public class EventInstances extends Instances {
 	 * @return the <tt>Instance</tt> corresponding to the <tt>EventEntry</tt>.
 	 */
 	private Instance eventToInstance(EventEntry event, Calendar localCal,
-			List<Attribute> attributes) {
-		// Validate event
-		if (event.mName == null || event.mName.length() == 0) {
-			throw new IllegalArgumentException("Unnamed event");
-		}
-		if (classifiedEventNames.contains(event.mName)) {
-			return null;
+			List<Attribute> attributes, boolean checkValidEvent) {
+		if (checkValidEvent) {
+			// Validate event
+			if (event.mName == null || event.mName.length() == 0
+					|| !classifiedEventNames.contains(event.mName)) {
+				return null;
+			}
 		}
 		// Create the instance
 		Instance eventInstance = new DenseInstance(5);
-
 		// Add start hour
 		localCal.setTimeInMillis(event.mStartTime);
 		eventInstance.setValue(attributes.get(0),
 				localCal.get(Calendar.HOUR_OF_DAY));
-
 		// Add start day of week
 		eventInstance.setValue(attributes.get(1), getDay(localCal).toString());
-
 		// Add starting position (if exists)
 		List<GPSCoordinates> eventCoords = event.getGPSCoordinates();
 		if (eventCoords.size() > 0) {
@@ -106,10 +128,12 @@ public class EventInstances extends Instances {
 			eventInstance.setValue(attributes.get(2), startPos.getLatitude());
 			eventInstance.setValue(attributes.get(3), startPos.getLongitude());
 		}
-
 		// Add name (if exists)
-		if (event.mName != null && event.mName.length() != 0)
+		if (event.mName != null && event.mName.length() != 0) {
 			eventInstance.setValue(attributes.get(4), event.mName);
+		}
+		// Associate with this set of instances
+		eventInstance.setDataset(this);
 		return eventInstance;
 	}
 

@@ -36,7 +36,7 @@ public class MachineLearningUtils {
 						newEventInstance);
 			} catch (Exception e) {
 				// Huh?
-				throw new RuntimeException();
+				throw new RuntimeException(e);
 			}
 
 			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
@@ -103,8 +103,9 @@ public class MachineLearningUtils {
 		EventEntry currentEvent;
 		while (allEventsCursor.moveToNext()) {
 			currentEvent = allEventsCursor.getEvent();
-			if (!names.add(currentEvent.mName))
+			if (!names.add(currentEvent.mName)) {
 				repeatedNames.add(currentEvent.mName);
+			}
 		}
 		return repeatedNames;
 	}
@@ -113,8 +114,8 @@ public class MachineLearningUtils {
 			Comparator<PredictedPair> {
 
 		@Override
-		public int compare(PredictedPair arg0, PredictedPair arg1) {
-			return Double.compare(arg0.getLikelihood(), arg1.getLikelihood());
+		public int compare(PredictedPair left, PredictedPair right) {
+			return Double.compare(left.getLikelihood(), right.getLikelihood());
 		}
 
 	}

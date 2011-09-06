@@ -93,10 +93,9 @@ class EventModel {
 	 *            the events to classify
 	 * @throws Exception
 	 */
-	void setInstances(EventInstances eventsToClassify) throws Exception {
-		mTrainingData = eventsToClassify;
-		if (eventsToClassify.size() > 0) {
-			getClassifer().buildClassifier(eventsToClassify);
+	void buildClassifier() throws Exception {
+		if (mTrainingData.size() > 0) {
+			getClassifer().buildClassifier(mTrainingData);
 		}
 
 	}
@@ -112,7 +111,7 @@ class EventModel {
 	 * @return a new {@link Instance} corresponding to a new event
 	 */
 	Instance newInstance() {
-		return mTrainingData.newInstance(new EventEntry());
+		return mTrainingData.newInstance();
 	}
 
 	/**
@@ -153,7 +152,7 @@ class EventModel {
 		if (mClassifier == null) {
 			mClassifier = new NaiveBayesUpdateable();
 			try {
-				setInstances(mTrainingData);
+				buildClassifier();
 			} catch (Exception e) {
 				throw new RuntimeException(e); // TODO make this more graceful
 			}
