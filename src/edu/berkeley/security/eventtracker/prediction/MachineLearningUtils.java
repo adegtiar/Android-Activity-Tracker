@@ -87,7 +87,7 @@ public class MachineLearningUtils {
 	}
 
 	static EventInstances newBlankTrainingData() {
-		return new EventInstances(getEventNames());
+		return new EventInstances(generateEventNames());
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class MachineLearningUtils {
 	 * 
 	 * @return a set of event names
 	 */
-	private static Set<String> getEventNames() {
+	private static Set<String> generateEventNames() {
 		Set<String> names = new HashSet<String>();
 		Set<String> repeatedNames = new HashSet<String>();
 		EventCursor allEventsCursor = EventManager.getManager()

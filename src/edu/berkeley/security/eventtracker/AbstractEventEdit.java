@@ -261,6 +261,11 @@ abstract public class AbstractEventEdit extends EventActivity {
 				autoCompleteActivities.add(nextEvent.mName);
 			}
 		}
+
+		adapterActivities = new ArrayAdapter<String>(this,
+				android.R.layout.simple_dropdown_item_1line,
+				autoCompleteActivities);
+		eventNameEditText.setAdapter(adapterActivities);
 	}
 
 	protected void initializeVoice() {
