@@ -109,16 +109,6 @@ class EventModel {
 	}
 
 	/**
-	 * Constructs an instance belonging to this model corresponding to an event
-	 * that just started.
-	 * 
-	 * @return a new {@link Instance} corresponding to a new event
-	 */
-	Instance newInstance() {
-		return mTrainingData.newInstance();
-	}
-
-	/**
 	 * Incrementally updates the model with new event data.
 	 * 
 	 * @param newEvent
@@ -139,11 +129,21 @@ class EventModel {
 	}
 
 	/**
+	 * Constructs an instance belonging to this model corresponding to an event
+	 * that just started.
+	 * 
+	 * @return a new {@link Instance} corresponding to a new event
+	 */
+	private Instance newInstance() {
+		return mTrainingData.newInstance();
+	}
+
+	/**
 	 * Whether the model has any instances classified.
 	 * 
 	 * @return true if the model has any instances classified, otherwise false
 	 */
-	boolean isEmpty() {
+	private boolean isEmpty() {
 		return mTrainingData.isEmpty();
 	}
 
@@ -156,7 +156,7 @@ class EventModel {
 	 *            the list of attributes.
 	 * @return the name of the event the attribute at the index corresponds to.
 	 */
-	String getEventName(double attributeIndex) {
+	private String getEventName(double attributeIndex) {
 		return mTrainingData.classAttribute().value((int) attributeIndex);
 	}
 

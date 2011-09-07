@@ -22,6 +22,7 @@ class EventInstances extends Instances {
 	EventInstances(Collection<String> eventNames) {
 		super("EventData", generateEventAttributes(eventNames), 10);
 		this.classifiedEventNames = eventNames;
+		setClassIndex(numAttributes() - 1);
 	}
 
 	/**

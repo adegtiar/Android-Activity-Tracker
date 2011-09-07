@@ -94,9 +94,8 @@ public class PredictionService extends Service {
 	 */
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
+			// Generate the model.
 			EventInstances eventData = new EventInstances(getEventNames());
-			eventData.setClassIndex(eventData.numAttributes() - 1);
-
 			EventCursor events = EventManager.getManager().fetchUndeletedEvents();
 			while (events.moveToNext()) {
 				eventData.add(events.getEvent());
@@ -114,12 +113,12 @@ public class PredictionService extends Service {
 	 */
 	private Set<String> getEventNames() {
 		if (mEventNames == null) {
+			// Generate the event names.
 			Set<String> names = new HashSet<String>();
 			Set<String> repeatedNames = new HashSet<String>();
 			EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
-			EventEntry currentEvent;
 			while (allEventsCursor.moveToNext()) {
-				currentEvent = allEventsCursor.getEvent();
+				EventEntry currentEvent = allEventsCursor.getEvent();
 				if (!names.add(currentEvent.mName)) {
 					repeatedNames.add(currentEvent.mName);
 				}
