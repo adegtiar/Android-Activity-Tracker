@@ -1,18 +1,20 @@
 package edu.berkeley.security.eventtracker.prediction;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import weka.classifiers.bayes.NaiveBayesUpdateable;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.Instance;
-import android.util.Base64;
+import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
+import edu.berkeley.security.eventtracker.prediction.EventInstances.DayOfWeek;
 
 /**
  * Wrapper for the prediction <tt>Classifier</tt>.
@@ -21,66 +23,17 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
  */
 class EventModel {
 
-	private NaiveBayesUpdateable mClassifier;
-	private EventInstances mTrainingData; // TODO remove this?
+	private DefaultClassifier mClassifier;
+	private ArrayList<Attribute> mAttributes;
+	private Collection<String> mEventNames;
+	private boolean isEmpty;
 
-	/**
-	 * Constructs an empty {@code EventModel}.
-	 */
-	EventModel(EventInstances trainingData) {
-		mTrainingData = trainingData;
-	}
-
-	/**
-	 * Constructs an {@code EventModel} from a {@link NaiveBayesUpdateable}.
-	 * 
-	 * @param model
-	 *            a non-empty model
-	 */
-	private EventModel(NaiveBayesUpdateable model) {
-		mClassifier = model;
-		// TODO fix training data serialization
-	}
-
-	/**
-	 * Constructs an <tt>EventModel</tt> that has been previously serialized
-	 * using the <tt>serializeToString()</tt> method. TODO test this
-	 * 
-	 * @return the de-serialized <tt>EventModel</tt>
-	 * @throws IOException
-	 *             the string is not a valid serialized <tt>EventModel</tt>, or
-	 *             an unexpected de-serialization error occurred
-	 */
-	static EventModel fromSerializedString(String serializedModel) throws IOException {
-		byte[] serializedClassifier = Base64.decode(serializedModel, 0);
-		ByteArrayInputStream is = new ByteArrayInputStream(serializedClassifier);
-		ObjectInputStream ois = new ObjectInputStream(is);
-		try {
-			return new EventModel((NaiveBayesUpdateable) ois.readObject());
-		} catch (ClassNotFoundException e) {
-			throw new IOException(e.getMessage());
-		}
-	}
-
-	/**
-	 * Serializes the eventModel into a string.
-	 * <p>
-	 * TODO check for correctness
-	 * 
-	 * @return the string-serialized form of the classifier.
-	 * @throws IOException
-	 *             the classifier is invalid, or an unexpected serialization
-	 *             error occurred
-	 */
-	String serializeToString() throws IOException {
-		if (isEmpty())
-			return "";
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(os);
-
-		oos.writeObject(getClassifer());
-		oos.flush();
-		return Base64.encodeToString(os.toByteArray(), 0);
+	EventModel(Collection<String> eventNames) {
+		mAttributes = generateEventAttributes(eventNames);
+		Instances eventInstances = new Instances("EventData", mAttributes, 0);
+		eventInstances.setClassIndex(mAttributes.size() - 1);
+		mClassifier = new DefaultClassifier(eventInstances);
+		mEventNames = eventNames;
 	}
 
 	/**
@@ -96,7 +49,7 @@ class EventModel {
 			Instance newEventInstance = newInstance();
 			double[] predictions;
 			try {
-				predictions = getClassifer().distributionForInstance(newEventInstance);
+				predictions = mClassifier.distributionForInstance(newEventInstance);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -119,11 +72,8 @@ class EventModel {
 		Instance eventInstance = mTrainingData.newInstance(newEvent);
 		if (eventInstance == null) {
 			throw new IllegalArgumentException("Invalid event: " + newEvent);
-		}
-		if (mClassifier == null) {
-			mTrainingData.add(eventInstance);
 		} else {
-			getClassifer().updateClassifier(eventInstance);
+			mClassifier.updateClassifier(eventInstance);
 		}
 		// TODO check if isEmpty works?
 	}
@@ -144,7 +94,7 @@ class EventModel {
 	 * @return true if the model has any instances classified, otherwise false
 	 */
 	private boolean isEmpty() {
-		return mTrainingData.isEmpty();
+		return isEmpty;
 	}
 
 	/**
@@ -161,37 +111,21 @@ class EventModel {
 	}
 
 	/**
-	 * Returns the wrapped <tt>Classifier</tt>.
+	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
+	 * constructing the corresponding <tt>Instance</tt>.
 	 * 
-	 * @return the wrapped <tt>Classifier</tt>
+	 * @param event
+	 *            the <tt>EventEntry</tt> to convert
+	 * @return the new {@link Instance}, or null if the event was invalid
 	 */
-	private NaiveBayesUpdateable getClassifer() {
-		if (mClassifier == null) {
-			mClassifier = new NaiveBayesUpdateable();
-			try {
-				buildClassifier();
-			} catch (Exception e) {
-				throw new RuntimeException(e); // TODO make this more graceful
-			}
-		}
-		return mClassifier;
+	private Instance newInstance(EventEntry event, boolean checkValidEvent) {
+		return eventToInstance(event, Calendar.getInstance(), mAttributes, checkValidEvent);
 	}
 
 	/**
-	 * Initializes the model with the given instances.
-	 * <p>
-	 * TODO check for correctness
-	 * 
-	 * @param eventsToClassify
-	 *            the events to classify
-	 * @throws Exception
+	 * A comparator that orders {@link PredictedPair} instances from high to low
+	 * probability.
 	 */
-	private void buildClassifier() throws Exception {
-		if (mTrainingData.size() > 0) {
-			getClassifer().buildClassifier(mTrainingData);
-		}
-	}
-
 	private static class PredictedPairComparator implements Comparator<PredictedPair> {
 
 		@Override
@@ -200,4 +134,137 @@ class EventModel {
 		}
 
 	}
+
+	static enum DayOfWeek {
+		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+	}
+
+	/**
+	 * Finds the <tt>DayOfWeek</tt> for the given <tt>Calendar</tt>.
+	 * 
+	 * @param calendar
+	 *            the <tt>Calendar</tt> to extract the time from
+	 * @return the <tt>DayOfWeek</tt> of the given time
+	 */
+	private static DayOfWeek getDay(Calendar calendar) {
+		return DayOfWeek.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1];
+	}
+
+	/**
+	 * Constructs a list of attributes to classify on.
+	 * 
+	 * @param eventNames
+	 *            the event names to classify
+	 * @return an <tt>ArrayList</tt> of event attributes
+	 */
+	private static ArrayList<Attribute> generateEventAttributes(Collection<String> eventNames) {
+		// Declare a numeric hourOfDay
+		Attribute attrHourOfDay = new Attribute("hourOfDay");
+		// Declare a numeric Longitude
+		Attribute attrLongitude = new Attribute("longitude");
+		// Declare a numeric Longitude
+		Attribute attrLatitude = new Attribute("latitude");
+		// Declare a nominal dayOfWeek attribute along with its values
+		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
+		for (DayOfWeek day : DayOfWeek.values())
+			daysOfWeekNominal.add(day.toString());
+		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
+		// Declare the event name attribute along with its values
+		ArrayList<String> namesNominal = new ArrayList<String>(eventNames);
+		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
+		// Declare the feature vector
+		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
+		eventAttributes.add(attrHourOfDay);
+		eventAttributes.add(attrDayOfWeek);
+		eventAttributes.add(attrLatitude);
+		eventAttributes.add(attrLongitude);
+		eventAttributes.add(attrNamesNominal);
+		return eventAttributes;
+	}
+
+	/**
+	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
+	 * constructing the corresponding <tt>Instance</tt>.
+	 * 
+	 * @param event
+	 *            the <tt>EventEntry</tt> to convert.
+	 * @param localCal
+	 *            a calendar to use for calculating time-based attributes.
+	 * @param attributes
+	 *            the list of attributes to extract.
+	 * @return the <tt>Instance</tt> corresponding to the <tt>EventEntry</tt>.
+	 */
+	private Instance eventToInstance(EventEntry event, Calendar localCal,
+			List<Attribute> attributes, boolean checkValidEvent) {
+		if (checkValidEvent) {
+			// Validate event
+			if (event.mName == null || event.mName.length() == 0
+					|| !classifiedEventNames.contains(event.mName)) {
+				return null;
+			}
+		}
+		// Create the instance
+		Instance eventInstance = new DenseInstance(5);
+		// Add start hour
+		localCal.setTimeInMillis(event.mStartTime);
+		eventInstance.setValue(attributes.get(0), localCal.get(Calendar.HOUR_OF_DAY));
+		// Add start day of week
+		eventInstance.setValue(attributes.get(1), getDay(localCal).toString());
+		// Add starting position (if exists)
+		List<GPSCoordinates> eventCoords = event.getGPSCoordinates();
+		if (eventCoords.size() > 0) {
+			GPSCoordinates startPos = eventCoords.get(0);
+			eventInstance.setValue(attributes.get(2), startPos.getLatitude());
+			eventInstance.setValue(attributes.get(3), startPos.getLongitude());
+		}
+		// Add name (if exists)
+		if (event.mName != null && event.mName.length() != 0) {
+			eventInstance.setValue(attributes.get(4), event.mName);
+		}
+		// Associate with this set of instances
+		eventInstance.setDataset(this);
+		return eventInstance;
+	}
+
+	// /**
+	// * Constructs an <tt>EventModel</tt> that has been previously serialized
+	// * using the <tt>serializeToString()</tt> method. TODO test this
+	// *
+	// * @return the de-serialized <tt>EventModel</tt>
+	// * @throws IOException
+	// * the string is not a valid serialized <tt>EventModel</tt>, or
+	// * an unexpected de-serialization error occurred
+	// */
+	// static EventModel fromSerializedString(String serializedModel) throws
+	// IOException {
+	// byte[] serializedClassifier = Base64.decode(serializedModel, 0);
+	// ByteArrayInputStream is = new ByteArrayInputStream(serializedClassifier);
+	// ObjectInputStream ois = new ObjectInputStream(is);
+	// try {
+	// return new EventModel((NaiveBayesUpdateable) ois.readObject());
+	// } catch (ClassNotFoundException e) {
+	// throw new IOException(e.getMessage());
+	// }
+	// }
+	//
+	// /**
+	// * Serializes the eventModel into a string.
+	// * <p>
+	// * TODO check for correctness
+	// *
+	// * @return the string-serialized form of the classifier.
+	// * @throws IOException
+	// * the classifier is invalid, or an unexpected serialization
+	// * error occurred
+	// */
+	// String serializeToString() throws IOException {
+	// if (isEmpty())
+	// return "";
+	// ByteArrayOutputStream os = new ByteArrayOutputStream();
+	// ObjectOutputStream oos = new ObjectOutputStream(os);
+	//
+	// oos.writeObject(mClassifier);
+	// oos.flush();
+	// return Base64.encodeToString(os.toByteArray(), 0);
+	// }
 }
