@@ -12,14 +12,14 @@ import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
-public class EventInstances extends Instances {
+class EventInstances extends Instances {
 
 	/** For serialization. */
 	private static final long serialVersionUID = -6786266809708280069L;
 
 	private final Collection<String> classifiedEventNames;
 
-	public EventInstances(Collection<String> eventNames) {
+	EventInstances(Collection<String> eventNames) {
 		super("EventData", generateEventAttributes(eventNames), 10);
 		this.classifiedEventNames = eventNames;
 	}
@@ -31,12 +31,12 @@ public class EventInstances extends Instances {
 	 *            an event to add that is neither empty nor null
 	 * @return true if it was added successfully
 	 */
-	public boolean add(EventEntry event) {
+	boolean add(EventEntry event) {
 		Instance eventInstance = newInstance(event);
 		return eventInstance == null ? false : this.add(eventInstance);
 	}
 
-	public List<Attribute> getAttributes() {
+	List<Attribute> getAttributes() {
 		return m_Attributes;
 	}
 
@@ -93,6 +93,39 @@ public class EventInstances extends Instances {
 	}
 
 	/**
+	 * Constructs a list of attributes to classify on.
+	 * 
+	 * @param eventNames
+	 *            the event names to classify
+	 * @return an <tt>ArrayList</tt> of event attributes
+	 */
+	private static ArrayList<Attribute> generateEventAttributes(
+			Collection<String> eventNames) {
+		// Declare a numeric hourOfDay
+		Attribute attrHourOfDay = new Attribute("hourOfDay");
+		// Declare a numeric Longitude
+		Attribute attrLongitude = new Attribute("longitude");
+		// Declare a numeric Longitude
+		Attribute attrLatitude = new Attribute("latitude");
+		// Declare a nominal dayOfWeek attribute along with its values
+		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
+		for (DayOfWeek day : DayOfWeek.values())
+			daysOfWeekNominal.add(day.toString());
+		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
+		// Declare the event name attribute along with its values
+		ArrayList<String> namesNominal = new ArrayList<String>(eventNames);
+		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
+		// Declare the feature vector
+		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
+		eventAttributes.add(attrHourOfDay);
+		eventAttributes.add(attrDayOfWeek);
+		eventAttributes.add(attrLatitude);
+		eventAttributes.add(attrLongitude);
+		eventAttributes.add(attrNamesNominal);
+		return eventAttributes;
+	}
+
+	/**
 	 * Extracts the relevant attributes from an <tt>EventEntry</tt> and
 	 * constructing the corresponding <tt>Instance</tt>.
 	 * 
@@ -135,44 +168,6 @@ public class EventInstances extends Instances {
 		// Associate with this set of instances
 		eventInstance.setDataset(this);
 		return eventInstance;
-	}
-
-	/**
-	 * Constructs a list of attributes to classify on.
-	 * 
-	 * @param eventNames
-	 *            the event names to classify
-	 * @return an <tt>ArrayList</tt> of event attributes
-	 */
-	private static ArrayList<Attribute> generateEventAttributes(
-			Collection<String> eventNames) {
-		// Declare a numeric hourOfDay
-		Attribute attrHourOfDay = new Attribute("hourOfDay");
-
-		// Declare a numeric Longitude
-		Attribute attrLongitude = new Attribute("longitude");
-
-		// Declare a numeric Longitude
-		Attribute attrLatitude = new Attribute("latitude");
-
-		// Declare a nominal dayOfWeek attribute along with its values
-		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
-		for (DayOfWeek day : DayOfWeek.values())
-			daysOfWeekNominal.add(day.toString());
-		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
-
-		// Declare the event name attribute along with its values
-		ArrayList<String> namesNominal = new ArrayList<String>(eventNames);
-		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
-
-		// Declare the feature vector
-		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
-		eventAttributes.add(attrHourOfDay);
-		eventAttributes.add(attrDayOfWeek);
-		eventAttributes.add(attrLatitude);
-		eventAttributes.add(attrLongitude);
-		eventAttributes.add(attrNamesNominal);
-		return eventAttributes;
 	}
 
 }

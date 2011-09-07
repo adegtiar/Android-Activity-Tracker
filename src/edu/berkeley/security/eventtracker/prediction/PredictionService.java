@@ -1,14 +1,11 @@
 package edu.berkeley.security.eventtracker.prediction;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
-import weka.core.Instance;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -61,26 +58,7 @@ public class PredictionService extends Service {
 	 *         from highest to lowest probability
 	 */
 	public SortedSet<PredictedPair> getEventDistribution() {
-		SortedSet<PredictedPair> predictionResults = new TreeSet<PredictedPair>(
-				new PredictedPairComparator());
-		if (!getEventModel().isEmpty()) {
-			Instance newEventInstance = mEventModel.newInstance();
-			double[] predictions;
-			try {
-				predictions = mEventModel.getClassifer()
-						.distributionForInstance(newEventInstance);
-			} catch (Exception e) {
-				// Huh?
-				throw new RuntimeException(e);
-			}
-
-			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
-				predictionResults.add(new PredictedPair(mEventModel
-						.getEventName(attributeIndex),
-						predictions[attributeIndex]));
-			}
-		}
-		return predictionResults;
+		return getEventModel().getEventDistribution();
 	}
 
 	/**
@@ -108,16 +86,6 @@ public class PredictionService extends Service {
 	public void markDbUnsupportedUpdated() {
 		// TODO implement
 		mEventModel = null;
-	}
-
-	private static class PredictedPairComparator implements
-			Comparator<PredictedPair> {
-
-		@Override
-		public int compare(PredictedPair left, PredictedPair right) {
-			return Double.compare(right.getLikelihood(), left.getLikelihood());
-		}
-
 	}
 
 	/**

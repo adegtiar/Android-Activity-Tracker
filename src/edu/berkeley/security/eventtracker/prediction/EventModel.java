@@ -5,9 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import weka.classifiers.bayes.NaiveBayesUpdateable;
 import weka.core.Instance;
@@ -85,23 +85,30 @@ class EventModel {
 	}
 
 	/**
-	 * Initializes the model with the given instances.
-	 * <p>
-	 * TODO check for correctness
+	 * Calculates the distribution of probabilities over all predictable events.
 	 * 
-	 * @param eventsToClassify
-	 *            the events to classify
-	 * @throws Exception
+	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
+	 *         from highest to lowest probability
 	 */
-	void buildClassifier() throws Exception {
-		if (mTrainingData.size() > 0) {
-			getClassifer().buildClassifier(mTrainingData);
+	SortedSet<PredictedPair> getEventDistribution() {
+		SortedSet<PredictedPair> predictionResults = new TreeSet<PredictedPair>(
+				new PredictedPairComparator());
+		if (!isEmpty()) {
+			Instance newEventInstance = newInstance();
+			double[] predictions;
+			try {
+				predictions = getClassifer().distributionForInstance(
+						newEventInstance);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
+				predictionResults.add(new PredictedPair(
+						getEventName(attributeIndex),
+						predictions[attributeIndex]));
+			}
 		}
-
-	}
-
-	EventInstances getInstances() {
-		return mTrainingData;
+		return predictionResults;
 	}
 
 	/**
@@ -144,11 +151,24 @@ class EventModel {
 	}
 
 	/**
+	 * Gets the name of an event based on its index in the attributes.
+	 * 
+	 * @param attributeIndex
+	 *            the index of the attribute to get the name of.
+	 * @param attributes
+	 *            the list of attributes.
+	 * @return the name of the event the attribute at the index corresponds to.
+	 */
+	String getEventName(double attributeIndex) {
+		return mTrainingData.classAttribute().value((int) attributeIndex);
+	}
+
+	/**
 	 * Returns the wrapped <tt>Classifier</tt>.
 	 * 
 	 * @return the wrapped <tt>Classifier</tt>
 	 */
-	NaiveBayesUpdateable getClassifer() {
+	private NaiveBayesUpdateable getClassifer() {
 		if (mClassifier == null) {
 			mClassifier = new NaiveBayesUpdateable();
 			try {
@@ -160,27 +180,28 @@ class EventModel {
 		return mClassifier;
 	}
 
-	Set<String> getEventNames() {
-		@SuppressWarnings("unchecked")
-		// Unparametrized legacy code.
-		Enumeration<String> eventNames = mTrainingData.classAttribute()
-				.enumerateValues();
-		HashSet<String> classifiedNames = new HashSet<String>();
-		while (eventNames.hasMoreElements())
-			classifiedNames.add(eventNames.nextElement());
-		return classifiedNames;
+	/**
+	 * Initializes the model with the given instances.
+	 * <p>
+	 * TODO check for correctness
+	 * 
+	 * @param eventsToClassify
+	 *            the events to classify
+	 * @throws Exception
+	 */
+	private void buildClassifier() throws Exception {
+		if (mTrainingData.size() > 0) {
+			getClassifer().buildClassifier(mTrainingData);
+		}
 	}
 
-	/**
-	 * Gets the name of an event based on its index in the attributes.
-	 * 
-	 * @param attributeIndex
-	 *            the index of the attribute to get the name of.
-	 * @param attributes
-	 *            the list of attributes.
-	 * @return the name of the event the attribute at the index corresponds to.
-	 */
-	String getEventName(double attributeIndex) {
-		return mTrainingData.classAttribute().value((int) attributeIndex);
+	private static class PredictedPairComparator implements
+			Comparator<PredictedPair> {
+
+		@Override
+		public int compare(PredictedPair left, PredictedPair right) {
+			return Double.compare(right.getLikelihood(), left.getLikelihood());
+		}
+
 	}
 }
