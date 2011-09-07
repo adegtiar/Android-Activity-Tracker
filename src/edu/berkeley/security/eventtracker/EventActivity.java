@@ -63,7 +63,6 @@ abstract public class EventActivity extends Activity {
 
 	static final int TRACKING_NOTIFICATION = 1;
 
-	private static final int trackingStringID = R.string.toolbarTracking;
 	private static final int notTrackingStringID = R.string.toolbarNotTracking;
 
 	private GestureDetector gestureDetector;
@@ -92,7 +91,6 @@ abstract public class EventActivity extends Activity {
 				return false;
 			}
 		};
-
 		// Attach fling listeners to the views in the top toolbar
 		findViewById(R.id.toolbar_center).setOnClickListener(detector);
 		int[] viewsToAttachListener = new int[] { R.id.toolbar_left_option,
@@ -158,7 +156,16 @@ abstract public class EventActivity extends Activity {
 	private void setToolbarButton(ImageView button, final boolean isLeft) {
 		final Class<?> activityClass = isLeft ? getLeftActivityClass()
 				: getRightActivityClass();
-
+		TextView centerText = (TextView) findViewById(R.id.toolbar_center);
+		
+		// In order to center the the toolbar text, padding is dynamically added/removed.
+		if (getRightActivityClass() == null){
+			centerText.setPadding(20, 0, 0, 0);
+		}
+		if (getLeftActivityClass() == null) {
+			centerText.setPadding(0, 0, 20, 0);
+		}
+		
 		if (activityClass == null)
 			button.setVisibility(View.INVISIBLE);
 		else {
@@ -304,11 +311,13 @@ abstract public class EventActivity extends Activity {
 	 *            Whether or not an event is being tracked.
 	 */
 	protected void updateTrackingUI(boolean isTracking) {
-		textViewIsTracking.setText(isTracking ? trackingStringID
-				: notTrackingStringID);
-		if (isTracking && getCurrentEvent() != null) {
-			textViewIsTracking.append(getCurrentEvent().mName);
+		if (!isTracking) {
+			textViewIsTracking.setText(notTrackingStringID);
 		}
+	
+//		if (isTracking && getCurrentEvent() != null) {
+//			textViewIsTracking.append(getCurrentEvent().mName);
+//		}
 	}
 
 	/**
@@ -420,11 +429,14 @@ abstract public class EventActivity extends Activity {
 	public void updateToolbarMessage() {
 		EventEntry thisCurrentEvent = getCurrentEvent();
 		if (isTracking() && thisCurrentEvent != null) {
-			long currentTime = System.currentTimeMillis();
-			long duration = currentTime - thisCurrentEvent.mStartTime;
-			textViewIsTracking.setText(trackingStringID);
-			textViewIsTracking.append(" (" + calculateDuration() + ")");
-
+		    String durationString = calculateDurationString();
+		    // Event just started so there is no duration yet
+		    if (durationString.length() == 0) {
+		    	textViewIsTracking.setText("Just started tracking");
+		    } else{
+		    	textViewIsTracking.setText("Tracking for ");
+		    	textViewIsTracking.append(durationString);
+		    }
 		}
 	}
 
@@ -432,7 +444,7 @@ abstract public class EventActivity extends Activity {
 	 * Returns a string representation of the duration(given in ms) ex: sec ago,
 	 * 6 min, 1.5 hr
 	 */
-	protected String calculateDuration() {
+	protected String calculateDurationString() {
 
 		if (getCurrentEvent() == null) {
 			return "";
@@ -442,28 +454,48 @@ abstract public class EventActivity extends Activity {
 		long durationInSeconds = duration / 1000;
 
 		// between 0 and 60
-		long numOfSeconds = durationInSeconds % 60;
-		// between 0 and 60
 		long numOfMinutes = (durationInSeconds / 60) % 60;
 		// no limit on the number of hours
 		long numOfHours = durationInSeconds / 3600;
 
+		String durationString = "";
 		// duration is between 0 and 60 seconds
 		if (numOfHours == 0 && numOfMinutes == 0) {
-			return "secs ago";
+			return "";
+
 		}
+		
 		// between 0 and 1 hour
 		else if (numOfHours == 0) {
-			return Long.toString(numOfMinutes) + " mins ago";
+			durationString = Long.toString(numOfMinutes) + " min";
+			// making the duration string plural
+			if (numOfMinutes > 1) {
+				durationString += "s";
+			}
 		} else if (numOfHours < 10) {
 			// returns the number of hours rounded to one decimal place
 			double hoursInDecimal = durationInSeconds / 3600.0;
 			DecimalFormat df = new DecimalFormat("#.#");
-			return df.format(hoursInDecimal) + " hrs ago";
-		} else {
+			durationString = df.format(hoursInDecimal) + " hr";
+			// making the duration string plural
+			if (hoursInDecimal > 1) {
+				durationString += "s";
+			}
+		} else if (numOfHours >= 10 && numOfHours < 24){
 			// greater than 10 hours. so don't display any decimals
-			return Long.toString(numOfHours) + " hrs ago";
+			durationString = Long.toString(numOfHours) + " hr";
+			// making the duration string plural
+			if (numOfHours > 1) {
+				durationString += "s";
+			}
+		} else {
+			// Its more than 24 hours. Show the duration in terms of days
+			durationString = Long.toString(numOfHours/24) + " day";
+			if (numOfHours/24 > 1) {
+				durationString += "s";
+			}
 		}
+		return durationString;
 
 	}
 

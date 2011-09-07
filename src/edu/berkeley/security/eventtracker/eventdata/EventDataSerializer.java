@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import edu.berkeley.security.eventtracker.Settings;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
-import edu.berkeley.security.eventtracker.network.Encryption;
+import edu.berkeley.security.eventtracker.network.HashingUtils;
 import edu.berkeley.security.eventtracker.network.GibberishAESCrypto;
 
 public class EventDataSerializer {
@@ -34,7 +34,7 @@ public class EventDataSerializer {
 		String password = Settings.getPassword();
 		String encryptedJSON = null;
 		try {
-			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, Encryption
+			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, HashingUtils
 					.hashPassword(password).toCharArray());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -19,7 +19,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
-import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
+import edu.berkeley.security.eventtracker.maps.GoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
@@ -104,7 +104,7 @@ public class EditMode extends AbstractEventEdit {
 							Toast.LENGTH_SHORT).show();
 				} else {
 					Intent myIntent = new Intent(EditMode.this,
-							HelloGoogleMaps.class);
+							GoogleMaps.class);
 					myIntent.putExtra("EventData", editingEvent);
 					startActivity(myIntent);
 				}
@@ -334,7 +334,13 @@ public class EditMode extends AbstractEventEdit {
 		// Display the dialog
 		mDateTimeDialog.show();
 	}
-
+	/*
+	 * This is blank in order to override the method in EventActivity
+	 */
+	public void updateToolbarMessage() {
+		
+	}
+	
 	@Override
 	protected Class<?> getLeftActivityClass() {
 		return null;

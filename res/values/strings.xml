@@ -16,7 +16,7 @@
 	<string name="previousActivityText">Previous Activity: </string>
 	<string name="currentActivityText">Activity in Progress: </string>
 	<string name="toolbarNotTracking">Not Currently Tracking</string>
-	<string name="toolbarTracking">Tracking</string>
+	<string name="toolbarTracking">Started Tracking</string>
 	<string name="previousActivityDefault">None</string>
 	<string name="isTracking">isTracking</string>
 	<string name="activityListHeader">All Activities</string>

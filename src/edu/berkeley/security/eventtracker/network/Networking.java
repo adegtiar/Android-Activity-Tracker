@@ -241,7 +241,7 @@ public class Networking {
 		case VERIFYPASSWORD:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			String possiblePassword = Encryption.hashPassword(Settings.possiblePassword);
+			String possiblePassword = HashingUtils.hashPassword(Settings.possiblePassword);
 			params.add(new BasicNameValuePair(PASSWORD_PARAM, possiblePassword));
 			break;
 		case CHECKACCOUNT:
@@ -251,7 +251,7 @@ public class Networking {
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
 					.getPhoneNumber()));
-			params.add(new BasicNameValuePair(PASSWORD_PARAM, Encryption
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, HashingUtils
 					.hashPassword(Settings.getPassword())));
 			break;
 		case SENDDATA:

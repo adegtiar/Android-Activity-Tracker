@@ -31,7 +31,7 @@ public class GPSLoggerService extends Service {
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationListener = new MyLocationListener();
 
-		minTimeMillis = 5 * 60000;
+		minTimeMillis = 2 * 60000;
 		minDistanceMeters = 20;
 
 		//

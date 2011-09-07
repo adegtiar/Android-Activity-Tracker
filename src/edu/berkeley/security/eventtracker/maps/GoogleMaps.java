@@ -1,3 +1,7 @@
+/**
+ * This class displays the maps for displaying gps data
+ */
+
 package edu.berkeley.security.eventtracker.maps;
 
 import java.text.SimpleDateFormat;
@@ -11,7 +15,6 @@ import android.os.Bundle;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
@@ -20,9 +23,8 @@ import edu.berkeley.security.eventtracker.R;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 
-public class HelloGoogleMaps extends MapActivity {
+public class GoogleMaps extends MapActivity {
 	MyMapView mapView;
-	private MapController mc;
 	List<GPSCoordinates> gpsList;
 	List<GeoPoint> geopointList;
 	List<Overlay> mapOverlays;
@@ -40,7 +42,6 @@ public class HelloGoogleMaps extends MapActivity {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 		EventEntry entry = (EventEntry) this.getIntent().getExtras()
@@ -69,7 +70,7 @@ public class HelloGoogleMaps extends MapActivity {
 			else
 				icon = R.drawable.androidmarker;
 			Drawable drawable = this.getResources().getDrawable(icon);
-			HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(
+			GPSItemizedOverlay itemizedoverlay = new GPSItemizedOverlay(
 					drawable, this);
 			OverlayItem overlayitem = new OverlayItem(point, entry.mName,
 					new SimpleDateFormat().format(new Date(gps.getTime())));
@@ -83,7 +84,6 @@ public class HelloGoogleMaps extends MapActivity {
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		return false;

@@ -28,7 +28,7 @@ import android.widget.Toast;
 import edu.berkeley.security.eventtracker.eventdata.EventDbAdapter.EventKey;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
-import edu.berkeley.security.eventtracker.maps.HelloGoogleMaps;
+import edu.berkeley.security.eventtracker.maps.GoogleMaps;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 import edu.berkeley.security.eventtracker.network.Synchronizer;
@@ -96,7 +96,9 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onClick(View v) {
-				startEditEventActivity(previousEvent.mDbRowID);
+				if (previousEvent != null) {
+				  startEditEventActivity(previousEvent.mDbRowID);
+				}
 			}
 		});
 	}
@@ -314,7 +316,7 @@ public class TrackingMode extends AbstractEventEdit {
 				} else {
 
 					Intent myIntent = new Intent(TrackingMode.this,
-							HelloGoogleMaps.class);
+							GoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
 				}
@@ -480,11 +482,12 @@ public class TrackingMode extends AbstractEventEdit {
 			if (currentEventName.length() < 2) {
 				return;
 			}
-			String durationString = calculateDuration();
-			CharSequence toastMsg = "Updating activity " + currentEventName
-					+ "\n" + "(started " + durationString + ")";
-
-			displayToast(toastMsg);
+			String durationString = calculateDurationString();
+			String updateMsg = "Updating activity " + currentEventName + "\n";
+			String durationMsg = durationString.length() == 0 ? "Just started tracking" :
+				                                               "(started " + durationString + ")";
+			
+			displayToast(updateMsg + durationMsg);
 		}
 	}
 

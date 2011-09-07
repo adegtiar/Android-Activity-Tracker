@@ -7,8 +7,8 @@ public enum ServerRequest {
 
 	private String mUrl;
 
-	private static final String SERVER_ROOT = "192.168.0.100";
-	// private static final String SERVER_ROOT = "eventtracker.heroku.com";
+	// private static final String SERVER_ROOT = "192.168.0.100";
+	private static final String SERVER_ROOT = "eventtracker.heroku.com";
 	private static final String SERVER_PORT = "";
 
 	private ServerRequest(String url) {
