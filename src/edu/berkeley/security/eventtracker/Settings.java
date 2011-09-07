@@ -24,9 +24,9 @@ import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
 
 /**
- * Manages the settings/miscellaneous parts of the Event Tracker.
- * This class is responsible for both managing the settings activity of the app
- * as well as various pieces of information such as the password and UUIDOfDevice.
+ * Manages the settings/miscellaneous parts of the Event Tracker. This class is
+ * responsible for both managing the settings activity of the app as well as
+ * various pieces of information such as the password and UUIDOfDevice.
  */
 public class Settings extends PreferenceActivity {
 
@@ -57,16 +57,21 @@ public class Settings extends PreferenceActivity {
 	// Accessed by the Synchronizer service
 	public static ProgressDialog creatingAcctDialog;
 	public static ProgressDialog verifyingPwdDialog;
-	
+
 	public static String possiblePassword;
-	
-	// This enum is used in order to communicate between the Synchronizer and this activity
-	//   when the user has clicked "Enable Web view" and the device believes it is not registered
+
+	// This enum is used in order to communicate between the Synchronizer and
+	// this activity
+	// when the user has clicked "Enable Web view" and the device believes it is
+	// not registered
 	// NOT_REGISTERED means that this device is not registered with the server
-	// REGISTERED means the device is registered with the server, but the device itself
-	//   does not know it
+	// REGISTERED means the device is registered with the server, but the device
+	// itself
+	// does not know it
 	// COULD_NOT_CONTACT means that the server was not reached.
-	public enum ServerAccoutStatus { NOT_REGISTERED, REGISTERED, COULD_NOT_CONTACT}
+	public enum ServerAccoutStatus {
+		NOT_REGISTERED, REGISTERED, COULD_NOT_CONTACT
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,68 +84,60 @@ public class Settings extends PreferenceActivity {
 		creatingAcctDialog = new ProgressDialog(Settings.this);
 		verifyingPwdDialog = new ProgressDialog(Settings.this);
 		// Sets the device uuid in case it hasn't been set before.
-		// This device uuid is used by the web server in order to identify users.
+		// This device uuid is used by the web server in order to identify
+		// users.
 		if (getDeviceUUID().length() == 0) {
 			setDeviceUUID();
 		}
 
-		gpsEnabled
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		gpsEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-					public boolean onPreferenceClick(Preference preference) {
+			public boolean onPreferenceClick(Preference preference) {
 
-						if (gpsEnabled.isChecked())
-							EventActivity.gpsServiceIntent
-									.putExtra("gps", true);
-						else {
-							EventActivity.gpsServiceIntent.putExtra("gps",
-									false);
-						}
-						if (EventActivity.mEventManager.isTracking())
-							startService(EventActivity.gpsServiceIntent);
+				if (gpsEnabled.isChecked())
+					EventActivity.gpsServiceIntent.putExtra("gps", true);
+				else {
+					EventActivity.gpsServiceIntent.putExtra("gps", false);
+				}
+				if (EventActivity.mEventManager.isTracking())
+					startService(EventActivity.gpsServiceIntent);
 
-						return true;
+				return true;
+			}
+
+		});
+		notificationsEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			public boolean onPreferenceClick(Preference preference) {
+				// TODO fix this
+				updatePreferences();
+				return true;
+			}
+		});
+
+		sychronizeDataEnabled.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			public boolean onPreferenceClick(Preference preference) {
+
+				if (!isPasswordSet() && sychronizeDataEnabled.isChecked()) {
+					sychronizeDataEnabled.setChecked(false);
+
+					if (Settings.getPhoneNumber() == null) {
+						CharSequence text = "Could not determine phone number\nA phone number is needed in order to "
+								+ "access data online";
+						int duration = Toast.LENGTH_LONG;
+						Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+						toast.show();
+					} else {
+						showCreatingAcctDialog();
 					}
 
-				});
-		notificationsEnabled
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				}
+				return true;
 
-					public boolean onPreferenceClick(Preference preference) {
-						// TODO fix this
-						updatePreferences();
-						return true;
-					}
-				});
+			}
+		});
 
-		sychronizeDataEnabled
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
-					public boolean onPreferenceClick(Preference preference) {
-
-						if (!isPasswordSet()
-								&& sychronizeDataEnabled.isChecked()) {
-							sychronizeDataEnabled.setChecked(false);
-
-							if (Settings.getPhoneNumber() == null){
-								CharSequence text = "Could not determine phone number\nA phone number is needed in order to " +
-										            "access data online";
-								int duration = Toast.LENGTH_LONG;
-								Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-								toast.show();
-							} else {
-								showCreatingAcctDialog();
-							}
-							
-						
-
-						}
-						return true;
-
-					}
-				});
-		
-		
 		creatingAcctDialog.setOnDismissListener(new OnDismissListener() {
 
 			@Override
@@ -149,9 +146,10 @@ public class Settings extends PreferenceActivity {
 				// user to create a new one
 				if (Settings.accountRegisteredOnlyServer() == ServerAccoutStatus.NOT_REGISTERED) {
 					showDialog(DIALOG_ENTER_PASSWORD);
-				} else if (Settings.accountRegisteredOnlyServer() == ServerAccoutStatus.REGISTERED){
-				// An account already exists. Ask user if they wish to link to it.
-				    showDialog(DIALOG_ACCOUNT_FOUND);	
+				} else if (Settings.accountRegisteredOnlyServer() == ServerAccoutStatus.REGISTERED) {
+					// An account already exists. Ask user if they wish to link
+					// to it.
+					showDialog(DIALOG_ACCOUNT_FOUND);
 				} else {
 					CharSequence text = "Could not contact server\nTry again later";
 					int duration = Toast.LENGTH_SHORT;
@@ -165,7 +163,8 @@ public class Settings extends PreferenceActivity {
 
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				// Device is registered which means that the correct password was entered.
+				// Device is registered which means that the correct password
+				// was entered.
 				if (Settings.registeredAlready()) {
 					// success!
 					Settings.setPassword(possiblePassword);
@@ -175,7 +174,7 @@ public class Settings extends PreferenceActivity {
 					Networking.pollServerIfAllowed(Settings.this);
 					// Send all phone only events to the server
 					Networking.sendAllEvents(Settings.this);
-					//Display success dialog
+					// Display success dialog
 					showDialog(DIALOG_SUCCESS_NOW_SYNCING);
 				} else {
 					showDialog(DIALOG_ENTER_CORRECT_PASSWORD);
@@ -188,23 +187,22 @@ public class Settings extends PreferenceActivity {
 
 		});
 
-
 		Preference showCredentials = (Preference) findPreference("webCredentials");
-		showCredentials
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		showCredentials.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-					// User clicks on the Show Credentials option in settings
-					public boolean onPreferenceClick(Preference preference) {
-						showDialog(DIALOG_SHOW_CREDENTIALS);
-						return true;
-					}
+			// User clicks on the Show Credentials option in settings
+			public boolean onPreferenceClick(Preference preference) {
+				showDialog(DIALOG_SHOW_CREDENTIALS);
+				return true;
+			}
 
-				});
+		});
 	}
 
 	/**
-	 * First Step in registering an account only. This method contacts the web server
-	 *  in order to check to see if an accout with the same phone number is also in use. 
+	 * First Step in registering an account only. This method contacts the web
+	 * server in order to check to see if an accout with the same phone number
+	 * is also in use.
 	 */
 	private void showCreatingAcctDialog() {
 		creatingAcctDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -214,14 +212,15 @@ public class Settings extends PreferenceActivity {
 		Networking.checkIfAlreadyRegistered(getApplicationContext());
 
 	}
+
 	/**
-	 * In order to link an account with an already existing account,
-	 * the user must verify their password. They must enter in the same 
-	 * password used with the previous account. This method brings up the dialog
-	 * box that does that.
+	 * In order to link an account with an already existing account, the user
+	 * must verify their password. They must enter in the same password used
+	 * with the previous account. This method brings up the dialog box that does
+	 * that.
 	 */
 	private void showVerifyingPwdDialog() {
-		
+
 		verifyingPwdDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		verifyingPwdDialog.setMessage("Verifying password...");
 		verifyingPwdDialog.setCancelable(true);
@@ -229,18 +228,18 @@ public class Settings extends PreferenceActivity {
 		Networking.verifyPassword(getApplicationContext());
 
 	}
+
 	/**
-	 * Copies the settings preferences over so that the EventActivity/other activies can access them
+	 * Copies the settings preferences over so that the EventActivity/other
+	 * activies can access them
 	 */
 	private void updatePreferences() {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(getBaseContext());
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putBoolean(isGPSEnabled, prefs.getBoolean("gpsPref", false));
-		prefEditor.putBoolean(areNotificationsEnabled, prefs.getBoolean(
-				"notificationsPref", false));
-		prefEditor.putBoolean(isSychronizationEnabled, prefs.getBoolean(
-				"webPref", false));
+		prefEditor
+				.putBoolean(areNotificationsEnabled, prefs.getBoolean("notificationsPref", false));
+		prefEditor.putBoolean(isSychronizationEnabled, prefs.getBoolean("webPref", false));
 		prefEditor.commit();
 	}
 
@@ -260,16 +259,16 @@ public class Settings extends PreferenceActivity {
 		if (!areNotificationsEnabled()) {
 			EventActivity.disableTrackingNotification(this);
 		}
-		if (areNotificationsEnabled()
-				&& EventActivity.mEventManager.isTracking()) {
+		if (areNotificationsEnabled() && EventActivity.mEventManager.isTracking()) {
 			EventActivity.enableTrackingNotification(this,
 					EventActivity.mEventManager.getCurrentEvent());
 		}
 	}
 
-	/**	
-	 *  onCreateDialog is responsible for the logic involved with displaying dialog boxes.
-	 *  These dialog boxes are used in order to register a user with the web server 
+	/**
+	 * onCreateDialog is responsible for the logic involved with displaying
+	 * dialog boxes. These dialog boxes are used in order to register a user
+	 * with the web server
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id, final Bundle bundle) {
@@ -279,93 +278,85 @@ public class Settings extends PreferenceActivity {
 		switch (id) {
 		case DIALOG_ENTER_PASSWORD:
 			te_factory = LayoutInflater.from(this);
-			textEntryView = te_factory.inflate(
-					R.layout.alert_dialog_text_entry, null);
+			textEntryView = te_factory.inflate(R.layout.alert_dialog_text_entry, null);
 
-			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(
-					R.string.alert_dialog_text_entry).setView(textEntryView)
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.alert_dialog_text_entry)
+					.setView(textEntryView)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 									/* User entered a password and clicked OK */
 									EditText passwdEditText = (EditText) textEntryView
 											.findViewById(R.id.password_edit);
-									String password = passwdEditText.getText()
-											.toString();
+									String password = passwdEditText.getText().toString();
 									Settings.setPassword(password);
 									Settings.updatePasswordSettings();
 									updatePreferences();
 									// Register with server now
-								    Networking.sendToServer(ServerRequest.REGISTER, null, Settings.this);
+									Networking.sendToServer(ServerRequest.REGISTER, null,
+											Settings.this);
 									showDialog(DIALOG_SUCCESS_NOW_SYNCING);
 								}
-							}).setNegativeButton(R.string.alert_dialog_cancel,
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 									/* User clicked cancel so do some stuff */
 								}
 							}).create();
-			
+
 		case DIALOG_ACCOUNT_FOUND:
 			username = Settings.getPhoneNumber();
 			message = "Account with phone number " + username + " found. Do you want to link?";
-			
-			return new AlertDialog.Builder(this).setMessage(message)
-					.setPositiveButton(R.string.dialog_yes,
-							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									showDialog(DIALOG_ENTER_CORRECT_PASSWORD);
-								
-								}
-							}).setNegativeButton(R.string.dialog_no,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									showDialog(DIALOG_DELETE_DATA);
-								}
-							}).create();
+			return new AlertDialog.Builder(this).setMessage(message)
+					.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_ENTER_CORRECT_PASSWORD);
+
+						}
+					}).setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_DELETE_DATA);
+						}
+					}).create();
 		case DIALOG_DELETE_DATA:
-			
+
 			message = "Are you sure? This will delete all data associated with this account.";
-			
+
 			return new AlertDialog.Builder(this).setMessage(message)
-					.setPositiveButton(R.string.dialog_yes,
-							new DialogInterface.OnClickListener() {
+					.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									showDialog(DIALOG_ENTER_PASSWORD);
-								
-								}
-							}).setNegativeButton(R.string.dialog_no,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_ENTER_PASSWORD);
 
-									showDialog(DIALOG_ACCOUNT_FOUND);
-								}
-							}).create();
-			
+						}
+					}).setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+
+							showDialog(DIALOG_ACCOUNT_FOUND);
+						}
+					}).create();
+
 		case DIALOG_SHOW_CREDENTIALS:
 			url = "Visit eventtracker.heroku.com with username ";
 			username = Settings.getPhoneNumber();
 			password = Settings.getPassword();
-			message =  url + username + " and password " + password;
-			
-			return new AlertDialog.Builder(this).setTitle("View Your Data Online").setMessage(message)
+			message = url + username + " and password " + password;
+
+			return new AlertDialog.Builder(this)
+					.setTitle("View Your Data Online")
+					.setMessage(message)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-								
+								public void onClick(DialogInterface dialog, int whichButton) {
+
 								}
 							}).create();
 		case DIALOG_SUCCESS_NOW_SYNCING:
@@ -375,42 +366,41 @@ public class Settings extends PreferenceActivity {
 			password = Settings.getPassword();
 			message = success + url + username + " and password " + password;
 
-			return new AlertDialog.Builder(this).setTitle("View Your Data Online").setMessage(message)
+			return new AlertDialog.Builder(this)
+					.setTitle("View Your Data Online")
+					.setMessage(message)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-								
+								public void onClick(DialogInterface dialog, int whichButton) {
+
 								}
 							}).create();
 		case DIALOG_ENTER_CORRECT_PASSWORD:
 			te_factory = LayoutInflater.from(this);
-			textEntryView = te_factory.inflate(
-					R.layout.dialog_enter_correct_password, null);
+			textEntryView = te_factory.inflate(R.layout.dialog_enter_correct_password, null);
 
-			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(
-					R.string.enter_same_password).setView(textEntryView)
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.enter_same_password)
+					.setView(textEntryView)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 									// User entered a password and clicked OK
-									
+
 									EditText passwdEditText = (EditText) textEntryView
 											.findViewById(R.id.password_edit);
-									String password = passwdEditText.getText()
-											.toString();
+									String password = passwdEditText.getText().toString();
 									possiblePassword = password;
 									showVerifyingPwdDialog();
-							
+
 								}
-							}).setNegativeButton(R.string.alert_dialog_cancel,
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 									/* User clicked cancel so do some stuff */
 								}
@@ -425,8 +415,7 @@ public class Settings extends PreferenceActivity {
 	}
 
 	protected static boolean areNotificationsEnabled() {
-		return EventActivity.settings
-				.getBoolean(areNotificationsEnabled, false);
+		return EventActivity.settings.getBoolean(areNotificationsEnabled, false);
 	}
 
 	protected static boolean isPasswordSet() {
@@ -434,8 +423,7 @@ public class Settings extends PreferenceActivity {
 	}
 
 	public static boolean isSychronizationEnabled() {
-		return EventActivity.settings
-				.getBoolean(isSychronizationEnabled, false);
+		return EventActivity.settings.getBoolean(isSychronizationEnabled, false);
 	}
 
 	public static String getPollTime() {
@@ -461,14 +449,17 @@ public class Settings extends PreferenceActivity {
 	public static boolean registeredAlready() {
 		return EventActivity.settings.getBoolean(Registered, false);
 	}
+
 	/**
-	 * Returns true if according to the device, the phone is unregistered. But 
-	 *   according to the web server, it is registered. False otherwise
-	 * @return 
+	 * Returns true if according to the device, the phone is unregistered. But
+	 * according to the web server, it is registered. False otherwise
+	 * 
+	 * @return
 	 */
 	public static ServerAccoutStatus accountRegisteredOnlyServer() {
-		int position = EventActivity.settings.getInt(RegisteredServerOnly, ServerAccoutStatus.NOT_REGISTERED.ordinal());
-		return ServerAccoutStatus.values()[position];  
+		int position = EventActivity.settings.getInt(RegisteredServerOnly,
+				ServerAccoutStatus.NOT_REGISTERED.ordinal());
+		return ServerAccoutStatus.values()[position];
 	}
 
 	protected static void setPassword(String passwd) {
@@ -493,6 +484,7 @@ public class Settings extends PreferenceActivity {
 		prefEditor.putString(UUIDOfDevice, uuid.toString());
 		prefEditor.commit();
 	}
+
 	public static void setDeviceUUID(String uuid) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putString(UUIDOfDevice, uuid);
@@ -523,6 +515,7 @@ public class Settings extends PreferenceActivity {
 		prefEditor.commit();
 
 	}
+
 	public static void setAccountRegisteredOnlyServer(ServerAccoutStatus serverOnly) {
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putInt(RegisteredServerOnly, serverOnly.ordinal());

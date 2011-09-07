@@ -72,8 +72,8 @@ public class TagsDBAdapter extends AbstractDbAdapter {
 
 		Cursor mCursor =
 
-		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_TAG },
-				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_TAG }, KEY_ROWID + "="
+				+ rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
@@ -84,8 +84,8 @@ public class TagsDBAdapter extends AbstractDbAdapter {
 	 * @return a cursor for all of the tags in the database
 	 */
 	public Cursor getTags() {
-		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_TAG },
-				null, null, null, null, null);
+		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_TAG }, null, null, null,
+				null, null);
 
 	}
 

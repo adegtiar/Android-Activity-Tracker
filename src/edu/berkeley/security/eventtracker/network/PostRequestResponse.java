@@ -33,7 +33,6 @@ public class PostRequestResponse {
 
 	@Override
 	public String toString() {
-		return String.format("{%s, %s}", isSuccess ? "SUCCESS" : "ERROR",
-				mContent);
+		return String.format("{%s, %s}", isSuccess ? "SUCCESS" : "ERROR", mContent);
 	}
 }

@@ -50,8 +50,7 @@ public class Networking {
 
 	public static void sendAllEvents(Context context) {
 		if (Settings.isSychronizationEnabled()) {
-			EventCursor theCursor = EventActivity.mEventManager
-					.fetchPhoneOnlyEvents();
+			EventCursor theCursor = EventActivity.mEventManager.fetchPhoneOnlyEvents();
 			// send them all! LEAVE NO EVENT BEHIND
 			EventEntry nextEvent;
 			ArrayList<EventEntry> listOfEvents = new ArrayList<EventEntry>();
@@ -62,8 +61,7 @@ public class Networking {
 				}
 			}
 			if (!listOfEvents.isEmpty()) {
-				Networking.sendToServerBulk(ServerRequest.SENDDATA,
-						listOfEvents, context);
+				Networking.sendToServerBulk(ServerRequest.SENDDATA, listOfEvents, context);
 			}
 		}
 	}
@@ -83,28 +81,29 @@ public class Networking {
 	}
 
 	/**
-	 * Contacts the server to see if an account has already been set up. This is 
-	 * done in order to recover data in case the user registers an account, but 
+	 * Contacts the server to see if an account has already been set up. This is
+	 * done in order to recover data in case the user registers an account, but
 	 * then clears the application data.
 	 * 
 	 * @param context
 	 *            the context from which to send the request.
 	 */
 	public static void checkIfAlreadyRegistered(Context context) {
-		Networking.sendToServer(ServerRequest.CHECKACCOUNT, null, context); 
+		Networking.sendToServer(ServerRequest.CHECKACCOUNT, null, context);
 	}
-	
+
 	/**
-	 * In order to link an account with the server, this method is called in order to 
-	 * verify that the password the user entered is the same as the one the server knows
+	 * In order to link an account with the server, this method is called in
+	 * order to verify that the password the user entered is the same as the one
+	 * the server knows
+	 * 
 	 * @param context
 	 *            the context from which to send the request.
 	 */
 	public static void verifyPassword(Context context) {
-		Networking.sendToServer(ServerRequest.VERIFYPASSWORD, null, context); 
+		Networking.sendToServer(ServerRequest.VERIFYPASSWORD, null, context);
 	}
-	
-	
+
 	/**
 	 * Attempts to poll the server for data, if preferences permit.
 	 * 
@@ -135,12 +134,12 @@ public class Networking {
 	 * @param context
 	 *            - dont't worry about this.
 	 */
-	public static void sendToServer(ServerRequest request, EventEntry data,
-			Context context) {
+	public static void sendToServer(ServerRequest request, EventEntry data, Context context) {
 
-		// check to see if allowed to send data or we are verifying the existence of an account
-		if (Settings.isSychronizationEnabled() || request == ServerRequest.CHECKACCOUNT ||
-				request == ServerRequest.VERIFYPASSWORD) {
+		// check to see if allowed to send data or we are verifying the
+		// existence of an account
+		if (Settings.isSychronizationEnabled() || request == ServerRequest.CHECKACCOUNT
+				|| request == ServerRequest.VERIFYPASSWORD) {
 			ArrayList<EventEntry> listOfEvents = null;
 			if (data != null) {
 				listOfEvents = new ArrayList<EventEntry>();
@@ -165,8 +164,8 @@ public class Networking {
 	 * @param context
 	 *            - dont't worry about this.
 	 */
-	public static void sendToServerBulk(ServerRequest request,
-			ArrayList<EventEntry> listOfEvents, Context context) {
+	public static void sendToServerBulk(ServerRequest request, ArrayList<EventEntry> listOfEvents,
+			Context context) {
 		// check to see if allowed to send data
 		if (Settings.isSychronizationEnabled()) {
 
@@ -187,8 +186,8 @@ public class Networking {
 	 *            the type of request to send.
 	 * @return the response to the request.
 	 */
-	public static PostRequestResponse sendPostRequest(
-			ArrayList<EventEntry> listOfEvents, ServerRequest request) {
+	public static PostRequestResponse sendPostRequest(ArrayList<EventEntry> listOfEvents,
+			ServerRequest request) {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> res = new BasicResponseHandler();
 		HttpPost postMethod = new HttpPost(request.getURL());
@@ -201,8 +200,7 @@ public class Networking {
 		}
 		PostRequestResponse response;
 		try {
-			response = new PostRequestResponse(httpclient.execute(postMethod,
-					res), true);
+			response = new PostRequestResponse(httpclient.execute(postMethod, res), true);
 		} catch (ClientProtocolException e) {
 			Log.e(EventActivity.LOG_TAG, "Failed sending post.", e);
 			response = PostRequestResponse.errorResponse();
@@ -239,20 +237,17 @@ public class Networking {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		switch (request) {
 		case VERIFYPASSWORD:
-			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
-					.getPhoneNumber()));
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings.getPhoneNumber()));
 			String possiblePassword = HashingUtils.hashPassword(Settings.possiblePassword);
 			params.add(new BasicNameValuePair(PASSWORD_PARAM, possiblePassword));
 			break;
 		case CHECKACCOUNT:
-			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
-					.getPhoneNumber()));
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings.getPhoneNumber()));
 			break;
 		case REGISTER:
-			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings
-					.getPhoneNumber()));
-			params.add(new BasicNameValuePair(PASSWORD_PARAM, HashingUtils
-					.hashPassword(Settings.getPassword())));
+			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings.getPhoneNumber()));
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, HashingUtils.hashPassword(Settings
+					.getPassword())));
 			break;
 		case SENDDATA:
 		case UPDATE:
@@ -261,19 +256,14 @@ public class Networking {
 				for (EventEntry data : listOfEvents) {
 					JSONObject eventJSON = new JSONObject();
 					eventJSON.accumulate(EVENT_UUID_PARAM, data.mUUID);
-					eventJSON.accumulate(EVENT_DELETED_PARAM,
-							String.valueOf(data.deleted));
-					eventJSON
-							.accumulate(EVENT_UPDATED_AT_PARAM,
-									Synchronizer.dateFormatter
-											.format(data.mUpdateTime));
+					eventJSON.accumulate(EVENT_DELETED_PARAM, String.valueOf(data.deleted));
+					eventJSON.accumulate(EVENT_UPDATED_AT_PARAM,
+							Synchronizer.dateFormatter.format(data.mUpdateTime));
 					eventJSON.accumulate(EVENT_DATA_PARAM, EventDataSerializer
-							.encryptJSONObject(EventDataSerializer
-									.toJSONObject(data)));
+							.encryptJSONObject(EventDataSerializer.toJSONObject(data)));
 					EventData.put(eventJSON);
 				}
-				params.add(new BasicNameValuePair(EVENT_DATA_PARAM, EventData
-						.toString()));
+				params.add(new BasicNameValuePair(EVENT_DATA_PARAM, EventData.toString()));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -292,8 +282,7 @@ public class Networking {
 				params.add(new BasicNameValuePair(POLL_TIME_PARAM, pollTime));
 			break;
 		}
-		params.add(new BasicNameValuePair(DEVICE_UUID_PARAM, Settings
-				.getDeviceUUID()));
+		params.add(new BasicNameValuePair(DEVICE_UUID_PARAM, Settings.getDeviceUUID()));
 		return params;
 	}
 
@@ -312,11 +301,11 @@ public class Networking {
 	 */
 	public static String getIpAddress() {
 		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface
-					.getNetworkInterfaces(); en.hasMoreElements();) {
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
+					.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf
-						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
+						.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
 					if (!inetAddress.isLoopbackAddress()) {
 						return inetAddress.getHostAddress().toString();
@@ -328,7 +317,5 @@ public class Networking {
 		}
 		return null;
 	}
-
-	
 
 }

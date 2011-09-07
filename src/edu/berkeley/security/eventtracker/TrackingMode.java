@@ -64,11 +64,9 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (isTracking()) {
-					String tagChosen = parent.getItemAtPosition(position)
-							.toString();
+					String tagChosen = parent.getItemAtPosition(position).toString();
 					currentEvent.mTag = tagChosen;
 				}
 			}
@@ -97,7 +95,7 @@ public class TrackingMode extends AbstractEventEdit {
 			@Override
 			public void onClick(View v) {
 				if (previousEvent != null) {
-				  startEditEventActivity(previousEvent.mDbRowID);
+					startEditEventActivity(previousEvent.mDbRowID);
 				}
 			}
 		});
@@ -118,8 +116,7 @@ public class TrackingMode extends AbstractEventEdit {
 	protected void fillViewWithEventInfo() {
 		if (currentEvent != null) {
 			eventNameEditText.setText(currentEvent.mName);
-			textViewStartTime.setText(currentEvent
-					.formatColumn(EventKey.START_TIME));
+			textViewStartTime.setText(currentEvent.formatColumn(EventKey.START_TIME));
 		} else {
 			eventNameEditText.setText("");
 			textViewStartTime.setText("");
@@ -179,15 +176,12 @@ public class TrackingMode extends AbstractEventEdit {
 		eventNameEditText.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				// TODO Auto-generated method stub
 				String activityName = (String) ((TextView) arg1).getText();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(),
-						0);
-				EventEntry thisEvent = EventManager.getManager().fetchEvents(
-						activityName);
+				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(), 0);
+				EventEntry thisEvent = EventManager.getManager().fetchEvents(activityName);
 				currentEvent.mTag = thisEvent.mTag;
 				initializeTags();
 			}
@@ -239,20 +233,17 @@ public class TrackingMode extends AbstractEventEdit {
 		}
 
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
 
 		}
 	}
 
 	private void updateStartTimeUI() {
-		textViewStartTime.setText(currentEvent
-				.formatColumn(EventKey.START_TIME));
+		textViewStartTime.setText(currentEvent.formatColumn(EventKey.START_TIME));
 	}
 
 	/**
@@ -262,8 +253,7 @@ public class TrackingMode extends AbstractEventEdit {
 	 * @return whether the current event has a long enough duration.
 	 */
 	private boolean timePassedThreshold() {
-		return (System.currentTimeMillis() - currentEvent.mStartTime)
-				/ MILLIS_PER_SECOND > MIN_ACTIVITY_DURATION;
+		return (System.currentTimeMillis() - currentEvent.mStartTime) / MILLIS_PER_SECOND > MIN_ACTIVITY_DURATION;
 	}
 
 	/**
@@ -273,8 +263,7 @@ public class TrackingMode extends AbstractEventEdit {
 	 * @return whether the current event has a name.
 	 */
 	private boolean currentEventHasName() {
-		return currentEvent.mName.length() > 0
-				|| eventNameEditText.getText().length() > 0;
+		return currentEvent.mName.length() > 0 || eventNameEditText.getText().length() > 0;
 	}
 
 	@Override
@@ -311,12 +300,11 @@ public class TrackingMode extends AbstractEventEdit {
 			public void onClick(View v) {
 
 				if (currentEvent.getGPSCoordinates().size() == 0) {
-					Toast.makeText(getApplicationContext(), "No data yet",
-							Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "No data yet", Toast.LENGTH_SHORT)
+							.show();
 				} else {
 
-					Intent myIntent = new Intent(TrackingMode.this,
-							GoogleMaps.class);
+					Intent myIntent = new Intent(TrackingMode.this, GoogleMaps.class);
 					myIntent.putExtra("EventData", currentEvent);
 					startActivity(myIntent);
 				}
@@ -326,11 +314,9 @@ public class TrackingMode extends AbstractEventEdit {
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (isTracking()) {
-					String tagChosen = parent.getItemAtPosition(position)
-							.toString();
+					String tagChosen = parent.getItemAtPosition(position).toString();
 					currentEvent.mTag = tagChosen;
 				}
 			}
@@ -484,9 +470,9 @@ public class TrackingMode extends AbstractEventEdit {
 			}
 			String durationString = calculateDurationString();
 			String updateMsg = "Updating activity " + currentEventName + "\n";
-			String durationMsg = durationString.length() == 0 ? "Just started tracking" :
-				                                               "(started " + durationString + ")";
-			
+			String durationMsg = durationString.length() == 0 ? "Just started tracking"
+					: "(started " + durationString + ")";
+
 			displayToast(updateMsg + durationMsg);
 		}
 	}

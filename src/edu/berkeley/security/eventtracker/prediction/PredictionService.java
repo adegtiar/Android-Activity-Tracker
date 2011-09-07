@@ -43,8 +43,7 @@ public class PredictionService extends Service {
 	public List<String> predictEventNames() {
 		SortedSet<PredictedPair> predictionResults = getEventDistribution();
 
-		List<String> eventNames = new ArrayList<String>(
-				predictionResults.size());
+		List<String> eventNames = new ArrayList<String>(predictionResults.size());
 		for (PredictedPair predictedResult : predictionResults) {
 			eventNames.add(predictedResult.getName());
 		}
@@ -98,8 +97,7 @@ public class PredictionService extends Service {
 			EventInstances eventData = new EventInstances(getEventNames());
 			eventData.setClassIndex(eventData.numAttributes() - 1);
 
-			EventCursor events = EventManager.getManager()
-					.fetchUndeletedEvents();
+			EventCursor events = EventManager.getManager().fetchUndeletedEvents();
 			while (events.moveToNext()) {
 				eventData.add(events.getEvent());
 			}
@@ -118,8 +116,7 @@ public class PredictionService extends Service {
 		if (mEventNames == null) {
 			Set<String> names = new HashSet<String>();
 			Set<String> repeatedNames = new HashSet<String>();
-			EventCursor allEventsCursor = EventManager.getManager()
-					.fetchUndeletedEvents();
+			EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
 			EventEntry currentEvent;
 			while (allEventsCursor.moveToNext()) {
 				currentEvent = allEventsCursor.getEvent();

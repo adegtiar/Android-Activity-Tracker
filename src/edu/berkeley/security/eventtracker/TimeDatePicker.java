@@ -41,29 +41,28 @@ public class TimeDatePicker extends Activity {
 		date.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
 				cal.get(Calendar.DAY_OF_MONTH));
 
-		findViewById(R.id.setTimeDate).setOnClickListener(
-				new View.OnClickListener() {
+		findViewById(R.id.setTimeDate).setOnClickListener(new View.OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
 
-						int hour = time.getCurrentHour();
-						int minute = time.getCurrentMinute();
+				int hour = time.getCurrentHour();
+				int minute = time.getCurrentMinute();
 
-						int day = date.getDayOfMonth();
-						int year = date.getYear();
-						int month = date.getMonth();
+				int day = date.getDayOfMonth();
+				int year = date.getYear();
+				int month = date.getMonth();
 
-						cal.set(year, month, day, hour, minute);
-						Intent mIntent = new Intent();
-						Bundle bundle = new Bundle();
-						bundle.putLong("Time", cal.getTimeInMillis());
-						mIntent.putExtras(bundle);
-						setResult(RESULT_OK, mIntent);
-						finish();
+				cal.set(year, month, day, hour, minute);
+				Intent mIntent = new Intent();
+				Bundle bundle = new Bundle();
+				bundle.putLong("Time", cal.getTimeInMillis());
+				mIntent.putExtras(bundle);
+				setResult(RESULT_OK, mIntent);
+				finish();
 
-					}
-				});
+			}
+		});
 
 	}
 }

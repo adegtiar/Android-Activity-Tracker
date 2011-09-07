@@ -37,73 +37,66 @@ public class Debugging extends Activity {
 		dateFormatter = new SimpleDateFormat(datePattern);
 		localCalendar = Calendar.getInstance();
 		debugStatus = ((TextView) findViewById(R.id.debuggingStatusText));
-		((Button) findViewById(R.id.eventDataButton))
-				.setOnClickListener(new OnClickListener() {
+		((Button) findViewById(R.id.eventDataButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						try {
-							debugStatus.setText("importing events...");
-							importTestEvents();
-							debugStatus.setText("importing events... Done");
-						} catch (Exception e) {
-							debugStatus.setText("Error importing events: " + e);
-						}
-					}
-				});
+			@Override
+			public void onClick(View v) {
+				try {
+					debugStatus.setText("importing events...");
+					importTestEvents();
+					debugStatus.setText("importing events... Done");
+				} catch (Exception e) {
+					debugStatus.setText("Error importing events: " + e);
+				}
+			}
+		});
 
-		((Button) findViewById(R.id.clearDatabaseButton))
-				.setOnClickListener(new OnClickListener() {
+		((Button) findViewById(R.id.clearDatabaseButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						debugStatus.setText("clearing events...");
-						EventManager.getManager().deleteAllEntries();
-						debugStatus.setText("clearing events... Done");
-					}
-				});
-		((Button) findViewById(R.id.doMLButton))
-				.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				debugStatus.setText("clearing events...");
+				EventManager.getManager().deleteAllEntries();
+				debugStatus.setText("clearing events... Done");
+			}
+		});
+		((Button) findViewById(R.id.doMLButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						SortedSet<PredictedPair> eventPredictions = EventActivity.mPredictionService
-								.getEventDistribution();
-						String debugText = "Predicted events: ";
-						for (PredictedPair nameProbPair : eventPredictions)
-							debugText += String.format("\n%s: %.2f%%",
-									nameProbPair.getName(),
-									nameProbPair.getLikelihood() * 100);
-						debugStatus.setText(debugText);
-					}
-				});
-		((Button) findViewById(R.id.forceRegisterButton))
-				.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SortedSet<PredictedPair> eventPredictions = EventActivity.mPredictionService
+						.getEventDistribution();
+				String debugText = "Predicted events: ";
+				for (PredictedPair nameProbPair : eventPredictions)
+					debugText += String.format("\n%s: %.2f%%", nameProbPair.getName(),
+							nameProbPair.getLikelihood() * 100);
+				debugStatus.setText(debugText);
+			}
+		});
+		((Button) findViewById(R.id.forceRegisterButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						debugStatus.setText("Registration forced.");
-						Debugging.this.forceRegister();
-					}
-				});
-		((Button) findViewById(R.id.sendAllEventsButton))
-				.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				debugStatus.setText("Registration forced.");
+				Debugging.this.forceRegister();
+			}
+		});
+		((Button) findViewById(R.id.sendAllEventsButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						debugStatus.setText("Trying to send all events.");
-						Networking.sendAllEvents(Debugging.this);
-					}
-				});
-		((Button) findViewById(R.id.pollServerButton))
-				.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				debugStatus.setText("Trying to send all events.");
+				Networking.sendAllEvents(Debugging.this);
+			}
+		});
+		((Button) findViewById(R.id.pollServerButton)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						debugStatus.setText("Polling server for Events.");
-						Networking.pollServerIfAllowed(Debugging.this);
-					}
-				});
+			@Override
+			public void onClick(View v) {
+				debugStatus.setText("Polling server for Events.");
+				Networking.pollServerIfAllowed(Debugging.this);
+			}
+		});
 	}
 
 	private int importTestEvents() throws IOException, ParseException {
@@ -123,8 +116,7 @@ public class Debugging extends Activity {
 				EventActivity.mEventManager.addTag(tag);
 			}
 			EventEntry event = mgr.createEvent(eventParts[0], eventParts[1],
-					parseDate(eventParts[2]), parseDate(eventParts[3]), false,
-					tag);
+					parseDate(eventParts[2]), parseDate(eventParts[3]), false, tag);
 			if (event != null) {
 				nSuccessful++;
 			}
@@ -142,8 +134,8 @@ public class Debugging extends Activity {
 					String[] gpsData = gps.split(",");
 					Double latitude = Double.valueOf(gpsData[0]);
 					Double longitude = Double.valueOf(gpsData[1]);
-					GPSCoordinates coord = new GPSCoordinates(latitude,
-							longitude, parseDate(gpsData[2]));
+					GPSCoordinates coord = new GPSCoordinates(latitude, longitude,
+							parseDate(gpsData[2]));
 					mgr.addGPSCoordinates(coord, event.mDbRowID);
 				}
 			} catch (NumberFormatException e) {

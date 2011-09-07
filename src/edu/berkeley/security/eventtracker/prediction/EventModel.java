@@ -51,8 +51,7 @@ class EventModel {
 	 *             the string is not a valid serialized <tt>EventModel</tt>, or
 	 *             an unexpected de-serialization error occurred
 	 */
-	static EventModel fromSerializedString(String serializedModel)
-			throws IOException {
+	static EventModel fromSerializedString(String serializedModel) throws IOException {
 		byte[] serializedClassifier = Base64.decode(serializedModel, 0);
 		ByteArrayInputStream is = new ByteArrayInputStream(serializedClassifier);
 		ObjectInputStream ois = new ObjectInputStream(is);
@@ -97,14 +96,12 @@ class EventModel {
 			Instance newEventInstance = newInstance();
 			double[] predictions;
 			try {
-				predictions = getClassifer().distributionForInstance(
-						newEventInstance);
+				predictions = getClassifer().distributionForInstance(newEventInstance);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
-				predictionResults.add(new PredictedPair(
-						getEventName(attributeIndex),
+				predictionResults.add(new PredictedPair(getEventName(attributeIndex),
 						predictions[attributeIndex]));
 			}
 		}
@@ -195,8 +192,7 @@ class EventModel {
 		}
 	}
 
-	private static class PredictedPairComparator implements
-			Comparator<PredictedPair> {
+	private static class PredictedPairComparator implements Comparator<PredictedPair> {
 
 		@Override
 		public int compare(PredictedPair left, PredictedPair right) {

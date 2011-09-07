@@ -84,12 +84,10 @@ public class NumberPicker extends LinearLayout {
 		public void run() {
 			if (autoIncrement) {
 				increment();
-				repeatUpdateHandler.postDelayed(new RepetetiveUpdater(),
-						REPEAT_DELAY);
+				repeatUpdateHandler.postDelayed(new RepetetiveUpdater(), REPEAT_DELAY);
 			} else if (autoDecrement) {
 				decrement();
-				repeatUpdateHandler.postDelayed(new RepetetiveUpdater(),
-						REPEAT_DELAY);
+				repeatUpdateHandler.postDelayed(new RepetetiveUpdater(), REPEAT_DELAY);
 			}
 		}
 	}
@@ -97,10 +95,9 @@ public class NumberPicker extends LinearLayout {
 	public NumberPicker(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
 
-		this.setLayoutParams(new LinearLayout.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		LayoutParams elementParams = new LinearLayout.LayoutParams(
-				ELEMENT_HEIGHT, ELEMENT_WIDTH);
+		this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT));
+		LayoutParams elementParams = new LinearLayout.LayoutParams(ELEMENT_HEIGHT, ELEMENT_WIDTH);
 
 		// init the individual elements
 		initDecrementButton(context);
@@ -172,8 +169,7 @@ public class NumberPicker extends LinearLayout {
 			public boolean onKey(View v, int arg1, KeyEvent event) {
 				int backupValue = value;
 				try {
-					value = Integer.parseInt(((EditText) v).getText()
-							.toString());
+					value = Integer.parseInt(((EditText) v).getText().toString());
 				} catch (NumberFormatException nfe) {
 					value = backupValue;
 				}
@@ -189,8 +185,7 @@ public class NumberPicker extends LinearLayout {
 				}
 			}
 		});
-		valueText.setGravity(Gravity.CENTER_VERTICAL
-				| Gravity.CENTER_HORIZONTAL);
+		valueText.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 		valueText.setText(value.toString());
 		valueText.setInputType(InputType.TYPE_CLASS_NUMBER);
 	}

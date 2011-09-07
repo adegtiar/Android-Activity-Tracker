@@ -106,8 +106,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		// editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line,
-				autoCompleteActivities);
+				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
 		adapterActivities.setNotifyOnChange(true);
 
 		eventNameEditText.setAdapter(adapterActivities);
@@ -263,8 +262,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		}
 
 		adapterActivities = new ArrayAdapter<String>(this,
-				android.R.layout.simple_dropdown_item_1line,
-				autoCompleteActivities);
+				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
 		eventNameEditText.setAdapter(adapterActivities);
 	}
 
@@ -312,8 +310,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode != RESULT_OK)
 			return;
-		ArrayList<String> matches = data
-				.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+		ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 		if (requestCode == VOICE_RECOGNITION_REQUEST_CODE_NAME) {
 			setNameText(matches.get(0));
 		} else if (requestCode == VOICE_RECOGNITION_REQUEST_CODE_NOTES) {
@@ -328,8 +325,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 		case DIALOG_ENTER_TAG:
 			// This example shows how to add a custom layout to an AlertDialog
 			LayoutInflater factory = LayoutInflater.from(this);
-			final View textEntryView = factory.inflate(
-					R.layout.alert_dialog_tag_entry, null);
+			final View textEntryView = factory.inflate(R.layout.alert_dialog_tag_entry, null);
 			return new AlertDialog.Builder(AbstractEventEdit.this)
 
 					.setTitle(R.string.alert_dialog_tag_entry)
@@ -337,13 +333,11 @@ abstract public class AbstractEventEdit extends EventActivity {
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 									EditText tagEditText = (EditText) textEntryView
 											.findViewById(R.id.tag_edit);
-									String tag = tagEditText.getText()
-											.toString();
+									String tag = tagEditText.getText().toString();
 									if (tag.length() > 0)
 										EventActivity.mEventManager.addTag(tag);
 									initializeTags();
@@ -354,8 +348,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 									/* User clicked cancel so do some stuff */
 								}
@@ -363,10 +356,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 		case DIALOG_NOTE_ENTRY:
 			// This example shows how to add a custom layout to an AlertDialog
 			LayoutInflater ne_factory = LayoutInflater.from(this);
-			final View noteEntryView = ne_factory.inflate(
-					R.layout.alert_dialog_note_entry, null);
-			final EditText noteEditText = (EditText) noteEntryView
-					.findViewById(R.id.notes_edit);
+			final View noteEntryView = ne_factory.inflate(R.layout.alert_dialog_note_entry, null);
+			final EditText noteEditText = (EditText) noteEntryView.findViewById(R.id.notes_edit);
 			final EventEntry eventInFocus = getFocussedEvent();
 			noteEditText.setText(eventInFocus.mNotes);
 			return new AlertDialog.Builder(this)
@@ -376,11 +367,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
-									String notes = noteEditText.getText()
-											.toString();
+									String notes = noteEditText.getText().toString();
 
 									eventInFocus.mNotes = notes;
 									syncToEventFromUI();
@@ -390,8 +379,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 									/* User clicked cancel so do some stuff */
 								}

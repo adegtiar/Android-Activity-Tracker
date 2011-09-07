@@ -73,8 +73,7 @@ class EventInstances extends Instances {
 	 * @return the new {@link Instance}, or null if the event was invalid
 	 */
 	private Instance newInstance(EventEntry event, boolean checkValidEvent) {
-		return eventToInstance(event, Calendar.getInstance(), getAttributes(),
-				checkValidEvent);
+		return eventToInstance(event, Calendar.getInstance(), getAttributes(), checkValidEvent);
 	}
 
 	static enum DayOfWeek {
@@ -99,8 +98,7 @@ class EventInstances extends Instances {
 	 *            the event names to classify
 	 * @return an <tt>ArrayList</tt> of event attributes
 	 */
-	private static ArrayList<Attribute> generateEventAttributes(
-			Collection<String> eventNames) {
+	private static ArrayList<Attribute> generateEventAttributes(Collection<String> eventNames) {
 		// Declare a numeric hourOfDay
 		Attribute attrHourOfDay = new Attribute("hourOfDay");
 		// Declare a numeric Longitude
@@ -150,8 +148,7 @@ class EventInstances extends Instances {
 		Instance eventInstance = new DenseInstance(5);
 		// Add start hour
 		localCal.setTimeInMillis(event.mStartTime);
-		eventInstance.setValue(attributes.get(0),
-				localCal.get(Calendar.HOUR_OF_DAY));
+		eventInstance.setValue(attributes.get(0), localCal.get(Calendar.HOUR_OF_DAY));
 		// Add start day of week
 		eventInstance.setValue(attributes.get(1), getDay(localCal).toString());
 		// Add starting position (if exists)

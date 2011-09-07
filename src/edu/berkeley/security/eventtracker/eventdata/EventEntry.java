@@ -55,8 +55,8 @@ public class EventEntry implements Serializable {
 	 * @param endTime
 	 *            the long end time of the event.
 	 */
-	public EventEntry(String name, String notes, long startTime, long endTime,
-			boolean persisted, String tag) {
+	public EventEntry(String name, String notes, long startTime, long endTime, boolean persisted,
+			String tag) {
 		mName = name;
 		mNotes = notes;
 		mUpdateTime = mStartTime = startTime;
@@ -84,9 +84,9 @@ public class EventEntry implements Serializable {
 	 * @param receivedAtServer
 	 *            whether or not the event has been received at the server.
 	 */
-	EventEntry(long dbRowID, String name, String notes, long startTime,
-			long endTime, long updateTime, String uuid, boolean isDeleted,
-			boolean receivedAtServer, boolean persisted, String tag) {
+	EventEntry(long dbRowID, String name, String notes, long startTime, long endTime,
+			long updateTime, String uuid, boolean isDeleted, boolean receivedAtServer,
+			boolean persisted, String tag) {
 		mDbRowID = dbRowID;
 		mName = name;
 		mNotes = notes;
@@ -109,8 +109,8 @@ public class EventEntry implements Serializable {
 	 * @return The EventEntry corresponding to the cursor event row.
 	 */
 	public static EventEntry fromCursor(Cursor eventCursor, EventManager manager) {
-		if (eventCursor == null || eventCursor.isClosed()
-				|| eventCursor.isBeforeFirst() || eventCursor.isAfterLast())
+		if (eventCursor == null || eventCursor.isClosed() || eventCursor.isBeforeFirst()
+				|| eventCursor.isAfterLast())
 			return null;
 		long dbRowID = getLong(eventCursor, EventKey.ROW_ID);
 		String name = getString(eventCursor, EventKey.NAME);
@@ -120,17 +120,15 @@ public class EventEntry implements Serializable {
 		long updateTime = getLong(eventCursor, EventKey.UPDATE_TIME);
 		String uuid = getString(eventCursor, EventKey.UUID);
 		String mTag = getString(eventCursor, EventKey.TAG);
-		boolean recievedAtServer = getBoolean(eventCursor,
-				EventKey.RECEIVED_AT_SERVER);
+		boolean recievedAtServer = getBoolean(eventCursor, EventKey.RECEIVED_AT_SERVER);
 		boolean isDeleted = getBoolean(eventCursor, EventKey.IS_DELETED);
-		return new EventEntry(dbRowID, name, notes, startTime, endTime,
-				updateTime, uuid, isDeleted, recievedAtServer, true, mTag);
+		return new EventEntry(dbRowID, name, notes, startTime, endTime, updateTime, uuid,
+				isDeleted, recievedAtServer, true, mTag);
 	}
 
 	@Override
 	public String toString() {
-		return "{" + mDbRowID + " : " + mName + ", ("
-				+ formatColumn(EventKey.START_TIME) + "->"
+		return "{" + mDbRowID + " : " + mName + ", (" + formatColumn(EventKey.START_TIME) + "->"
 				+ formatColumn(EventKey.END_TIME) + ")}";
 	}
 
@@ -251,8 +249,7 @@ public class EventEntry implements Serializable {
 	 * @return The boolean at the column with the given name.
 	 */
 	private static boolean getBoolean(Cursor cursor, EventKey columnType) {
-		long dbValue = cursor.getInt(cursor.getColumnIndex(columnType
-				.columnName()));
+		long dbValue = cursor.getInt(cursor.getColumnIndex(columnType.columnName()));
 		return dbValue == 0 ? false : true;
 	}
 
@@ -282,8 +279,7 @@ public class EventEntry implements Serializable {
 		try {
 			otherUpdatedTime = Synchronizer.dateFormatter.parse(timestamp);
 		} catch (ParseException e) {
-			Log.e(EventActivity.LOG_TAG, "Could not parse remote update time.",
-					e);
+			Log.e(EventActivity.LOG_TAG, "Could not parse remote update time.", e);
 			return false;
 		}
 		return new Date(mUpdateTime).after(otherUpdatedTime);

@@ -80,8 +80,7 @@ abstract public class EventActivity extends Activity {
 		mEventManager = EventManager.getManager(this);
 		mPredictionConnection = new PredictionConnection();
 
-		FlingDetector detector = new FlingDetector(getLeftActivityClass(),
-				getRightActivityClass());
+		FlingDetector detector = new FlingDetector(getLeftActivityClass(), getRightActivityClass());
 		gestureDetector = new GestureDetector(detector);
 		flingListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -100,8 +99,7 @@ abstract public class EventActivity extends Activity {
 		}
 
 		// Set up preferences
-		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME,
-				MODE_PRIVATE);
+		settings = getSharedPreferences(Settings.PREFERENCE_FILENAME, MODE_PRIVATE);
 
 		startTrackingDuration();
 	}
@@ -138,10 +136,8 @@ abstract public class EventActivity extends Activity {
 	 */
 	protected void initializeToolbar() {
 		textViewIsTracking = (TextView) findViewById(R.id.toolbar_center);
-		setToolbarButton((ImageView) findViewById(R.id.toolbar_right_option),
-				false);
-		setToolbarButton((ImageView) findViewById(R.id.toolbar_left_option),
-				true);
+		setToolbarButton((ImageView) findViewById(R.id.toolbar_right_option), false);
+		setToolbarButton((ImageView) findViewById(R.id.toolbar_left_option), true);
 	}
 
 	/**
@@ -154,18 +150,18 @@ abstract public class EventActivity extends Activity {
 	 *            whether or not it is the left button.
 	 */
 	private void setToolbarButton(ImageView button, final boolean isLeft) {
-		final Class<?> activityClass = isLeft ? getLeftActivityClass()
-				: getRightActivityClass();
+		final Class<?> activityClass = isLeft ? getLeftActivityClass() : getRightActivityClass();
 		TextView centerText = (TextView) findViewById(R.id.toolbar_center);
-		
-		// In order to center the the toolbar text, padding is dynamically added/removed.
-		if (getRightActivityClass() == null){
+
+		// In order to center the the toolbar text, padding is dynamically
+		// added/removed.
+		if (getRightActivityClass() == null) {
 			centerText.setPadding(20, 0, 0, 0);
 		}
 		if (getLeftActivityClass() == null) {
 			centerText.setPadding(0, 0, 20, 0);
 		}
-		
+
 		if (activityClass == null)
 			button.setVisibility(View.INVISIBLE);
 		else {
@@ -191,8 +187,7 @@ abstract public class EventActivity extends Activity {
 		else if (activityClass == Settings.class)
 			return R.drawable.settings_icon;
 		else
-			throw new IllegalArgumentException(
-					"Could not find icon for class: " + activityClass);
+			throw new IllegalArgumentException("Could not find icon for class: " + activityClass);
 	}
 
 	@Override
@@ -314,10 +309,10 @@ abstract public class EventActivity extends Activity {
 		if (!isTracking) {
 			textViewIsTracking.setText(notTrackingStringID);
 		}
-	
-//		if (isTracking && getCurrentEvent() != null) {
-//			textViewIsTracking.append(getCurrentEvent().mName);
-//		}
+
+		// if (isTracking && getCurrentEvent() != null) {
+		// textViewIsTracking.append(getCurrentEvent().mName);
+		// }
 	}
 
 	/**
@@ -341,8 +336,7 @@ abstract public class EventActivity extends Activity {
 	 */
 	abstract protected int getLayoutResource();
 
-	static void enableTrackingNotification(Context mContext,
-			EventEntry trackedEvent) {
+	static void enableTrackingNotification(Context mContext, EventEntry trackedEvent) {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) mContext
 				.getSystemService(ns);
@@ -359,19 +353,15 @@ abstract public class EventActivity extends Activity {
 		CharSequence contentTitle = "Event in progress";
 		CharSequence contentText = "Event: " + trackedEvent.mName;
 		Intent notificationIntent = new Intent(mContext, TrackingMode.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
-				notificationIntent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
 
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 
-		notification.setLatestEventInfo(context, contentTitle, contentText,
-				contentIntent);
-		mNotificationManager.notify(EventActivity.TRACKING_NOTIFICATION,
-				notification);
+		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		mNotificationManager.notify(EventActivity.TRACKING_NOTIFICATION, notification);
 	}
 
-	class FlingDetector extends SimpleOnGestureListener implements
-			OnClickListener {
+	class FlingDetector extends SimpleOnGestureListener implements OnClickListener {
 		protected static final int SWIPE_MIN_DISTANCE = 120;
 		protected static final int SWIPE_MAX_OFF_PATH = 250;
 		protected static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -384,8 +374,7 @@ abstract public class EventActivity extends Activity {
 		}
 
 		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			try {
 				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 					return false;
@@ -429,14 +418,14 @@ abstract public class EventActivity extends Activity {
 	public void updateToolbarMessage() {
 		EventEntry thisCurrentEvent = getCurrentEvent();
 		if (isTracking() && thisCurrentEvent != null) {
-		    String durationString = calculateDurationString();
-		    // Event just started so there is no duration yet
-		    if (durationString.length() == 0) {
-		    	textViewIsTracking.setText("Just started tracking");
-		    } else{
-		    	textViewIsTracking.setText("Tracking for ");
-		    	textViewIsTracking.append(durationString);
-		    }
+			String durationString = calculateDurationString();
+			// Event just started so there is no duration yet
+			if (durationString.length() == 0) {
+				textViewIsTracking.setText("Just started tracking");
+			} else {
+				textViewIsTracking.setText("Tracking for ");
+				textViewIsTracking.append(durationString);
+			}
 		}
 	}
 
@@ -464,7 +453,7 @@ abstract public class EventActivity extends Activity {
 			return "";
 
 		}
-		
+
 		// between 0 and 1 hour
 		else if (numOfHours == 0) {
 			durationString = Long.toString(numOfMinutes) + " min";
@@ -481,7 +470,7 @@ abstract public class EventActivity extends Activity {
 			if (hoursInDecimal > 1) {
 				durationString += "s";
 			}
-		} else if (numOfHours >= 10 && numOfHours < 24){
+		} else if (numOfHours >= 10 && numOfHours < 24) {
 			// greater than 10 hours. so don't display any decimals
 			durationString = Long.toString(numOfHours) + " hr";
 			// making the duration string plural
@@ -490,8 +479,8 @@ abstract public class EventActivity extends Activity {
 			}
 		} else {
 			// Its more than 24 hours. Show the duration in terms of days
-			durationString = Long.toString(numOfHours/24) + " day";
-			if (numOfHours/24 > 1) {
+			durationString = Long.toString(numOfHours / 24) + " day";
+			if (numOfHours / 24 > 1) {
 				durationString += "s";
 			}
 		}

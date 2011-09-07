@@ -44,8 +44,7 @@ public class GoogleMaps extends MapActivity {
 	protected void onResume() {
 		super.onResume();
 
-		EventEntry entry = (EventEntry) this.getIntent().getExtras()
-				.getSerializable("EventData");
+		EventEntry entry = (EventEntry) this.getIntent().getExtras().getSerializable("EventData");
 		gpsList = new ArrayList<GPSCoordinates>();
 		gpsList = entry.getGPSCoordinates();
 		if (gpsList.size() == 0) {
@@ -70,8 +69,7 @@ public class GoogleMaps extends MapActivity {
 			else
 				icon = R.drawable.androidmarker;
 			Drawable drawable = this.getResources().getDrawable(icon);
-			GPSItemizedOverlay itemizedoverlay = new GPSItemizedOverlay(
-					drawable, this);
+			GPSItemizedOverlay itemizedoverlay = new GPSItemizedOverlay(drawable, this);
 			OverlayItem overlayitem = new OverlayItem(point, entry.mName,
 					new SimpleDateFormat().format(new Date(gps.getTime())));
 			itemizedoverlay.addOverlay(overlayitem);

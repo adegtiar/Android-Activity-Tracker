@@ -30,10 +30,7 @@ public abstract class AbstractDbAdapter {
 	}
 
 	protected static final String TABLE_CREATE_GPSDATA = "create table gpsData (_id integer primary key autoincrement, "
-			+ "eventRowID long,"
-			+ "latitude real,"
-			+ "longitude real,"
-			+ "timeOfRecording Long);";
+			+ "eventRowID long," + "latitude real," + "longitude real," + "timeOfRecording Long);";
 
 	protected static final String TABLE_CREATE_TAGDATA = "create table tagData (_id integer primary key autoincrement, "
 			+ "tag string);";
@@ -58,8 +55,8 @@ public abstract class AbstractDbAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
+					+ ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
 			onCreate(db);
 		}

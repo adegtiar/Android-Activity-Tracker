@@ -46,8 +46,7 @@ public class EditMode extends AbstractEventEdit {
 		super.onPause();
 		if (saveToDB) {
 			updateDatabase(editingEvent);
-			Networking.sendToServer(ServerRequest.UPDATE, editingEvent,
-					EditMode.this);
+			Networking.sendToServer(ServerRequest.UPDATE, editingEvent, EditMode.this);
 		}
 	}
 
@@ -100,11 +99,10 @@ public class EditMode extends AbstractEventEdit {
 			public void onClick(View v) {
 
 				if (editingEvent.getGPSCoordinates().size() == 0) {
-					Toast.makeText(getApplicationContext(), "No data yet",
-							Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "No data yet", Toast.LENGTH_SHORT)
+							.show();
 				} else {
-					Intent myIntent = new Intent(EditMode.this,
-							GoogleMaps.class);
+					Intent myIntent = new Intent(EditMode.this, GoogleMaps.class);
 					myIntent.putExtra("EventData", editingEvent);
 					startActivity(myIntent);
 				}
@@ -113,11 +111,9 @@ public class EditMode extends AbstractEventEdit {
 		dropDown.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-				String tagChosen = parent.getItemAtPosition(position)
-						.toString();
+				String tagChosen = parent.getItemAtPosition(position).toString();
 				editingEvent.mTag = tagChosen;
 				saveToDB = true;
 			}
@@ -158,8 +154,7 @@ public class EditMode extends AbstractEventEdit {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (requestCode != EventKey.START_TIME.ordinal()
 				&& requestCode != EventKey.END_TIME.ordinal())
@@ -266,21 +261,19 @@ public class EditMode extends AbstractEventEdit {
 		// Create the dialog
 		final Dialog mDateTimeDialog = new Dialog(this);
 		// Inflate the root layout
-		final RelativeLayout mDateTimeDialogView = (RelativeLayout) getLayoutInflater()
-				.inflate(R.layout.date_time_dialog, null);
+		final RelativeLayout mDateTimeDialogView = (RelativeLayout) getLayoutInflater().inflate(
+				R.layout.date_time_dialog, null);
 		// Grab widget instance
 		final DateTimePicker mDateTimePicker = (DateTimePicker) mDateTimeDialogView
 				.findViewById(R.id.DateTimePicker);
-		mDateTimePicker.datePicker.init(cal.get(Calendar.YEAR),
-				cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
-				mDateTimePicker);
+		mDateTimePicker.datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+				cal.get(Calendar.DAY_OF_MONTH), mDateTimePicker);
 		mDateTimePicker.timePicker.setCurrentHour(cal.getTime().getHours());
 		mDateTimePicker.timePicker.setCurrentMinute(cal.getTime().getMinutes());
 		mDateTimePicker.mCalendar = cal;
 		// Check is system is set to use 24h time (this doesn't seem to work as
 		// expected though)
-		final String timeS = android.provider.Settings.System.getString(
-				getContentResolver(),
+		final String timeS = android.provider.Settings.System.getString(getContentResolver(),
 				android.provider.Settings.System.TIME_12_24);
 		final boolean is24h = !(timeS == null || timeS.equals("12"));
 		// Update demo TextViews when the "OK" button is clicked
@@ -289,16 +282,12 @@ public class EditMode extends AbstractEventEdit {
 
 					public void onClick(View v) {
 						if (mRequestCode == EventKey.START_TIME.ordinal()) {
-							editingEvent.mStartTime = mDateTimePicker.mCalendar
-									.getTimeInMillis();
-							startTimeButton.setText(editingEvent
-									.formatColumn(EventKey.START_TIME));
+							editingEvent.mStartTime = mDateTimePicker.mCalendar.getTimeInMillis();
+							startTimeButton.setText(editingEvent.formatColumn(EventKey.START_TIME));
 						}
 						if (mRequestCode == EventKey.END_TIME.ordinal()) {
-							editingEvent.mEndTime = mDateTimePicker.mCalendar
-									.getTimeInMillis();
-							endTimeButton.setText(editingEvent
-									.formatColumn(EventKey.END_TIME));
+							editingEvent.mEndTime = mDateTimePicker.mCalendar.getTimeInMillis();
+							endTimeButton.setText(editingEvent.formatColumn(EventKey.END_TIME));
 						}
 
 						mDateTimeDialog.dismiss();
@@ -334,13 +323,14 @@ public class EditMode extends AbstractEventEdit {
 		// Display the dialog
 		mDateTimeDialog.show();
 	}
+
 	/*
 	 * This is blank in order to override the method in EventActivity
 	 */
 	public void updateToolbarMessage() {
-		
+
 	}
-	
+
 	@Override
 	protected Class<?> getLeftActivityClass() {
 		return null;

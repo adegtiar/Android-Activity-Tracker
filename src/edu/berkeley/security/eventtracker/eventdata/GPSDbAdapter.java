@@ -40,8 +40,7 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 		super(ctx);
 	}
 
-	public long createGPSEntry(Long eventRowID, Double latitude,
-			Double longitude, Long time) {
+	public long createGPSEntry(Long eventRowID, Double latitude, Double longitude, Long time) {
 
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_EVENT_ROWID, eventRowID);
@@ -78,17 +77,16 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 
 		Cursor mCursor =
 
-		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID,
-				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME },
-				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_EVENT_ROWID, KEY_LONGITUDE,
+				KEY_LATITUDE, KEY_GPSTIME }, KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
 		return mCursor;
 	}
 
-	public boolean updateGPSEntry(long rowId, long eventRowID,
-			double longitude, double latitude, Long time) {
+	public boolean updateGPSEntry(long rowId, long eventRowID, double longitude, double latitude,
+			Long time) {
 		ContentValues args = new ContentValues();
 		args.put(KEY_EVENT_ROWID, eventRowID);
 		args.put(KEY_LONGITUDE, longitude);
@@ -101,9 +99,9 @@ public class GPSDbAdapter extends AbstractDbAdapter {
 
 		// String selection="SELECT * FROM "+ DATABASE_TABLE+ " WHERE "
 		// +KEY_EVENT_ROWID +"=" + eventRowID;
-		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID,
-				KEY_EVENT_ROWID, KEY_LONGITUDE, KEY_LATITUDE, KEY_GPSTIME },
-				KEY_EVENT_ROWID + "=" + eventRowID, null, null, null, null);
+		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_EVENT_ROWID, KEY_LONGITUDE,
+				KEY_LATITUDE, KEY_GPSTIME }, KEY_EVENT_ROWID + "=" + eventRowID, null, null, null,
+				null);
 
 	}
 

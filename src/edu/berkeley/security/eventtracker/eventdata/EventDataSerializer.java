@@ -12,17 +12,15 @@ import edu.berkeley.security.eventtracker.network.HashingUtils;
 import edu.berkeley.security.eventtracker.network.GibberishAESCrypto;
 
 public class EventDataSerializer {
-	private static final EventKey[] keysToSerialize = new EventKey[] {
-			EventKey.NAME, EventKey.NOTES, EventKey.START_TIME,
-			EventKey.END_TIME, EventKey.TAG };
+	private static final EventKey[] keysToSerialize = new EventKey[] { EventKey.NAME,
+			EventKey.NOTES, EventKey.START_TIME, EventKey.END_TIME, EventKey.TAG };
 
 	public static JSONObject toJSONObject(EventEntry event) {
 		JSONObject json = new JSONObject();
 		try {
 			for (EventKey key : keysToSerialize)
 				json.accumulate(key.columnName(), event.getValue(key));
-			json.accumulate("gpsCoordinates",
-					toJSONArray(event.getGPSCoordinates()));
+			json.accumulate("gpsCoordinates", toJSONArray(event.getGPSCoordinates()));
 		} catch (JSONException e) {
 			json = null;
 		}
@@ -34,8 +32,8 @@ public class EventDataSerializer {
 		String password = Settings.getPassword();
 		String encryptedJSON = null;
 		try {
-			encryptedJSON = GibberishAESCrypto.encrypt(jsonString, HashingUtils
-					.hashPassword(password).toCharArray());
+			encryptedJSON = GibberishAESCrypto.encrypt(jsonString,
+					HashingUtils.hashPassword(password).toCharArray());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,8 +53,7 @@ public class EventDataSerializer {
 		return gpsArray;
 	}
 
-	private static JSONObject toJSONObject(GPSCoordinates coords)
-			throws JSONException {
+	private static JSONObject toJSONObject(GPSCoordinates coords) throws JSONException {
 		JSONObject jsonCoords = new JSONObject();
 		jsonCoords.put("latitude", coords.getLatitude());
 		jsonCoords.put("longitude", coords.getLongitude());

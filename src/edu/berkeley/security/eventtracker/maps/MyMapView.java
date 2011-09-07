@@ -16,8 +16,7 @@ public class MyMapView extends MapView {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setMapBoundsToPois(List<GeoPoint> items, double hpadding,
-			double vpadding) {
+	public void setMapBoundsToPois(List<GeoPoint> items, double hpadding, double vpadding) {
 
 		MapController mapController = this.getController();
 		// If there is only on one result
@@ -45,23 +44,18 @@ public class MyMapView extends MapView {
 
 			// leave some padding from corners
 			// such as 0.1 for hpadding and 0.2 for vpadding
-			maxLatitude = maxLatitude
-					+ (int) ((maxLatitude - minLatitude) * hpadding);
-			minLatitude = minLatitude
-					- (int) ((maxLatitude - minLatitude) * hpadding);
+			maxLatitude = maxLatitude + (int) ((maxLatitude - minLatitude) * hpadding);
+			minLatitude = minLatitude - (int) ((maxLatitude - minLatitude) * hpadding);
 
-			maxLongitude = maxLongitude
-					+ (int) ((maxLongitude - minLongitude) * vpadding);
-			minLongitude = minLongitude
-					- (int) ((maxLongitude - minLongitude) * vpadding);
+			maxLongitude = maxLongitude + (int) ((maxLongitude - minLongitude) * vpadding);
+			minLongitude = minLongitude - (int) ((maxLongitude - minLongitude) * vpadding);
 
 			// Calculate the lat, lon spans from the given pois and zoom
 			mapController.zoomToSpan(Math.abs(maxLatitude - minLatitude),
 					Math.abs(maxLongitude - minLongitude));
 
 			// Animate to the center of the cluster of points
-			mapController.animateTo(new GeoPoint(
-					(maxLatitude + minLatitude) / 2,
+			mapController.animateTo(new GeoPoint((maxLatitude + minLatitude) / 2,
 					(maxLongitude + minLongitude) / 2));
 		}
 	} // end of the method

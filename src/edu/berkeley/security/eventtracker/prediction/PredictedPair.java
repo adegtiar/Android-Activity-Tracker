@@ -23,8 +23,7 @@ public class PredictedPair {
 		if (!this.getClass().equals(other.getClass()))
 			return false;
 		PredictedPair otherPair = (PredictedPair) other;
-		return mName.equals(otherPair.mName)
-				&& mLikelihood == otherPair.mLikelihood;
+		return mName.equals(otherPair.mName) && mLikelihood == otherPair.mLikelihood;
 	}
 
 	@Override

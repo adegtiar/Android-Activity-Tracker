@@ -16,16 +16,14 @@ public class GibberishAESCrypto {
 	private static final String PREFIX = "Salted__";
 	private static final String UTF_8 = "UTF-8";
 
-	public static String encrypt(String plainText, char[] password)
-			throws Exception {
+	public static String encrypt(String plainText, char[] password) throws Exception {
 		byte[] salt = new byte[8];
 		new Random().nextBytes(salt);
 
 		Cipher cipher = createCipher(Cipher.ENCRYPT_MODE, salt, password);
 		byte[] cipherText = cipher.doFinal(plainText.getBytes(UTF_8));
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(
-				cipherText.length + 16);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(cipherText.length + 16);
 		baos.write(PREFIX.getBytes(UTF_8));
 		baos.write(salt);
 		baos.write(cipherText);
@@ -33,8 +31,7 @@ public class GibberishAESCrypto {
 		return Base64.encodeToString(baos.toByteArray(), 0);
 	}
 
-	public static String decrypt(String cipherText, char[] password)
-			throws Exception {
+	public static String decrypt(String cipherText, char[] password) throws Exception {
 		byte[] input = Base64.decode(cipherText, 0);
 
 		byte[] salt = new byte[8];
@@ -46,8 +43,8 @@ public class GibberishAESCrypto {
 		return new String(plainText, UTF_8);
 	}
 
-	private static Cipher createCipher(int cipherMode, byte[] salt,
-			char[] password) throws Exception {
+	private static Cipher createCipher(int cipherMode, byte[] salt, char[] password)
+			throws Exception {
 
 		PBEKeySpec pbeSpec = new PBEKeySpec(password);
 		SecretKeyFactory keyFact = SecretKeyFactory.getInstance(CIPHER_ALG);

@@ -35,8 +35,7 @@ public class Synchronizer extends IntentService {
 		manager = EventManager.getManager();
 		Bundle bundle = intent.getExtras();
 
-		ServerRequest request = (ServerRequest) bundle
-				.getSerializable(REQUEST_EXTRA);
+		ServerRequest request = (ServerRequest) bundle.getSerializable(REQUEST_EXTRA);
 
 		ArrayList<EventEntry> listOfEvents = (ArrayList<EventEntry>) bundle
 				.getSerializable(EVENT_LIST_EXTRA);
@@ -64,11 +63,11 @@ public class Synchronizer extends IntentService {
 						String uuid = jsonResponse.getString("uuid");
 						Settings.setDeviceUUID(uuid);
 						Settings.confirmRegistrationWithWebServer();
-						
+
 					}
-					
+
 				}
-		
+
 			} catch (JSONException e1) {
 				e1.printStackTrace();
 			}
@@ -86,7 +85,7 @@ public class Synchronizer extends IntentService {
 					Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.NOT_REGISTERED);
 				}
 
-			} else{
+			} else {
 				Settings.setAccountRegisteredOnlyServer(ServerAccoutStatus.COULD_NOT_CONTACT);
 			}
 			Settings.creatingAcctDialog.dismiss();
@@ -115,8 +114,7 @@ public class Synchronizer extends IntentService {
 				try {
 					parseEventPollResponse(response.getContent());
 				} catch (JSONException e) {
-					Log.e(EventActivity.LOG_TAG,
-							"Could not parse JSON response.", e);
+					Log.e(EventActivity.LOG_TAG, "Could not parse JSON response.", e);
 				}
 			break;
 		}
@@ -143,8 +141,8 @@ public class Synchronizer extends IntentService {
 			String passwd = Settings.getPassword();
 			String unencryptedData = null;
 			try {
-				unencryptedData = GibberishAESCrypto.decrypt(encryptedData,
-						HashingUtils.hashPassword(passwd).toCharArray());
+				unencryptedData = GibberishAESCrypto.decrypt(encryptedData, HashingUtils
+						.hashPassword(passwd).toCharArray());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -3,17 +3,17 @@
  */
 
 package edu.berkeley.security.eventtracker.network;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import android.util.Base64;
 
-
 public class HashingUtils {
 
 	/**
-	 * Returns a md5 hash of the given input string
-	 * NOTE: Do not modify this implementation without also modifying the md5 hash
-	 * implementation server side as well. 
+	 * Returns a md5 hash of the given input string NOTE: Do not modify this
+	 * implementation without also modifying the md5 hash implementation server
+	 * side as well.
 	 */
 	public static String hashPassword(String password) {
 		byte[] hashedString = HashingUtils.hash(password);
@@ -38,5 +38,4 @@ public class HashingUtils {
 
 	}
 
-	
 }

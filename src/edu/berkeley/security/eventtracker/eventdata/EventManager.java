@@ -83,10 +83,9 @@ public class EventManager {
 	 * @return a new EventEntry corresponding to the database entry, or null
 	 *         upon error.
 	 */
-	public EventEntry createEvent(String name, String notes, long startTime,
-			long endTime, boolean receivedAtServer, String tag) {
-		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime,
-				true, tag);
+	public EventEntry createEvent(String name, String notes, long startTime, long endTime,
+			boolean receivedAtServer, String tag) {
+		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime, true, tag);
 		return updateDatabase(newEntry, receivedAtServer) ? newEntry : null;
 	}
 
@@ -101,39 +100,34 @@ public class EventManager {
 		if (event == null)
 			return false;
 		if (event.mDbRowID == -1) {
-			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes,
-					event.mStartTime, event.mEndTime, event.mUUID,
-					receivedAtServer, event.mTag);
+			event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes, event.mStartTime,
+					event.mEndTime, event.mUUID, receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
 			if (event.persisted)
 				getPredictionService().updateEventModel(event);
 			return event.persisted;
 		} else {
 			getPredictionService().markDbUnsupportedUpdated();
-			return mDbHelper.updateEvent(event.mDbRowID, event.mName,
-					event.mNotes, event.mStartTime, event.mEndTime,
-					event.mUUID, event.deleted, receivedAtServer, event.mTag);
+			return mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes,
+					event.mStartTime, event.mEndTime, event.mUUID, event.deleted, receivedAtServer,
+					event.mTag);
 		}
 	}
 
 	/**
 	 * Creates or updates the database with the given list of events
 	 */
-	public void updateDatabaseBulk(ArrayList<EventEntry> listOfEvents,
-			boolean receivedAtServer) {
+	public void updateDatabaseBulk(ArrayList<EventEntry> listOfEvents, boolean receivedAtServer) {
 		if (listOfEvents == null)
 			return;
 		for (EventEntry event : listOfEvents) {
 			if (event.mDbRowID == -1) {
-				event.mDbRowID = mDbHelper.createEvent(event.mName,
-						event.mNotes, event.mStartTime, event.mEndTime,
-						event.mUUID, receivedAtServer, event.mTag);
+				event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes, event.mStartTime,
+						event.mEndTime, event.mUUID, receivedAtServer, event.mTag);
 				event.persisted = event.mDbRowID != -1;
 			} else {
-				mDbHelper.updateEvent(event.mDbRowID, event.mName,
-						event.mNotes, event.mStartTime, event.mEndTime,
-						event.mUUID, event.deleted, receivedAtServer,
-						event.mTag);
+				mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes, event.mStartTime,
+						event.mEndTime, event.mUUID, event.deleted, receivedAtServer, event.mTag);
 			}
 		}
 
@@ -227,9 +221,8 @@ public class EventManager {
 	 */
 	public Date fetchDateBefore(Date date) {
 
-		EventCursor mCursor = new EventCursor(
-				mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(date)
-						.getTime()), this);
+		EventCursor mCursor = new EventCursor(mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(
+				date).getTime()), this);
 		if (mCursor.moveToFirst()) {
 			EventEntry latestEvent = mCursor.getEvent();
 			return new Date(latestEvent.mStartTime);
@@ -244,10 +237,8 @@ public class EventManager {
 	 */
 	public Date fetchDateAfter(Date date) {
 
-		EventCursor mCursor = new EventCursor(
-				mDbHelper
-						.fetchSortedEventsAfterDate(LatestTime(date).getTime()),
-				this);
+		EventCursor mCursor = new EventCursor(mDbHelper.fetchSortedEventsAfterDate(LatestTime(date)
+				.getTime()), this);
 		if (mCursor.moveToFirst()) {
 			EventEntry latestEvent = mCursor.getEvent();
 			return new Date(latestEvent.mStartTime);
@@ -264,8 +255,8 @@ public class EventManager {
 		Date startDate = EarliestTime(date);
 		Date endDate = LatestTime(date);
 
-		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(),
-				endDate.getTime()), this);
+		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(), endDate.getTime()),
+				this);
 	}
 
 	/**
@@ -305,8 +296,7 @@ public class EventManager {
 	 */
 	public EventEntry findOrCreateByUUID(String uuid) {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(uuid), this);
-		EventEntry event = events.getCount() > 0 ? events.getEvent()
-				: new EventEntry();
+		EventEntry event = events.getCount() > 0 ? events.getEvent() : new EventEntry();
 		event.mUUID = uuid;
 		return event;
 	}
@@ -334,8 +324,7 @@ public class EventManager {
 						.getColumnIndex((GPSDbAdapter.KEY_LATITUDE)));
 				double longitude = cursor.getDouble(cursor
 						.getColumnIndex((GPSDbAdapter.KEY_LONGITUDE)));
-				long time = cursor.getLong(cursor
-						.getColumnIndex((GPSDbAdapter.KEY_GPSTIME)));
+				long time = cursor.getLong(cursor.getColumnIndex((GPSDbAdapter.KEY_GPSTIME)));
 				toBeReturned.add(new GPSCoordinates(latitude, longitude, time));
 
 			}
@@ -356,8 +345,7 @@ public class EventManager {
 
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
-				String tag = cursor.getString(cursor
-						.getColumnIndex((TagsDBAdapter.KEY_TAG)));
+				String tag = cursor.getString(cursor.getColumnIndex((TagsDBAdapter.KEY_TAG)));
 				tagSet.add(tag);
 
 			}
@@ -373,8 +361,7 @@ public class EventManager {
 	 * @return the current event.
 	 */
 	public EventEntry getCurrentEvent() {
-		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(),
-				this);
+		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
 		if (!events.moveToFirst())
 			return null; // no events, so can't be tracking
 		// if end time is 0(initial value), we are still tracking.
@@ -383,8 +370,8 @@ public class EventManager {
 	}
 
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {
-		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(),
-				coord.getLongitude(), coord.getTime());
+		mGPSHelper.createGPSEntry(eventRowID, coord.getLatitude(), coord.getLongitude(),
+				coord.getTime());
 
 	}
 
@@ -435,7 +422,7 @@ public class EventManager {
 	public void addTag(String tag) {
 		mTagHelper.createTagEntry(tag);
 	}
-	
+
 	private PredictionService getPredictionService() {
 		return EventActivity.mPredictionService;
 	}

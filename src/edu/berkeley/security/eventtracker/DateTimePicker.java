@@ -31,8 +31,8 @@ import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.ViewSwitcher;
 
-public class DateTimePicker extends RelativeLayout implements
-		View.OnClickListener, OnDateChangedListener, OnTimeChangedListener {
+public class DateTimePicker extends RelativeLayout implements View.OnClickListener,
+		OnDateChangedListener, OnTimeChangedListener {
 
 	// TimePicker reference
 	protected TimePicker timePicker;
@@ -62,10 +62,10 @@ public class DateTimePicker extends RelativeLayout implements
 		inflater.inflate(R.layout.datetimepicker, this, true);
 
 		// Inflate the date and time picker views
-		final LinearLayout datePickerView = (LinearLayout) inflater.inflate(
-				R.layout.datepicker, null);
-		final LinearLayout timePickerView = (LinearLayout) inflater.inflate(
-				R.layout.timepicker, null);
+		final LinearLayout datePickerView = (LinearLayout) inflater.inflate(R.layout.datepicker,
+				null);
+		final LinearLayout timePickerView = (LinearLayout) inflater.inflate(R.layout.timepicker,
+				null);
 
 		// Grab a Calendar instance
 		mCalendar = Calendar.getInstance();
@@ -74,8 +74,7 @@ public class DateTimePicker extends RelativeLayout implements
 
 		// Init date picker
 		datePicker = (DatePicker) datePickerView.findViewById(R.id.DatePicker);
-		datePicker.init(mCalendar.get(Calendar.YEAR),
-				mCalendar.get(Calendar.MONTH),
+		datePicker.init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
 				mCalendar.get(Calendar.DAY_OF_MONTH), this);
 
 		// Init time picker
@@ -101,19 +100,16 @@ public class DateTimePicker extends RelativeLayout implements
 	// Constructor end
 
 	// Called every time the user changes DatePicker values
-	public void onDateChanged(DatePicker view, int year, int monthOfYear,
-			int dayOfMonth) {
+	public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 		// Update the internal Calendar instance
-		mCalendar.set(year, monthOfYear, dayOfMonth,
-				mCalendar.get(Calendar.HOUR_OF_DAY),
+		mCalendar.set(year, monthOfYear, dayOfMonth, mCalendar.get(Calendar.HOUR_OF_DAY),
 				mCalendar.get(Calendar.MINUTE));
 	}
 
 	// Called every time the user changes TimePicker values
 	public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 		// Update the internal Calendar instance
-		mCalendar.set(mCalendar.get(Calendar.YEAR),
-				mCalendar.get(Calendar.MONTH),
+		mCalendar.set(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
 				mCalendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
 	}
 
@@ -142,8 +138,7 @@ public class DateTimePicker extends RelativeLayout implements
 	// Reset DatePicker, TimePicker and internal Calendar instance
 	public void reset() {
 		final Calendar c = Calendar.getInstance();
-		updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH),
-				c.get(Calendar.DAY_OF_MONTH));
+		updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 		updateTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
 	}
 
