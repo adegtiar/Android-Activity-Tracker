@@ -1,8 +1,14 @@
 package edu.berkeley.security.eventtracker.prediction;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
+import weka.core.Instance;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -16,36 +22,72 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
  */
 public class PredictionService extends Service {
 
-	/**
-	 * The cached <tt>EventModel</tt>.
-	 */
+	/** The cached <tt>EventModel</tt>. */
 	private EventModel mEventModel;
+	private Set<String> mEventNames;
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return new PredictionBinder();
+	}
+
+	public class PredictionBinder extends Binder {
+		public PredictionService getService() {
+			return PredictionService.this;
+		}
+	}
 
 	/**
 	 * Predicts the names of events that might be starting now, in order of
 	 * likelihood.
 	 * 
-	 * @return a list of predicted names.
+	 * @return a list of predicted names
 	 */
 	public List<String> predictEventNames() {
-		return MachineLearningUtils.predictEventNames(getEventModel());
+		SortedSet<PredictedPair> predictionResults = getEventDistribution();
+
+		List<String> eventNames = new ArrayList<String>(
+				predictionResults.size());
+		for (PredictedPair predictedResult : predictionResults) {
+			eventNames.add(predictedResult.getName());
+		}
+		return eventNames;
 	}
 
 	/**
 	 * Calculates the distribution of probabilities over all predictable events.
 	 * 
 	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
-	 *         from highest to lowest probability.
+	 *         from highest to lowest probability
 	 */
 	public SortedSet<PredictedPair> getEventDistribution() {
-		return MachineLearningUtils.getEventDistribution(getEventModel());
+		SortedSet<PredictedPair> predictionResults = new TreeSet<PredictedPair>(
+				new PredictedPairComparator());
+		if (!getEventModel().isEmpty()) {
+			Instance newEventInstance = mEventModel.newInstance();
+			double[] predictions;
+			try {
+				predictions = mEventModel.getClassifer()
+						.distributionForInstance(newEventInstance);
+			} catch (Exception e) {
+				// Huh?
+				throw new RuntimeException(e);
+			}
+
+			for (int attributeIndex = 0; attributeIndex < predictions.length; attributeIndex++) {
+				predictionResults.add(new PredictedPair(mEventModel
+						.getEventName(attributeIndex),
+						predictions[attributeIndex]));
+			}
+		}
+		return predictionResults;
 	}
 
 	/**
 	 * Updates the model with a new event.
 	 * 
 	 * @param newEvent
-	 *            the new event to add to the model.
+	 *            the new event to add to the model
 	 */
 	public void updateEventModel(EventEntry newEvent) {
 		try {
@@ -68,31 +110,58 @@ public class PredictionService extends Service {
 		mEventModel = null;
 	}
 
+	private static class PredictedPairComparator implements
+			Comparator<PredictedPair> {
+
+		@Override
+		public int compare(PredictedPair left, PredictedPair right) {
+			return Double.compare(right.getLikelihood(), left.getLikelihood());
+		}
+
+	}
+
 	/**
 	 * Builds an <tt>EventModel</tt> over the event data.
 	 * 
-	 * @return an <tt>EventModel</tt> built using the event data.
+	 * @return an <tt>EventModel</tt> built using the event data
 	 */
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
+			EventInstances eventData = new EventInstances(getEventNames());
+			eventData.setClassIndex(eventData.numAttributes() - 1);
+
 			EventCursor events = EventManager.getManager()
 					.fetchUndeletedEvents();
-			EventInstances eventInstances = MachineLearningUtils
-					.eventsToInstances(events);
-			return new EventModel(eventInstances);
+			while (events.moveToNext()) {
+				eventData.add(events.getEvent());
+			}
+			mEventModel = new EventModel(eventData);
 		}
 		return mEventModel;
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new PredictionBinder();
-	}
-
-	public class PredictionBinder extends Binder {
-		public PredictionService getService() {
-			return PredictionService.this;
+	/**
+	 * Retrieves the event names to classify on. Currently, these are the names
+	 * of events that have occurred more than once.
+	 * 
+	 * @return a set of event names
+	 */
+	private Set<String> getEventNames() {
+		if (mEventNames == null) {
+			Set<String> names = new HashSet<String>();
+			Set<String> repeatedNames = new HashSet<String>();
+			EventCursor allEventsCursor = EventManager.getManager()
+					.fetchUndeletedEvents();
+			EventEntry currentEvent;
+			while (allEventsCursor.moveToNext()) {
+				currentEvent = allEventsCursor.getEvent();
+				if (!names.add(currentEvent.mName)) {
+					repeatedNames.add(currentEvent.mName);
+				}
+			}
+			mEventNames = repeatedNames;
 		}
+		return mEventNames;
 	}
 
 }
