@@ -95,12 +95,12 @@ public class PredictionService extends Service {
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
 			// Generate the model.
-			EventInstances eventData = new EventInstances(getEventNames());
+			EventModel eventModel = new EventModel(getEventNames());
 			EventCursor events = EventManager.getManager().fetchUndeletedEvents();
 			while (events.moveToNext()) {
-				eventData.add(events.getEvent());
+				eventModel.updateModel(events.getEvent());
 			}
-			mEventModel = new EventModel(eventData);
+			mEventModel = eventModel;
 		}
 		return mEventModel;
 	}

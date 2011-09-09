@@ -14,26 +14,25 @@ import weka.core.Instance;
 import weka.core.Instances;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
-import edu.berkeley.security.eventtracker.prediction.EventInstances.DayOfWeek;
 
 /**
- * Wrapper for the prediction <tt>Classifier</tt>.
- * <p>
- * TODO consider extending a classifier.
+ * A wrapper for the prediction <tt>Classifier</tt>.
  */
 class EventModel {
 
-	private DefaultClassifier mClassifier;
+	private final Instances mBlankInstances;
 	private ArrayList<Attribute> mAttributes;
 	private Collection<String> mEventNames;
+	private DefaultClassifier mClassifier;
 	private boolean isEmpty;
 
 	EventModel(Collection<String> eventNames) {
 		mAttributes = generateEventAttributes(eventNames);
+		mEventNames = eventNames;
 		Instances eventInstances = new Instances("EventData", mAttributes, 0);
 		eventInstances.setClassIndex(mAttributes.size() - 1);
+		mBlankInstances = new Instances(eventInstances, 0);
 		mClassifier = new DefaultClassifier(eventInstances);
-		mEventNames = eventNames;
 	}
 
 	/**
@@ -68,14 +67,33 @@ class EventModel {
 	 *            the event to update the model with
 	 * @throws Exception
 	 */
-	void updateModel(EventEntry newEvent) throws Exception {
-		Instance eventInstance = mTrainingData.newInstance(newEvent);
+	void updateModel(EventEntry newEvent) {
+		Instance eventInstance = newInstance(newEvent, true);
 		if (eventInstance == null) {
-			throw new IllegalArgumentException("Invalid event: " + newEvent);
+			return;
 		} else {
-			mClassifier.updateClassifier(eventInstance);
+			try {
+				mClassifier.updateClassifier(eventInstance);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			isEmpty = false;
 		}
-		// TODO check if isEmpty works?
+	}
+
+	static enum DayOfWeek {
+		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+	}
+
+	/**
+	 * Finds the <tt>DayOfWeek</tt> for the given <tt>Calendar</tt>.
+	 * 
+	 * @param calendar
+	 *            the <tt>Calendar</tt> to extract the time from
+	 * @return the <tt>DayOfWeek</tt> of the given time
+	 */
+	private static DayOfWeek getDay(Calendar calendar) {
+		return DayOfWeek.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1];
 	}
 
 	/**
@@ -85,7 +103,7 @@ class EventModel {
 	 * @return a new {@link Instance} corresponding to a new event
 	 */
 	private Instance newInstance() {
-		return mTrainingData.newInstance();
+		return newInstance(new EventEntry(), false);
 	}
 
 	/**
@@ -107,7 +125,11 @@ class EventModel {
 	 * @return the name of the event the attribute at the index corresponds to.
 	 */
 	private String getEventName(double attributeIndex) {
-		return mTrainingData.classAttribute().value((int) attributeIndex);
+		return classAttribute().value((int) attributeIndex);
+	}
+
+	private Attribute classAttribute() {
+		return mAttributes.get(mAttributes.size() - 1);
 	}
 
 	/**
@@ -119,7 +141,7 @@ class EventModel {
 	 * @return the new {@link Instance}, or null if the event was invalid
 	 */
 	private Instance newInstance(EventEntry event, boolean checkValidEvent) {
-		return eventToInstance(event, Calendar.getInstance(), mAttributes, checkValidEvent);
+		return eventToInstance(event, checkValidEvent);
 	}
 
 	/**
@@ -133,21 +155,6 @@ class EventModel {
 			return Double.compare(right.getLikelihood(), left.getLikelihood());
 		}
 
-	}
-
-	static enum DayOfWeek {
-		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
-	}
-
-	/**
-	 * Finds the <tt>DayOfWeek</tt> for the given <tt>Calendar</tt>.
-	 * 
-	 * @param calendar
-	 *            the <tt>Calendar</tt> to extract the time from
-	 * @return the <tt>DayOfWeek</tt> of the given time
-	 */
-	private static DayOfWeek getDay(Calendar calendar) {
-		return DayOfWeek.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1];
 	}
 
 	/**
@@ -188,83 +195,40 @@ class EventModel {
 	 * 
 	 * @param event
 	 *            the <tt>EventEntry</tt> to convert.
-	 * @param localCal
-	 *            a calendar to use for calculating time-based attributes.
 	 * @param attributes
 	 *            the list of attributes to extract.
 	 * @return the <tt>Instance</tt> corresponding to the <tt>EventEntry</tt>.
 	 */
-	private Instance eventToInstance(EventEntry event, Calendar localCal,
-			List<Attribute> attributes, boolean checkValidEvent) {
+	private Instance eventToInstance(EventEntry event, boolean checkValidEvent) {
 		if (checkValidEvent) {
 			// Validate event
 			if (event.mName == null || event.mName.length() == 0
-					|| !classifiedEventNames.contains(event.mName)) {
+					|| !mEventNames.contains(event.mName)) {
 				return null;
 			}
 		}
+		Calendar localCal = Calendar.getInstance();
 		// Create the instance
 		Instance eventInstance = new DenseInstance(5);
 		// Add start hour
 		localCal.setTimeInMillis(event.mStartTime);
-		eventInstance.setValue(attributes.get(0), localCal.get(Calendar.HOUR_OF_DAY));
+		eventInstance.setValue(mAttributes.get(0), localCal.get(Calendar.HOUR_OF_DAY));
 		// Add start day of week
-		eventInstance.setValue(attributes.get(1), getDay(localCal).toString());
+		eventInstance.setValue(mAttributes.get(1), getDay(localCal).toString());
 		// Add starting position (if exists)
 		List<GPSCoordinates> eventCoords = event.getGPSCoordinates();
 		if (eventCoords.size() > 0) {
 			GPSCoordinates startPos = eventCoords.get(0);
-			eventInstance.setValue(attributes.get(2), startPos.getLatitude());
-			eventInstance.setValue(attributes.get(3), startPos.getLongitude());
+			eventInstance.setValue(mAttributes.get(2), startPos.getLatitude());
+			eventInstance.setValue(mAttributes.get(3), startPos.getLongitude());
 		}
 		// Add name (if exists)
 		if (event.mName != null && event.mName.length() != 0) {
-			eventInstance.setValue(attributes.get(4), event.mName);
+			eventInstance.setValue(mAttributes.get(4), event.mName);
 		}
 		// Associate with this set of instances
-		eventInstance.setDataset(this);
+		eventInstance.setDataset(mBlankInstances);
 		return eventInstance;
 	}
 
-	// /**
-	// * Constructs an <tt>EventModel</tt> that has been previously serialized
-	// * using the <tt>serializeToString()</tt> method. TODO test this
-	// *
-	// * @return the de-serialized <tt>EventModel</tt>
-	// * @throws IOException
-	// * the string is not a valid serialized <tt>EventModel</tt>, or
-	// * an unexpected de-serialization error occurred
-	// */
-	// static EventModel fromSerializedString(String serializedModel) throws
-	// IOException {
-	// byte[] serializedClassifier = Base64.decode(serializedModel, 0);
-	// ByteArrayInputStream is = new ByteArrayInputStream(serializedClassifier);
-	// ObjectInputStream ois = new ObjectInputStream(is);
-	// try {
-	// return new EventModel((NaiveBayesUpdateable) ois.readObject());
-	// } catch (ClassNotFoundException e) {
-	// throw new IOException(e.getMessage());
-	// }
-	// }
-	//
-	// /**
-	// * Serializes the eventModel into a string.
-	// * <p>
-	// * TODO check for correctness
-	// *
-	// * @return the string-serialized form of the classifier.
-	// * @throws IOException
-	// * the classifier is invalid, or an unexpected serialization
-	// * error occurred
-	// */
-	// String serializeToString() throws IOException {
-	// if (isEmpty())
-	// return "";
-	// ByteArrayOutputStream os = new ByteArrayOutputStream();
-	// ObjectOutputStream oos = new ObjectOutputStream(os);
-	//
-	// oos.writeObject(mClassifier);
-	// oos.flush();
-	// return Base64.encodeToString(os.toByteArray(), 0);
-	// }
 }
