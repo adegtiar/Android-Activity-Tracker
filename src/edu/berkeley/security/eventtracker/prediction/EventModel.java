@@ -20,17 +20,17 @@ import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
  */
 class EventModel {
 
+	/** Used to generate new instances with the correct attributes. */
 	private final Instances mBlankInstances;
-	private ArrayList<Attribute> mAttributes;
 	private Collection<String> mClassifiedEventNames;
 	private DefaultClassifier mClassifier;
 	private boolean isEmpty;
 
 	EventModel(Collection<String> eventNames) {
-		mAttributes = generateEventAttributes(eventNames);
 		mClassifiedEventNames = eventNames;
-		Instances eventInstances = new Instances("EventData", mAttributes, 0);
-		eventInstances.setClassIndex(mAttributes.size() - 1);
+		ArrayList<Attribute> attributes = generateEventAttributes(eventNames);
+		Instances eventInstances = new Instances("EventData", attributes, 0);
+		eventInstances.setClassIndex(attributes.size() - 1);
 		mBlankInstances = new Instances(eventInstances, 0);
 		mClassifier = new DefaultClassifier(eventInstances);
 	}
@@ -125,11 +125,7 @@ class EventModel {
 	 * @return the name of the event the attribute at the index corresponds to.
 	 */
 	private String getEventName(double attributeIndex) {
-		return classAttribute().value((int) attributeIndex);
-	}
-
-	private Attribute classAttribute() {
-		return mAttributes.get(mAttributes.size() - 1);
+		return mBlankInstances.classAttribute().value((int) attributeIndex);
 	}
 
 	/**
@@ -211,19 +207,19 @@ class EventModel {
 		Instance eventInstance = new DenseInstance(5);
 		// Add start hour
 		localCal.setTimeInMillis(event.mStartTime);
-		eventInstance.setValue(mAttributes.get(0), localCal.get(Calendar.HOUR_OF_DAY));
+		eventInstance.setValue(mBlankInstances.attribute(0), localCal.get(Calendar.HOUR_OF_DAY));
 		// Add start day of week
-		eventInstance.setValue(mAttributes.get(1), getDay(localCal).toString());
+		eventInstance.setValue(mBlankInstances.attribute(1), getDay(localCal).toString());
 		// Add starting position (if exists)
 		List<GPSCoordinates> eventCoords = event.getGPSCoordinates();
 		if (eventCoords.size() > 0) {
 			GPSCoordinates startPos = eventCoords.get(0);
-			eventInstance.setValue(mAttributes.get(2), startPos.getLatitude());
-			eventInstance.setValue(mAttributes.get(3), startPos.getLongitude());
+			eventInstance.setValue(mBlankInstances.attribute(2), startPos.getLatitude());
+			eventInstance.setValue(mBlankInstances.attribute(3), startPos.getLongitude());
 		}
 		// Add name (if exists)
 		if (event.mName != null && event.mName.length() != 0) {
-			eventInstance.setValue(mAttributes.get(4), event.mName);
+			eventInstance.setValue(mBlankInstances.attribute(4), event.mName);
 		}
 		// Associate with this set of instances
 		eventInstance.setDataset(mBlankInstances);
