@@ -139,8 +139,7 @@ public class Debugging extends Activity {
 					mgr.addGPSCoordinates(coord, event.mDbRowID);
 				}
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		return nSuccessful;
