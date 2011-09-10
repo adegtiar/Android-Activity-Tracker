@@ -55,8 +55,7 @@ public class EventEntry implements Serializable {
 	 * @param endTime
 	 *            the long end time of the event.
 	 */
-	public EventEntry(String name, String notes, long startTime, long endTime, boolean persisted,
-			String tag) {
+	public EventEntry(String name, String notes, long startTime, long endTime, String tag) {
 		mName = name;
 		mNotes = notes;
 		mUpdateTime = mStartTime = startTime;
@@ -185,16 +184,6 @@ public class EventEntry implements Serializable {
 	}
 
 	/**
-	 * Formats a long date in a standard date format.
-	 */
-	private static String getDateString(long dateLong) {
-		if (dateLong == 0)
-			return "In Progress";
-		SimpleDateFormat dateFormat = new SimpleDateFormat();
-		return dateFormat.format(new Date(dateLong));
-	}
-
-	/**
 	 * Formats a long date in a time only format.
 	 */
 	public String getTimeString(EventKey colType) {
@@ -203,6 +192,48 @@ public class EventEntry implements Serializable {
 			return "In Progress";
 		SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
 				.getTimeInstance(DateFormat.SHORT);
+		return dateFormat.format(new Date(dateLong));
+	}
+
+	/**
+	 * Queries the databae for the list of GPSCoordinates associated with this
+	 * event.
+	 * 
+	 * @return a list of GPSCoordinates.
+	 */
+	public List<GPSCoordinates> getGPSCoordinates() {
+		return EventActivity.mEventManager.getGPSCoordinates(mDbRowID);
+	}
+
+	/**
+	 * Checks if this event has been updated more recently than the timestamp.
+	 * 
+	 * @param timestamp
+	 *            the String timestamp to compare with.
+	 * @return whether or not the event is newer than the timestamp.
+	 */
+	public boolean newerThan(String timestamp) {
+	
+		// hack to get SimpleDateFormat working with UTC
+		timestamp = timestamp.replace("UTC", "GMT");
+	
+		Date otherUpdatedTime;
+		try {
+			otherUpdatedTime = Synchronizer.dateFormatter.parse(timestamp);
+		} catch (ParseException e) {
+			Log.e(EventActivity.LOG_TAG, "Could not parse remote update time.", e);
+			return false;
+		}
+		return new Date(mUpdateTime).after(otherUpdatedTime);
+	}
+
+	/**
+	 * Formats a long date in a standard date format.
+	 */
+	private static String getDateString(long dateLong) {
+		if (dateLong == 0)
+			return "In Progress";
+		SimpleDateFormat dateFormat = new SimpleDateFormat();
 		return dateFormat.format(new Date(dateLong));
 	}
 
@@ -258,38 +289,6 @@ public class EventEntry implements Serializable {
 	private static boolean getBoolean(Cursor cursor, EventKey columnType) {
 		long dbValue = cursor.getInt(cursor.getColumnIndex(columnType.columnName()));
 		return dbValue == 0 ? false : true;
-	}
-
-	/**
-	 * Queries the databae for the list of GPSCoordinates associated with this
-	 * event.
-	 * 
-	 * @return a list of GPSCoordinates.
-	 */
-	public List<GPSCoordinates> getGPSCoordinates() {
-		return EventActivity.mEventManager.getGPSCoordinates(mDbRowID);
-	}
-
-	/**
-	 * Checks if this event has been updated more recently than the timestamp.
-	 * 
-	 * @param timestamp
-	 *            the String timestamp to compare with.
-	 * @return whether or not the event is newer than the timestamp.
-	 */
-	public boolean newerThan(String timestamp) {
-
-		// hack to get SimpleDateFormat working with UTC
-		timestamp = timestamp.replace("UTC", "GMT");
-
-		Date otherUpdatedTime;
-		try {
-			otherUpdatedTime = Synchronizer.dateFormatter.parse(timestamp);
-		} catch (ParseException e) {
-			Log.e(EventActivity.LOG_TAG, "Could not parse remote update time.", e);
-			return false;
-		}
-		return new Date(mUpdateTime).after(otherUpdatedTime);
 	}
 
 }

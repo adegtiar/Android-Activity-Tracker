@@ -14,7 +14,8 @@ import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 
 /**
- * Provides some public methods to predict which events may be starting.
+ * A service that can make predictions about events that are currently
+ * occurring.
  */
 public class PredictionService extends Service {
 
@@ -44,7 +45,7 @@ public class PredictionService extends Service {
 		LinkedHashSet<String> predictedEvents = predictEventNames();
 
 		// Add the rest of the events
-		EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
+		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry nextEvent = allEventsCursor.getEvent();
 			if (nextEvent.isNamed()) {
@@ -72,19 +73,45 @@ public class PredictionService extends Service {
 	 */
 	public void addNewEvent(EventEntry newEvent) {
 		try {
-			// isDbUpdated = true;
 			getEventModel().updateModel(newEvent);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void invalidateModel() {
-		throw new UnsupportedOperationException("Not implemented");
+	/**
+	 * Deletes the event with the given id from the model.
+	 * 
+	 * @param eventId
+	 *            the id of event to delete
+	 */
+	public void deleteEvent(long eventId) {
+		invalidateModel();
 	}
 
+	/**
+	 * Updates the model with the existing event.
+	 * 
+	 * @param event
+	 *            the event to update
+	 */
+	public void updateEvent(EventEntry event) {
+		invalidateModel();
+	}
+
+	/**
+	 * Marks the current model as invalid due to an event that could not
+	 * incrementally update it.
+	 */
+	private void invalidateModel() {
+		// TODO implement.
+	}
+
+	/**
+	 * Persists the internal model to local storage.
+	 */
 	public void syncModelToStorage() {
-		throw new UnsupportedOperationException("Not implemented");
+		// TODO implement.
 	}
 
 	/**
@@ -112,7 +139,7 @@ public class PredictionService extends Service {
 		if (mEventModel == null) {
 			// Generate the model.
 			EventModel eventModel = new EventModel(generateEventNames());
-			EventCursor events = EventManager.getManager().fetchUndeletedEvents();
+			EventCursor events = EventManager.getManager().fetchAllEvents();
 			while (events.moveToNext()) {
 				eventModel.updateModel(events.getEvent());
 			}
@@ -131,7 +158,7 @@ public class PredictionService extends Service {
 		// Generate the event names.
 		Set<String> names = new HashSet<String>();
 		Set<String> repeatedNames = new HashSet<String>();
-		EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
+		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry currentEvent = allEventsCursor.getEvent();
 			if (!names.add(currentEvent.mName)) {

@@ -33,8 +33,8 @@ public class EventManager {
 	 * Returns an instance of an EventManager. Only one may be active at a time.
 	 * 
 	 * @param mainActivity
-	 *            The single activity the EventManger should start from.
-	 * @return The EventManger instance.
+	 *            the single activity the {@link EventManager} should start from
+	 * @return the {@link EventManager} instance.
 	 */
 	public static EventManager getManager(Context context) {
 		if (mEventManager == null)
@@ -70,22 +70,22 @@ public class EventManager {
 
 	/**
 	 * Create a new entry in the database corresponding to the given eventName,
-	 * notes, and startTime
+	 * notes, and startTime.
 	 * 
 	 * @param name
-	 *            the name of the event.
+	 *            the name of the event
 	 * @param notes
-	 *            the notes associated with the event.
+	 *            the notes associated with the event
 	 * @param startTime
-	 *            the long start time of the event.
+	 *            the long start time of the event
 	 * @param endTime
-	 *            the long end time of the event.
+	 *            the long end time of the event
 	 * @return a new EventEntry corresponding to the database entry, or null
-	 *         upon error.
+	 *         upon error
 	 */
 	public EventEntry createEvent(String name, String notes, long startTime, long endTime,
 			boolean receivedAtServer, String tag) {
-		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime, true, tag);
+		EventEntry newEntry = new EventEntry(name, notes, startTime, endTime, tag);
 		return updateDatabase(newEntry, receivedAtServer) ? newEntry : null;
 	}
 
@@ -93,8 +93,8 @@ public class EventManager {
 	 * Creates or updates the database with the given event.
 	 * 
 	 * @param event
-	 *            The EventEntry to push to the database.
-	 * @return whether or not the database was successfully updated.
+	 *            the {@link EventEntry }to push to the database
+	 * @return whether or not the database was successfully updated
 	 */
 	public boolean updateDatabase(EventEntry event, boolean receivedAtServer) {
 		if (event == null)
@@ -107,28 +107,26 @@ public class EventManager {
 				getPredictionService().addNewEvent(event);
 			return event.persisted;
 		} else {
-//			getPredictionService().invalidateModel();
-			return mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes,
-					event.mStartTime, event.mEndTime, event.mUUID, event.deleted, receivedAtServer,
-					event.mTag);
+			boolean updateSuccessful = mDbHelper.updateEvent(event.mDbRowID, event.mName,
+					event.mNotes, event.mStartTime, event.mEndTime, event.mUUID, event.deleted,
+					receivedAtServer, event.mTag);
+			if (updateSuccessful) {
+				event.persisted = true;
+				getPredictionService().updateEvent(event);
+			}
+			return updateSuccessful;
 		}
 	}
 
 	/**
-	 * Creates or updates the database with the given list of events
+	 * Creates or updates the database with the given list of events.
 	 */
 	public void updateDatabaseBulk(ArrayList<EventEntry> listOfEvents, boolean receivedAtServer) {
-		if (listOfEvents == null)
-			return;
+		if (listOfEvents == null) {
+			return; // TODO remove this call?
+		}
 		for (EventEntry event : listOfEvents) {
-			if (event.mDbRowID == -1) {
-				event.mDbRowID = mDbHelper.createEvent(event.mName, event.mNotes, event.mStartTime,
-						event.mEndTime, event.mUUID, receivedAtServer, event.mTag);
-				event.persisted = event.mDbRowID != -1;
-			} else {
-				mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes, event.mStartTime,
-						event.mEndTime, event.mUUID, event.deleted, receivedAtServer, event.mTag);
-			}
+			updateDatabase(event, receivedAtServer);
 		}
 
 	}
@@ -137,39 +135,40 @@ public class EventManager {
 	 * Mark the event with the given rowId as deleted.
 	 * 
 	 * @param rowId
-	 *            id of note to mark as deleted.
-	 * @return true if deleted, false otherwise.
-	 */
-	public boolean markEventDeleted(long rowId) {
-		getPredictionService().invalidateModel();
-		return mDbHelper.markDeleted(rowId);
-	}
-
-	/**
-	 * Delete the event with the given rowId
-	 * 
-	 * @param rowId
-	 *            id of note to delete.
-	 * @return true if deleted, false otherwise.
+	 *            id of note to mark as deleted
+	 * @return true if deleted, false otherwise
 	 */
 	public boolean deleteEvent(long rowId) {
-		getPredictionService().invalidateModel();
-		return mDbHelper.deleteEvent(rowId);
+		boolean successful = mDbHelper.markDeleted(rowId);
+		if (successful) {
+			getPredictionService().deleteEvent(rowId);
+		}
+		return successful;
 	}
 
 	/**
-	 * @return an Iterator over all events in the database.
+	 * Deletes all events and GPS entries in the database. TODO make more
+	 * efficient.
+	 * 
+	 * @return the number of events deleted
 	 */
-	public EventCursor fetchAllEvents() {
-		return new EventCursor(mDbHelper.fetchAllEvents(), this);
+	public int permanentlyDeleteAllEntries() {
+		EventCursor cursor = actuallyFetchAllEvents();
+		int nDeleted = 0;
+		while (cursor.moveToNext()) {
+			long rowId = cursor.getEvent().mDbRowID;
+			permanentlyDeleteEvent(rowId);
+			nDeleted++;
+		}
+		return nDeleted;
 	}
 
-	public EventCursor fetchUndeletedEvents() {
+	public EventCursor fetchAllEvents() {
 		return new EventCursor(mDbHelper.fetchUndeletedEvents(), this);
 	}
 
 	/**
-	 * @return an iterator over all events in descending endTime order.
+	 * @return a cursor over all events in descending endTime order
 	 */
 	public EventCursor fetchSortedEvents() {
 		return new EventCursor(mDbHelper.fetchSortedEvents(), this);
@@ -190,97 +189,60 @@ public class EventManager {
 	}
 
 	/**
-	 * Gets the earliest time corresponding to the same day as date
-	 * 
-	 * @param date
-	 * @return a date object which represents 12am of that same day
-	 */
-	private Date EarliestTime(Date date) {
-		date.setHours(0);
-		date.setMinutes(0);
-		date.setSeconds(0);
-		return date;
-	}
-
-	/**
-	 * Gets the latest time corresponding to the same day as date
-	 * 
-	 * @param date
-	 * @return a date object which represents midnight of that same day
-	 */
-	private Date LatestTime(Date date) {
-		Date dateToReturn = (Date) date.clone();
-		dateToReturn.setHours(23);
-		dateToReturn.setMinutes(59);
-		dateToReturn.setSeconds(59);
-		return dateToReturn;
-	}
-
-	/**
 	 * @return the date of the event that comes before date
 	 */
 	public Date fetchDateBefore(Date date) {
-
-		EventCursor mCursor = new EventCursor(mDbHelper.fetchSortedEventsBeforeDate(EarliestTime(
+		EventCursor cursor = new EventCursor(mDbHelper.fetchSortedEventsBeforeDate(earliestTime(
 				date).getTime()), this);
-		if (mCursor.moveToFirst()) {
-			EventEntry latestEvent = mCursor.getEvent();
-			return new Date(latestEvent.mStartTime);
-		} else {
-			return null;
-		}
-
+		return getFirstDate(cursor);
 	}
 
 	/**
 	 * @return the date of the event that comes after after date
 	 */
 	public Date fetchDateAfter(Date date) {
-
-		EventCursor mCursor = new EventCursor(mDbHelper.fetchSortedEventsAfterDate(LatestTime(date)
+		EventCursor cursor = new EventCursor(mDbHelper.fetchSortedEventsAfterDate(latestTime(date)
 				.getTime()), this);
-		if (mCursor.moveToFirst()) {
-			EventEntry latestEvent = mCursor.getEvent();
-			return new Date(latestEvent.mStartTime);
-		} else {
-			return null;
-		}
+		return getFirstDate(cursor);
 	}
 
 	/**
-	 * @return an iterator over all events in descending endTime order on this
-	 *         date
+	 * @return a cursor over all events in descending endTime order on this date
 	 */
 	public EventCursor fetchSortedEvents(Date date) {
-		Date startDate = EarliestTime(date);
-		Date endDate = LatestTime(date);
-
+		Date startDate = earliestTime(date);
+		Date endDate = latestTime(date);
 		return new EventCursor(mDbHelper.fetchSortedEvents(startDate.getTime(), endDate.getTime()),
 				this);
 	}
 
 	/**
-	 * @return an iterator over the list of all events in the database that are
-	 *         not yet on the web server
+	 * @return a cursor over the list of all events in the database that are not
+	 *         yet on the web server
 	 */
 	public EventCursor fetchPhoneOnlyEvents() {
 		return new EventCursor(mDbHelper.fetchPhoneOnlyEvents(), this);
 	}
 
 	/**
-	 * Return a Cursor positioned at the note that matches the given rowId
+	 * Retrieves the event corresponding to the given row id.
 	 * 
 	 * @param rowId
-	 *            id of note to retrieve.
-	 * @return Cursor positioned to matching note, if found.
-	 * @throws SQLException
-	 *             if note could not be found/retrieved.
+	 *            id of the event to retrieve
+	 * @return an {@link EventEntry} for the event, or null if not found
 	 */
 	public EventEntry fetchEvent(long rowId) throws SQLException {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(rowId), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
 	}
 
+	/**
+	 * Retrieves an event with the given name.
+	 * 
+	 * @param name
+	 *            the name of the event to find
+	 * @return the first event with the given name
+	 */
 	public EventEntry fetchEvents(String name) throws SQLException {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvents(name), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
@@ -288,11 +250,11 @@ public class EventManager {
 
 	/**
 	 * Either finds the given event in the database, or a creates a new
-	 * (unsaved) event entry.
+	 * (unsaved) event entry
 	 * 
 	 * @param uuid
-	 *            the UUID to find or create by.
-	 * @return the new or found event.
+	 *            the UUID to find or create by
+	 * @return the new or found event
 	 */
 	public EventEntry findOrCreateByUUID(String uuid) {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvent(uuid), this);
@@ -358,7 +320,7 @@ public class EventManager {
 	/**
 	 * Retrieves the event that is currently in progress.
 	 * 
-	 * @return the current event.
+	 * @return the current event
 	 */
 	public EventEntry getCurrentEvent() {
 		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
@@ -376,13 +338,90 @@ public class EventManager {
 	}
 
 	/**
+	 * Adds a tag to the database
+	 * 
+	 * @param string
+	 *            - the tag to be added
+	 */
+	public void addTag(String tag) {
+		mTagHelper.createTagEntry(tag);
+	}
+
+	/**
+	 * Gets the earliest time corresponding to the same day as date
+	 * 
+	 * @param dateToReturn
+	 * @return a date object which represents 12am of that same day
+	 */
+	private static Date earliestTime(Date date) {
+		Date dateToReturn = (Date) date.clone();
+		dateToReturn.setHours(0);
+		dateToReturn.setMinutes(0);
+		dateToReturn.setSeconds(0);
+		return dateToReturn;
+	}
+
+	/**
+	 * Gets the latest time corresponding to the same day as date
+	 * 
+	 * @param date
+	 * @return a date object which represents midnight of that same day
+	 */
+	private static Date latestTime(Date date) {
+		Date dateToReturn = (Date) date.clone();
+		dateToReturn.setHours(23);
+		dateToReturn.setMinutes(59);
+		dateToReturn.setSeconds(59);
+		return dateToReturn;
+	}
+
+	/**
+	 * Gets the date of the first event in the cursor.
+	 * 
+	 * @param cursor
+	 *            a cursor of events
+	 * @return the data of the first event, or null if the cursor is empty
+	 */
+	private static Date getFirstDate(EventCursor cursor) {
+		if (cursor.moveToFirst()) {
+			EventEntry latestEvent = cursor.getEvent();
+			return new Date(latestEvent.mStartTime);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return a cursor over all events (including deleted) in the database
+	 */
+	private EventCursor actuallyFetchAllEvents() {
+		return new EventCursor(mDbHelper.fetchAllEvents(), this);
+	}
+
+	/**
+	 * Delete the event with the given rowId
+	 * 
+	 * @param rowId
+	 *            id of note to delete
+	 * @return true if deleted, false otherwise
+	 */
+	private boolean permanentlyDeleteEvent(long rowId) {
+		boolean successful = mDbHelper.deleteEvent(rowId);
+		if (successful) {
+			getPredictionService().deleteEvent(rowId);
+			deleteGPSEntries(rowId);
+		}
+		return successful;
+	}
+
+	/**
 	 * Delete all of the GPSEntrys with the given eventRowID.
 	 * 
 	 * @param eventRowID
-	 *            id of gpsEntrys to delete.
-	 * @return true if deleted, false otherwise.
+	 *            id of gpsEntrys to delete
+	 * @return true if deleted, false otherwise
 	 */
-	public boolean deleteGPSEntries(long eventRowID) {
+	private boolean deleteGPSEntries(long eventRowID) {
 		Cursor cursor = mGPSHelper.getGPSCoordinates(eventRowID);
 
 		if (cursor.getCount() > 0) {
@@ -393,34 +432,6 @@ public class EventManager {
 		}
 		cursor.close();
 		return true;
-	}
-
-	/**
-	 * Deletes all events and GPS entries in the database. TODO make more
-	 * efficient.
-	 * 
-	 * @return the number of events deleted.
-	 */
-	public int deleteAllEntries() {
-		EventCursor cursor = fetchAllEvents();
-		int nDeleted = 0;
-		while (cursor.moveToNext()) {
-			long rowId = cursor.getEvent().mDbRowID;
-			deleteGPSEntries(rowId);
-			deleteEvent(rowId);
-			nDeleted++;
-		}
-		return nDeleted;
-	}
-
-	/**
-	 * Adds a tag to the database
-	 * 
-	 * @param string
-	 *            - the tag to be added
-	 */
-	public void addTag(String tag) {
-		mTagHelper.createTagEntry(tag);
 	}
 
 	private PredictionService getPredictionService() {

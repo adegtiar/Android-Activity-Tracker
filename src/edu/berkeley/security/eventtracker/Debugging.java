@@ -56,7 +56,7 @@ public class Debugging extends Activity {
 			@Override
 			public void onClick(View v) {
 				debugStatus.setText("clearing events...");
-				EventManager.getManager().deleteAllEntries();
+				EventManager.getManager().permanentlyDeleteAllEntries();
 				debugStatus.setText("clearing events... Done");
 			}
 		});

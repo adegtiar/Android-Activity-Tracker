@@ -72,7 +72,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 	private static final int DIALOG_DELETE_EVENT = 1;
 
 	// Used for deleting events
-	private static long deleteROWID;
+	private static long deleteRowId;
 	private static boolean deletedRowInProgress;
 
 	// gesture stuff
@@ -346,7 +346,7 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 			TextView deleteEvent = (TextView) dialog.findViewById(R.id.delete_description);
 			deleteEvent.setText("Are you sure you want to delete the event "
 					+ bundle.getString("nameOfEvent") + "?");
-			deleteROWID = bundle.getLong("rowId");
+			deleteRowId = bundle.getLong("rowId");
 			deletedRowInProgress = bundle.getBoolean("isInProgress");
 
 			break;
@@ -374,9 +374,9 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 
 								public void onClick(DialogInterface dialog, int whichButton) {
 
-									mEventManager.markEventDeleted(deleteROWID);
+									mEventManager.deleteEvent(deleteRowId);
 									Networking.sendToServer(ServerRequest.DELETE,
-											mEventManager.fetchEvent(deleteROWID), ListEvents.this);
+											mEventManager.fetchEvent(deleteRowId), ListEvents.this);
 									mEventsCursor.requery();
 									if (deletedRowInProgress) {
 										updateTrackingStatus(false);

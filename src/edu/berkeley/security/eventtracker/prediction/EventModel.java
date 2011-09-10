@@ -88,6 +88,19 @@ class EventModel {
 	}
 
 	/**
+	 * A comparator that orders {@link PredictedPair} instances from high to low
+	 * probability.
+	 */
+	private static class PredictedPairComparator implements Comparator<PredictedPair> {
+	
+		@Override
+		public int compare(PredictedPair left, PredictedPair right) {
+			return Double.compare(right.getLikelihood(), left.getLikelihood());
+		}
+	
+	}
+
+	/**
 	 * Finds the <tt>DayOfWeek</tt> for the given <tt>Calendar</tt>.
 	 * 
 	 * @param calendar
@@ -96,6 +109,38 @@ class EventModel {
 	 */
 	private static DayOfWeek getDay(Calendar calendar) {
 		return DayOfWeek.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1];
+	}
+
+	/**
+	 * Constructs a list of attributes to classify on.
+	 * 
+	 * @param eventNames
+	 *            the event names to classify
+	 * @return an <tt>ArrayList</tt> of event attributes
+	 */
+	private static ArrayList<Attribute> generateEventAttributes(Collection<String> eventNames) {
+		// Declare a numeric hourOfDay
+		Attribute attrHourOfDay = new Attribute("hourOfDay");
+		// Declare a numeric Longitude
+		Attribute attrLongitude = new Attribute("longitude");
+		// Declare a numeric Longitude
+		Attribute attrLatitude = new Attribute("latitude");
+		// Declare a nominal dayOfWeek attribute along with its values
+		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
+		for (DayOfWeek day : DayOfWeek.values())
+			daysOfWeekNominal.add(day.toString());
+		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
+		// Declare the event name attribute along with its values
+		ArrayList<String> namesNominal = new ArrayList<String>(eventNames);
+		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
+		// Declare the feature vector
+		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
+		eventAttributes.add(attrHourOfDay);
+		eventAttributes.add(attrDayOfWeek);
+		eventAttributes.add(attrLatitude);
+		eventAttributes.add(attrLongitude);
+		eventAttributes.add(attrNamesNominal);
+		return eventAttributes;
 	}
 
 	/**
@@ -140,51 +185,6 @@ class EventModel {
 	 */
 	private Instance newInstance(EventEntry event, boolean checkValidEvent) {
 		return eventToInstance(event, checkValidEvent);
-	}
-
-	/**
-	 * A comparator that orders {@link PredictedPair} instances from high to low
-	 * probability.
-	 */
-	private static class PredictedPairComparator implements Comparator<PredictedPair> {
-
-		@Override
-		public int compare(PredictedPair left, PredictedPair right) {
-			return Double.compare(right.getLikelihood(), left.getLikelihood());
-		}
-
-	}
-
-	/**
-	 * Constructs a list of attributes to classify on.
-	 * 
-	 * @param eventNames
-	 *            the event names to classify
-	 * @return an <tt>ArrayList</tt> of event attributes
-	 */
-	private static ArrayList<Attribute> generateEventAttributes(Collection<String> eventNames) {
-		// Declare a numeric hourOfDay
-		Attribute attrHourOfDay = new Attribute("hourOfDay");
-		// Declare a numeric Longitude
-		Attribute attrLongitude = new Attribute("longitude");
-		// Declare a numeric Longitude
-		Attribute attrLatitude = new Attribute("latitude");
-		// Declare a nominal dayOfWeek attribute along with its values
-		ArrayList<String> daysOfWeekNominal = new ArrayList<String>(7);
-		for (DayOfWeek day : DayOfWeek.values())
-			daysOfWeekNominal.add(day.toString());
-		Attribute attrDayOfWeek = new Attribute("dayOfWeek", daysOfWeekNominal);
-		// Declare the event name attribute along with its values
-		ArrayList<String> namesNominal = new ArrayList<String>(eventNames);
-		Attribute attrNamesNominal = new Attribute("eventNames", namesNominal);
-		// Declare the feature vector
-		ArrayList<Attribute> eventAttributes = new ArrayList<Attribute>(5);
-		eventAttributes.add(attrHourOfDay);
-		eventAttributes.add(attrDayOfWeek);
-		eventAttributes.add(attrLatitude);
-		eventAttributes.add(attrLongitude);
-		eventAttributes.add(attrNamesNominal);
-		return eventAttributes;
 	}
 
 	/**
