@@ -28,9 +28,11 @@ class EventModel {
 
 	EventModel(Collection<String> eventNames) {
 		mClassifiedEventNames = eventNames;
+		// Generate a blank set of instances.
 		ArrayList<Attribute> attributes = generateEventAttributes(eventNames);
 		Instances eventInstances = new Instances("EventData", attributes, 0);
 		eventInstances.setClassIndex(attributes.size() - 1);
+		// Store a copy of the instances to keep track of attributes.
 		mBlankInstances = new Instances(eventInstances, 0);
 		mClassifier = new DefaultClassifier(eventInstances);
 	}
