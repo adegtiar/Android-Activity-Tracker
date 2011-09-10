@@ -80,16 +80,6 @@ public class PredictionService extends Service {
 	}
 
 	/**
-	 * Deletes the event with the given id from the model.
-	 * 
-	 * @param eventId
-	 *            the id of event to delete
-	 */
-	public void deleteEvent(long eventId) {
-		invalidateModel();
-	}
-
-	/**
 	 * Updates the model with the existing event.
 	 * 
 	 * @param event
@@ -100,17 +90,27 @@ public class PredictionService extends Service {
 	}
 
 	/**
-	 * Marks the current model as invalid due to an event that could not
-	 * incrementally update it.
+	 * Deletes the event with the given id from the model.
+	 * 
+	 * @param eventId
+	 *            the id of event to delete
 	 */
-	private void invalidateModel() {
-		// TODO implement.
+	public void deleteEvent(long eventId) {
+		invalidateModel();
 	}
 
 	/**
 	 * Persists the internal model to local storage.
 	 */
 	public void syncModelToStorage() {
+		// TODO implement.
+	}
+
+	/**
+	 * Marks the current model as invalid due to an event that could not
+	 * incrementally update it.
+	 */
+	private void invalidateModel() {
 		// TODO implement.
 	}
 
