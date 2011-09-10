@@ -178,6 +178,13 @@ public class EventEntry implements Serializable {
 	}
 
 	/**
+	 * @return whether or not the event has a name
+	 */
+	public boolean isNamed() {
+		return mName != null && mName.length() != 0;
+	}
+
+	/**
 	 * Formats a long date in a standard date format.
 	 */
 	private static String getDateString(long dateLong) {

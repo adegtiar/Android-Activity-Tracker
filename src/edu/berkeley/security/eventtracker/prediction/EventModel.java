@@ -22,13 +22,13 @@ class EventModel {
 
 	private final Instances mBlankInstances;
 	private ArrayList<Attribute> mAttributes;
-	private Collection<String> mEventNames;
+	private Collection<String> mClassifiedEventNames;
 	private DefaultClassifier mClassifier;
 	private boolean isEmpty;
 
 	EventModel(Collection<String> eventNames) {
 		mAttributes = generateEventAttributes(eventNames);
-		mEventNames = eventNames;
+		mClassifiedEventNames = eventNames;
 		Instances eventInstances = new Instances("EventData", mAttributes, 0);
 		eventInstances.setClassIndex(mAttributes.size() - 1);
 		mBlankInstances = new Instances(eventInstances, 0);
@@ -202,8 +202,7 @@ class EventModel {
 	private Instance eventToInstance(EventEntry event, boolean checkValidEvent) {
 		if (checkValidEvent) {
 			// Validate event
-			if (event.mName == null || event.mName.length() == 0
-					|| !mEventNames.contains(event.mName)) {
+			if (!event.isNamed() || !mClassifiedEventNames.contains(event.mName)) {
 				return null;
 			}
 		}

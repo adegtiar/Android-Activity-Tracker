@@ -1,8 +1,7 @@
 package edu.berkeley.security.eventtracker.prediction;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -21,7 +20,7 @@ public class PredictionService extends Service {
 
 	/** The cached <tt>EventModel</tt>. */
 	private EventModel mEventModel;
-	private Set<String> mEventNames;
+	private Set<String> mClassifedEventNames;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -35,25 +34,31 @@ public class PredictionService extends Service {
 	}
 
 	/**
-	 * Predicts the names of events that might be starting now, in order of
-	 * likelihood.
+	 * Retrieves an ordered set of all events in order of most likely to least
+	 * likely that is the best prediction currently available. Any names not
+	 * ready or ignored by {@link predictEventNames()} will be appended in an
+	 * arbitrary order.
 	 * 
-	 * @return a list of predicted names
+	 * @return the best-effort ordered set of predicted event names
 	 */
-	public List<String> predictEventNames() {
-		SortedSet<PredictedPair> predictionResults = getEventDistribution();
+	public Set<String> getAllEventNamePredictions() {
+		LinkedHashSet<String> predictedEvents = predictEventNames();
 
-		List<String> eventNames = new ArrayList<String>(predictionResults.size());
-		for (PredictedPair predictedResult : predictionResults) {
-			eventNames.add(predictedResult.getName());
+		// Add the rest of the events
+		EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
+		while (allEventsCursor.moveToNext()) {
+			EventEntry nextEvent = allEventsCursor.getEvent();
+			if (nextEvent.isNamed()) {
+				predictedEvents.add(nextEvent.mName);
+			}
 		}
-		return eventNames;
+		return predictedEvents;
 	}
 
 	/**
 	 * Calculates the distribution of probabilities over all predictable events.
 	 * 
-	 * @return a <tt>SortedMap</tt> mapping probabilities to events. In order
+	 * @return a <tt>SortedSet</tt> mapping probabilities to events. In order
 	 *         from highest to lowest probability
 	 */
 	public SortedSet<PredictedPair> getEventDistribution() {
@@ -66,25 +71,37 @@ public class PredictionService extends Service {
 	 * @param newEvent
 	 *            the new event to add to the model
 	 */
-	public void updateEventModel(EventEntry newEvent) {
+	public void addNewEvent(EventEntry newEvent) {
 		try {
-			if (mEventModel != null) {
-				// isDbUpdated = true;
-				getEventModel().updateModel(newEvent);
-			}
+			// isDbUpdated = true;
+			getEventModel().updateModel(newEvent);
 		} catch (Exception e) {
-			// TODO make more graceful
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void syncModelToStorage() {
-		// TODO implement
+	public void invalidateModel() {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
-	public void markDbUnsupportedUpdated() {
-		// TODO implement
-		mEventModel = null;
+	public void syncModelToStorage() {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	/**
+	 * Predicts the names of events that might be starting now, in order of
+	 * likelihood.
+	 * 
+	 * @return an ordered set of predicted names
+	 */
+	private LinkedHashSet<String> predictEventNames() {
+		SortedSet<PredictedPair> predictionResults = getEventDistribution();
+
+		LinkedHashSet<String> eventNames = new LinkedHashSet<String>(predictionResults.size());
+		for (PredictedPair predictedResult : predictionResults) {
+			eventNames.add(predictedResult.getName());
+		}
+		return eventNames;
 	}
 
 	/**
@@ -112,7 +129,7 @@ public class PredictionService extends Service {
 	 * @return a set of event names
 	 */
 	private Set<String> getEventNames() {
-		if (mEventNames == null) {
+		if (mClassifedEventNames == null) {
 			// Generate the event names.
 			Set<String> names = new HashSet<String>();
 			Set<String> repeatedNames = new HashSet<String>();
@@ -123,9 +140,9 @@ public class PredictionService extends Service {
 					repeatedNames.add(currentEvent.mName);
 				}
 			}
-			mEventNames = repeatedNames;
+			mClassifedEventNames = repeatedNames;
 		}
-		return mEventNames;
+		return mClassifedEventNames;
 	}
 
 }

@@ -104,10 +104,10 @@ public class EventManager {
 					event.mEndTime, event.mUUID, receivedAtServer, event.mTag);
 			event.persisted = event.mDbRowID != -1;
 			if (event.persisted)
-				getPredictionService().updateEventModel(event);
+				getPredictionService().addNewEvent(event);
 			return event.persisted;
 		} else {
-			getPredictionService().markDbUnsupportedUpdated();
+			getPredictionService().invalidateModel();
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID, event.deleted, receivedAtServer,
 					event.mTag);
@@ -141,7 +141,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean markEventDeleted(long rowId) {
-		getPredictionService().markDbUnsupportedUpdated();
+		getPredictionService().invalidateModel();
 		return mDbHelper.markDeleted(rowId);
 	}
 
@@ -153,7 +153,7 @@ public class EventManager {
 	 * @return true if deleted, false otherwise.
 	 */
 	public boolean deleteEvent(long rowId) {
-		getPredictionService().markDbUnsupportedUpdated();
+		getPredictionService().invalidateModel();
 		return mDbHelper.deleteEvent(rowId);
 	}
 

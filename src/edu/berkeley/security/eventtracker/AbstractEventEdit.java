@@ -1,10 +1,8 @@
 package edu.berkeley.security.eventtracker;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -38,7 +36,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected EventEntry previousEvent;
 
 	protected ArrayList<String> autoCompleteActivities = new ArrayList<String>();
-	protected Set<String> mActivityNames = new HashSet<String>();
 	protected ArrayAdapter<String> adapterActivities;
 
 	protected AutoCompleteTextView eventNameEditText;
@@ -197,9 +194,10 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	protected void updateAutoComplete() {
 		String activityName = eventNameEditText.getText().toString();
-		if (activityName.length() != 0 && mActivityNames.add(activityName)) {
-			adapterActivities.add(activityName);
-		}
+		// TODO implement
+		// if (activityName.length() != 0 && mActivityNames.add(activityName)) {
+		// adapterActivities.add(activityName);
+		// }
 	}
 
 	/**
@@ -240,26 +238,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	private void initializeAutoComplete() {
 		autoCompleteActivities.clear();
-		mActivityNames.clear();
-		// // Add predicted events in order of likelihood
-		List<String> predictedEvents = mPredictionService.predictEventNames();
-		for (String predictedEvent : predictedEvents) {
-			if (predictedEvent == null || predictedEvent.length() == 0) {
-				throw new IllegalStateException("Predicted event not valid");
-			}
-			mActivityNames.add(predictedEvent);
-			autoCompleteActivities.add(predictedEvent);
-		}
-
-		// Add the rest of the events
-		EventCursor allEventsCursor = mEventManager.fetchUndeletedEvents();
-		while (allEventsCursor.moveToNext()) {
-			EventEntry nextEvent = allEventsCursor.getEvent();
-			if (nextEvent.mName != null && nextEvent.mName.length() != 0
-					&& mActivityNames.add(nextEvent.mName)) {
-				autoCompleteActivities.add(nextEvent.mName);
-			}
-		}
+		// Add predicted events in order of likelihood
+		autoCompleteActivities.addAll(mPredictionService.getAllEventNamePredictions());
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
