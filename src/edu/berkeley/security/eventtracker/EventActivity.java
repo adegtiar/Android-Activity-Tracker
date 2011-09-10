@@ -216,7 +216,7 @@ abstract public class EventActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		if (mPredictionService != null) {
-			mPredictionService.syncModelToStorage();
+//			mPredictionService.syncModelToStorage();
 		}
 		mHandlerDuration.removeCallbacks(mUpdateTimeTaskDuration);
 	}

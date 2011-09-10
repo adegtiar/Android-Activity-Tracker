@@ -107,7 +107,7 @@ public class EventManager {
 				getPredictionService().addNewEvent(event);
 			return event.persisted;
 		} else {
-			getPredictionService().invalidateModel();
+//			getPredictionService().invalidateModel();
 			return mDbHelper.updateEvent(event.mDbRowID, event.mName, event.mNotes,
 					event.mStartTime, event.mEndTime, event.mUUID, event.deleted, receivedAtServer,
 					event.mTag);
