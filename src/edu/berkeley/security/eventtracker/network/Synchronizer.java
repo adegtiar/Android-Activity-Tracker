@@ -37,6 +37,8 @@ public class Synchronizer extends IntentService {
 
 		ServerRequest request = (ServerRequest) bundle.getSerializable(REQUEST_EXTRA);
 
+		@SuppressWarnings("unchecked")
+		// key is only used with ArrayList<EventEntry>
 		ArrayList<EventEntry> listOfEvents = (ArrayList<EventEntry>) bundle
 				.getSerializable(EVENT_LIST_EXTRA);
 		if (listOfEvents != null) {

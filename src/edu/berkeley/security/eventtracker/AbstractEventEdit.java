@@ -98,13 +98,12 @@ abstract public class AbstractEventEdit extends EventActivity {
 	 */
 	protected void initializeEditTexts() {
 		eventNameEditText = (AutoCompleteTextView) findViewById(R.id.editEventName);
-		// TODO uncomment these to disable soft keyboard
+		// uncomment these to disable soft keyboard
 		// editTextEventName.setInputType(0);
 		// editTextEventNotes.setInputType(0);
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
-		adapterActivities.setNotifyOnChange(true);
 
 		eventNameEditText.setAdapter(adapterActivities);
 
@@ -119,7 +118,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		updateAutoComplete();
 		syncToEventFromUI();
 	}
 
@@ -187,17 +185,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 		String previousEventString = previousEvent != null ? previousEvent.mName
 				: getString(previousEventDefaultID);
 		return previousActivityLabel + " " + previousEventString;
-	}
-
-	/**
-	 * Updates the the AutoComplete adapter with the current name/notes.
-	 */
-	protected void updateAutoComplete() {
-		String activityName = eventNameEditText.getText().toString();
-		// TODO implement
-		// if (activityName.length() != 0 && mActivityNames.add(activityName)) {
-		// adapterActivities.add(activityName);
-		// }
 	}
 
 	/**

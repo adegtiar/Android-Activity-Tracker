@@ -339,7 +339,6 @@ public class TrackingMode extends AbstractEventEdit {
 	private void finishCurrentActivity(boolean createNewActivity) {
 
 		currentEvent.mEndTime = System.currentTimeMillis();
-		updateAutoComplete();
 		syncToEventFromUI();
 		updateDatabase(currentEvent);
 
@@ -347,10 +346,11 @@ public class TrackingMode extends AbstractEventEdit {
 		Networking.sendToServer(ServerRequest.SENDDATA, currentEvent, this);
 
 		previousEvent = currentEvent;
-		if (createNewActivity)
+		if (createNewActivity) {
 			startNewActivity();
-		else
+		} else {
 			currentEvent = null;
+		}
 		updateTrackingStatus();
 		fillViewWithEventInfo();
 
