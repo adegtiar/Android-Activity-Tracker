@@ -20,7 +20,6 @@ public class PredictionService extends Service {
 
 	/** The cached <tt>EventModel</tt>. */
 	private EventModel mEventModel;
-	private Set<String> mClassifedEventNames;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -112,7 +111,7 @@ public class PredictionService extends Service {
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
 			// Generate the model.
-			EventModel eventModel = new EventModel(getEventNames());
+			EventModel eventModel = new EventModel(generateEventNames());
 			EventCursor events = EventManager.getManager().fetchUndeletedEvents();
 			while (events.moveToNext()) {
 				eventModel.updateModel(events.getEvent());
@@ -128,21 +127,18 @@ public class PredictionService extends Service {
 	 * 
 	 * @return a set of event names
 	 */
-	private Set<String> getEventNames() {
-		if (mClassifedEventNames == null) {
-			// Generate the event names.
-			Set<String> names = new HashSet<String>();
-			Set<String> repeatedNames = new HashSet<String>();
-			EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
-			while (allEventsCursor.moveToNext()) {
-				EventEntry currentEvent = allEventsCursor.getEvent();
-				if (!names.add(currentEvent.mName)) {
-					repeatedNames.add(currentEvent.mName);
-				}
+	private Set<String> generateEventNames() {
+		// Generate the event names.
+		Set<String> names = new HashSet<String>();
+		Set<String> repeatedNames = new HashSet<String>();
+		EventCursor allEventsCursor = EventManager.getManager().fetchUndeletedEvents();
+		while (allEventsCursor.moveToNext()) {
+			EventEntry currentEvent = allEventsCursor.getEvent();
+			if (!names.add(currentEvent.mName)) {
+				repeatedNames.add(currentEvent.mName);
 			}
-			mClassifedEventNames = repeatedNames;
 		}
-		return mClassifedEventNames;
+		return repeatedNames;
 	}
 
 }
