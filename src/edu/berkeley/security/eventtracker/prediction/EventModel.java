@@ -71,9 +71,7 @@ class EventModel {
 	 */
 	void updateModel(EventEntry newEvent) {
 		Instance eventInstance = newInstance(newEvent, true);
-		if (eventInstance == null) {
-			return;
-		} else {
+		if (eventInstance != null) {
 			try {
 				mClassifier.updateClassifier(eventInstance);
 			} catch (Exception e) {
@@ -92,12 +90,12 @@ class EventModel {
 	 * probability.
 	 */
 	private static class PredictedPairComparator implements Comparator<PredictedPair> {
-	
+
 		@Override
 		public int compare(PredictedPair left, PredictedPair right) {
 			return Double.compare(right.getLikelihood(), left.getLikelihood());
 		}
-	
+
 	}
 
 	/**

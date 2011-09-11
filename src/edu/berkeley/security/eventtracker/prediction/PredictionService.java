@@ -114,7 +114,8 @@ public class PredictionService extends Service {
 	 * incrementally update it.
 	 */
 	private void invalidateModel() {
-		mCacheIsValid = true;
+		// TODO this is wrong...
+		mCacheIsValid = false;
 	}
 
 	/**
