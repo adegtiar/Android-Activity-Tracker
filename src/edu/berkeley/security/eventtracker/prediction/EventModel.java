@@ -24,7 +24,7 @@ class EventModel {
 	private final Instances mBlankInstances;
 	private Collection<String> mClassifiedEventNames;
 	private DefaultClassifier mClassifier;
-	private boolean isEmpty;
+	private boolean isEmpty = true;
 
 	EventModel(Collection<String> eventNames) {
 		mClassifiedEventNames = eventNames;
