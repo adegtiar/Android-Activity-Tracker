@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.SortedSet;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -20,7 +20,6 @@ import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
 import edu.berkeley.security.eventtracker.network.ServerRequest;
-import edu.berkeley.security.eventtracker.prediction.PredictedPair;
 
 public class Debugging extends Activity {
 
@@ -64,12 +63,11 @@ public class Debugging extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				SortedSet<PredictedPair> eventPredictions = EventActivity.mPredictionService
-						.getEventDistribution();
+				Set<String> eventNamePredictions = EventActivity.mPredictionService
+						.getEventNamePredictions();
 				String debugText = "Predicted events: ";
-				for (PredictedPair nameProbPair : eventPredictions)
-					debugText += String.format("\n%s: %.2f%%", nameProbPair.getName(),
-							nameProbPair.getLikelihood() * 100);
+				for (String predictedName : eventNamePredictions)
+					debugText += String.format('\n' + predictedName);
 				debugStatus.setText(debugText);
 			}
 		});

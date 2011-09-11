@@ -226,7 +226,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	private void initializeAutoComplete() {
 		autoCompleteActivities.clear();
 		// Add predicted events in order of likelihood
-		autoCompleteActivities.addAll(mPredictionService.getAllEventNamePredictions());
+		autoCompleteActivities.addAll(mPredictionService.getEventNamePredictions());
 
 		adapterActivities = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, autoCompleteActivities);
