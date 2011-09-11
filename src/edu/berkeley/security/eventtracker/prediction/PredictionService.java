@@ -45,7 +45,7 @@ public class PredictionService extends Service {
 	 */
 	public Set<String> getEventNamePredictions() {
 		if (mCachedDistribution == null) {
-//			mCachedDistribution = generateAllEventNames();
+			// mCachedDistribution = generateAllEventNames();
 			mCachedDistribution = generateAllEventNamePredictions();
 		}
 		return mCachedDistribution;
@@ -140,7 +140,9 @@ public class PredictionService extends Service {
 		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry currentEvent = allEventsCursor.getEvent();
-			eventNames.add(currentEvent.mName);
+			if (currentEvent.isNamed()) {
+				eventNames.add(currentEvent.mName);
+			}
 		}
 		return eventNames;
 	}
@@ -153,7 +155,7 @@ public class PredictionService extends Service {
 	 */
 	private LinkedHashSet<String> generateAllEventNamePredictions() {
 		LinkedHashSet<String> predictedEvents = generateClassifiedEventNamePredictions();
-	
+
 		// Append the rest of the events.
 		predictedEvents.addAll(generateAllEventNames());
 		return predictedEvents;
@@ -172,7 +174,7 @@ public class PredictionService extends Service {
 		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry currentEvent = allEventsCursor.getEvent();
-			if (!names.add(currentEvent.mName)) {
+			if (currentEvent.isNamed() && !names.add(currentEvent.mName)) {
 				repeatedNames.add(currentEvent.mName);
 			}
 		}
