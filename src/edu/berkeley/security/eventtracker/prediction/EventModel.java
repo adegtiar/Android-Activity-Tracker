@@ -46,7 +46,7 @@ class EventModel {
 	SortedSet<PredictedPair> getEventDistribution() {
 		SortedSet<PredictedPair> predictionResults = new TreeSet<PredictedPair>(
 				new PredictedPairComparator());
-		if (!isEmpty()) {
+		if (!isEmpty() && mClassifiedEventNames.size() > 1) {
 			Instance newEventInstance = newInstance();
 			double[] predictions;
 			try {
