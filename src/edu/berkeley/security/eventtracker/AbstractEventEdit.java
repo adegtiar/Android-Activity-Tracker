@@ -15,6 +15,7 @@ import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -52,6 +53,7 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected ArrayList<String> mTagList;
 
 	protected boolean justResumed;
+	protected boolean skipPrediction = true;
 
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NAME = 1234;
 	private static final int VOICE_RECOGNITION_REQUEST_CODE_NOTES = 5678;
@@ -67,6 +69,22 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeActivityButtons();
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
+		eventNameEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+
+				if (hasFocus && !skipPrediction) {
+					// Only predict the first time gaining focus.
+					updateAutoComplete();
+					skipPrediction = true;
+				} else if (skipPrediction) {
+					// We don't want to predict when we're simply losing focus.
+					skipPrediction = false;
+				}
+			}
+
+		});
 		initializeVoice();
 	}
 
@@ -125,6 +143,9 @@ abstract public class AbstractEventEdit extends EventActivity {
 	protected void onResume() {
 		super.onResume();
 		justResumed = true;
+		if (mPredictionService != null) {
+			skipPrediction = false;
+		}
 
 		initializeTags();
 		fillViewWithEventInfo();
@@ -217,13 +238,14 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 	@Override
 	protected void onPredictionServiceConnected() {
-		initializeAutoComplete();
+		updateAutoComplete();
+		skipPrediction = false;
 	}
 
 	/**
 	 * Refreshes the AutoComplete adapters with all events from the database.
 	 */
-	private void initializeAutoComplete() {
+	private void updateAutoComplete() {
 		autoCompleteActivities.clear();
 		// Add predicted events in order of likelihood
 		autoCompleteActivities.addAll(mPredictionService.getEventNamePredictions());
