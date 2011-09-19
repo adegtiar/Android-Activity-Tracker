@@ -13,6 +13,7 @@ import android.os.IBinder;
 import edu.berkeley.security.eventtracker.eventdata.EventCursor;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
+import edu.berkeley.security.eventtracker.prediction.EventModel.NoAttributeValueException;
 
 /**
  * A service that can make predictions about events that are currently
@@ -60,8 +61,8 @@ public class PredictionService extends Service {
 	public void addNewEvent(EventEntry newEvent) {
 		try {
 			getEventModel().updateModel(newEvent);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (NoAttributeValueException e) {
+			regenerateModel();
 		}
 	}
 
@@ -72,7 +73,7 @@ public class PredictionService extends Service {
 	 *            the event to update
 	 */
 	public void updateEvent(EventEntry event) {
-		invalidateModel();
+		regenerateModel(); // TODO check if necessary
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class PredictionService extends Service {
 	 *            the id of event to delete
 	 */
 	public void deleteEvent(long eventId) {
-		invalidateModel();
+		regenerateModel();
 	}
 
 	/**
@@ -113,9 +114,9 @@ public class PredictionService extends Service {
 	 * Marks the current model as invalid due to an event that could not
 	 * incrementally update it.
 	 */
-	private void invalidateModel() {
-		// TODO this is wrong...
-		mCacheIsValid = false;
+	private void regenerateModel() {
+		mEventModel = generateEventModel();
+		mCachedDistribution = null;
 	}
 
 	/**
@@ -125,15 +126,23 @@ public class PredictionService extends Service {
 	 */
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
-			// Generate the model.
-			EventModel eventModel = new EventModel(generateClassifiedEventNames());
-			EventCursor events = EventManager.getManager().fetchAllEvents();
-			while (events.moveToNext()) {
-				eventModel.updateModel(events.getEvent());
-			}
-			mEventModel = eventModel;
+			mEventModel = generateEventModel();
 		}
 		return mEventModel;
+	}
+
+	private EventModel generateEventModel() {
+		// Generate the model.
+		EventModel eventModel = new EventModel(generateClassifiedEventNames());
+		EventCursor events = EventManager.getManager().fetchAllEvents();
+		while (events.moveToNext()) {
+			try {
+				eventModel.updateModel(events.getEvent());
+			} catch (NoAttributeValueException e) {
+				// Do nothing. Only use classified events.
+			}
+		}
+		return eventModel;
 	}
 
 	private Set<String> generateAllEventNames() {

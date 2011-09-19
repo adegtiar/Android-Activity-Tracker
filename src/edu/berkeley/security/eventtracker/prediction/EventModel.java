@@ -69,8 +69,14 @@ class EventModel {
 	 *            the event to update the model with
 	 * @throws Exception
 	 */
-	void updateModel(EventEntry newEvent) {
+	void updateModel(EventEntry newEvent) throws NoAttributeValueException {
 		Instance eventInstance = newInstance(newEvent, true);
+		if (!newEvent.isNamed()) {
+			return;
+		}
+		if (!mClassifiedEventNames.contains(newEvent.mName)) {
+			throw new NoAttributeValueException();
+		}
 		if (eventInstance != null) {
 			try {
 				mClassifier.updateClassifier(eventInstance);
@@ -226,4 +232,7 @@ class EventModel {
 		return eventInstance;
 	}
 
+	class NoAttributeValueException extends Exception {
+		private static final long serialVersionUID = 1884104158218823097L;
+	}
 }
