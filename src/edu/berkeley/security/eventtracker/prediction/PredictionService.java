@@ -24,6 +24,7 @@ import edu.berkeley.security.eventtracker.prediction.EventModel.NoAttributeValue
 public class PredictionService extends Service {
 
 	private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+	private EventManager mManager = EventManager.getManager();
 	private EventModel mEventModel;
 	private Set<String> mCachedDistribution;
 
@@ -59,15 +60,18 @@ public class PredictionService extends Service {
 	/**
 	 * Updates the model with a new event.
 	 * 
-	 * @param newEvent
+	 * @param event
 	 *            the new event to add to the model
 	 */
-	public void addNewEvent(final EventEntry newEvent) {
+	public void addNewEvent(final EventEntry event) {
+		if (!event.isNamed()) {
+			return;
+		}
 		Runnable updateModel = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					getEventModel().updateModel(newEvent);
+					getEventModel().updateModel(event);
 				} catch (NoAttributeValueException e) {
 					regenerateModel(); // TODO check if necessary
 					regenerateCache();
@@ -84,7 +88,9 @@ public class PredictionService extends Service {
 	 *            the event to update
 	 */
 	public void updateEvent(EventEntry event) {
-		regenerateAllAsync(); // TODO check if necessary
+		if (event.isNamed()) {
+			regenerateAllAsync();
+		}
 	}
 
 	/**
@@ -93,8 +99,8 @@ public class PredictionService extends Service {
 	 * @param eventId
 	 *            the id of event to delete
 	 */
-	public void deleteEvent(long eventId) {
-		regenerateAllAsync(); // TODO check if necessary
+	public void deleteEvent(EventEntry event) {
+		updateEvent(event);
 	}
 
 	/**
@@ -145,7 +151,7 @@ public class PredictionService extends Service {
 	private EventModel generateEventModel() {
 		// Generate the model.
 		EventModel eventModel = new EventModel(generateClassifiedEventNames());
-		EventCursor events = EventManager.getManager().fetchAllEvents();
+		EventCursor events = mManager.fetchAllEvents();
 		while (events.moveToNext()) {
 			try {
 				eventModel.updateModel(events.getEvent());
@@ -158,7 +164,7 @@ public class PredictionService extends Service {
 
 	private Set<String> generateAllEventNames() {
 		Set<String> eventNames = new TreeSet<String>();
-		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
+		EventCursor allEventsCursor = mManager.fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry currentEvent = allEventsCursor.getEvent();
 			if (currentEvent.isNamed()) {
@@ -192,7 +198,7 @@ public class PredictionService extends Service {
 		// Generate the event names.
 		Set<String> names = new HashSet<String>();
 		Set<String> repeatedNames = new HashSet<String>();
-		EventCursor allEventsCursor = EventManager.getManager().fetchAllEvents();
+		EventCursor allEventsCursor = mManager.fetchAllEvents();
 		while (allEventsCursor.moveToNext()) {
 			EventEntry currentEvent = allEventsCursor.getEvent();
 			if (currentEvent.isNamed() && !names.add(currentEvent.mName)) {

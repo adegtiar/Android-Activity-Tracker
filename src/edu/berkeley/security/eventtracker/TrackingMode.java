@@ -177,11 +177,10 @@ public class TrackingMode extends AbstractEventEdit {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				// TODO Auto-generated method stub
 				String activityName = (String) ((TextView) arg1).getText();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(eventNameEditText.getWindowToken(), 0);
-				EventEntry thisEvent = EventManager.getManager().fetchEvents(activityName);
+				EventEntry thisEvent = EventManager.getManager().fetchFirstEvent(activityName);
 				currentEvent.mTag = thisEvent.mTag;
 				initializeTags();
 			}

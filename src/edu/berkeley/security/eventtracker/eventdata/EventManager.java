@@ -141,7 +141,7 @@ public class EventManager {
 	public boolean deleteEvent(long rowId) {
 		boolean successful = mDbHelper.markDeleted(rowId);
 		if (successful) {
-			getPredictionService().deleteEvent(rowId);
+			getPredictionService().deleteEvent(fetchEvent(rowId));
 		}
 		return successful;
 	}
@@ -243,9 +243,13 @@ public class EventManager {
 	 *            the name of the event to find
 	 * @return the first event with the given name
 	 */
-	public EventEntry fetchEvents(String name) throws SQLException {
+	public EventEntry fetchFirstEvent(String name) throws SQLException {
 		EventCursor events = new EventCursor(mDbHelper.fetchEvents(name), this);
 		return events.getCount() > 0 ? events.getEvent() : null;
+	}
+
+	public int getEventCount(String name) {
+		return new EventCursor(mDbHelper.fetchEvents(name), this).getCount();
 	}
 
 	/**
@@ -408,7 +412,7 @@ public class EventManager {
 	private boolean permanentlyDeleteEvent(long rowId) {
 		boolean successful = mDbHelper.deleteEvent(rowId);
 		if (successful) {
-			getPredictionService().deleteEvent(rowId);
+			getPredictionService().deleteEvent(fetchEvent(rowId));
 			deleteGPSEntries(rowId);
 		}
 		return successful;

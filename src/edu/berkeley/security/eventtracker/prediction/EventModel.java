@@ -87,6 +87,10 @@ class EventModel {
 		}
 	}
 
+	boolean isClassified(String eventName) {
+		return mClassifiedEventNames.contains(eventName);
+	}
+
 	static enum DayOfWeek {
 		SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
 	}
