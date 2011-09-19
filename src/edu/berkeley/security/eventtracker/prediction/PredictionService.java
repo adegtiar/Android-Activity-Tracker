@@ -5,6 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Service;
 import android.content.Intent;
@@ -21,12 +23,15 @@ import edu.berkeley.security.eventtracker.prediction.EventModel.NoAttributeValue
  */
 public class PredictionService extends Service {
 
+	private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 	private EventModel mEventModel;
 	private Set<String> mCachedDistribution;
-	private boolean mCacheIsValid;
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		if (mEventModel == null) {
+			regenerateAllAsync();
+		}
 		return new PredictionBinder();
 	}
 
@@ -44,10 +49,9 @@ public class PredictionService extends Service {
 	 * 
 	 * @return the best-effort ordered set of predicted event names
 	 */
-	public Set<String> getEventNamePredictions() {
+	synchronized public Set<String> getEventNamePredictions() {
 		if (mCachedDistribution == null) {
-			// mCachedDistribution = generateAllEventNames();
-			mCachedDistribution = generateAllEventNamePredictions();
+			mCachedDistribution = generateAllEventNames();
 		}
 		return mCachedDistribution;
 	}
@@ -58,12 +62,19 @@ public class PredictionService extends Service {
 	 * @param newEvent
 	 *            the new event to add to the model
 	 */
-	public void addNewEvent(EventEntry newEvent) {
-		try {
-			getEventModel().updateModel(newEvent);
-		} catch (NoAttributeValueException e) {
-			regenerateModel();
-		}
+	public void addNewEvent(final EventEntry newEvent) {
+		Runnable updateModel = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					getEventModel().updateModel(newEvent);
+				} catch (NoAttributeValueException e) {
+					regenerateModel(); // TODO check if necessary
+					regenerateCache();
+				}
+			}
+		};
+		mExecutor.execute(updateModel);
 	}
 
 	/**
@@ -73,7 +84,7 @@ public class PredictionService extends Service {
 	 *            the event to update
 	 */
 	public void updateEvent(EventEntry event) {
-		regenerateModel(); // TODO check if necessary
+		regenerateAllAsync(); // TODO check if necessary
 	}
 
 	/**
@@ -83,31 +94,22 @@ public class PredictionService extends Service {
 	 *            the id of event to delete
 	 */
 	public void deleteEvent(long eventId) {
-		regenerateModel();
-	}
-
-	/**
-	 * Persists the internal model to local storage.
-	 */
-	public void syncModelToStorage() {
-		// TODO implement.
+		regenerateAllAsync(); // TODO check if necessary
 	}
 
 	/**
 	 * Requests that the cache be updated. If the cache is already valid, the
 	 * request is ignored. This method is non-blocking.
 	 */
-	private void updateCacheAsync() {
-		// TODO asynchronously update the cache
-	}
-
-	/**
-	 * TODO implement
-	 */
-	private void updateCache() {
-		if (!mCacheIsValid) {
-
-		}
+	private void regenerateAllAsync() {
+		Runnable regenerate = new Runnable() {
+			@Override
+			public void run() {
+				regenerateModel();
+				regenerateCache();
+			}
+		};
+		mExecutor.execute(regenerate);
 	}
 
 	/**
@@ -115,8 +117,17 @@ public class PredictionService extends Service {
 	 * incrementally update it.
 	 */
 	private void regenerateModel() {
-		mEventModel = generateEventModel();
-		mCachedDistribution = null;
+		EventModel newModel = generateEventModel();
+		synchronized (this) {
+			mEventModel = newModel;
+		}
+	}
+
+	private void regenerateCache() {
+		Set<String> newPredictions = generateAllEventNamePredictions();
+		synchronized (this) {
+			mCachedDistribution = newPredictions;
+		}
 	}
 
 	/**
@@ -126,7 +137,7 @@ public class PredictionService extends Service {
 	 */
 	private EventModel getEventModel() {
 		if (mEventModel == null) {
-			mEventModel = generateEventModel();
+			regenerateModel();
 		}
 		return mEventModel;
 	}
@@ -206,5 +217,4 @@ public class PredictionService extends Service {
 		}
 		return eventNames;
 	}
-
 }
