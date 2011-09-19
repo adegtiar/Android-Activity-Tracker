@@ -70,10 +70,8 @@ abstract public class AbstractEventEdit extends EventActivity {
 		initializeTimesUI();
 		eventNameEditText.setHint(getString(R.string.eventNameHint));
 		eventNameEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
-
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-
 				if (hasFocus && !skipPrediction) {
 					// Only predict the first time gaining focus.
 					updateAutoComplete();
@@ -83,7 +81,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 					skipPrediction = false;
 				}
 			}
-
 		});
 		initializeVoice();
 	}
@@ -238,7 +235,6 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 	@Override
 	protected void onPredictionServiceConnected() {
-		updateAutoComplete();
 		skipPrediction = false;
 	}
 

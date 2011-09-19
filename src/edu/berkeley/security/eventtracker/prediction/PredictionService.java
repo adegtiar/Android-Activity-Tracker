@@ -30,7 +30,7 @@ public class PredictionService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (mEventModel == null) {
+		if (mEventModel == null || mCachedDistribution == null) {
 			regenerateAllAsync();
 		}
 		return new PredictionBinder();
