@@ -328,11 +328,21 @@ public class EventManager {
 	 */
 	public EventEntry getCurrentEvent() {
 		EventCursor events = new EventCursor(mDbHelper.fetchSortedEvents(), this);
-		if (!events.moveToFirst())
-			return null; // no events, so can't be tracking
-		// if end time is 0(initial value), we are still tracking.
-		EventEntry currentEvent = events.getEvent();
-		return currentEvent.mEndTime == 0 ? currentEvent : null;
+		EventEntry currentEvent = null;
+		while (events.moveToNext()) {
+			// if end time is 0(initial value), we are still tracking.
+			EventEntry event = events.getEvent();
+			if (event.mEndTime == 0) {
+				currentEvent = event;
+				break;
+			}
+			// Once an event has begun before the current time, at this point 
+			// we know there can't be a current event
+			if (event.mStartTime < System.currentTimeMillis()) {
+				break;
+			}
+		}
+		return currentEvent;
 	}
 
 	public void addGPSCoordinates(GPSCoordinates coord, long eventRowID) {

@@ -157,22 +157,22 @@ abstract public class AbstractEventEdit extends EventActivity {
 
 	@Override
 	protected void refreshState() {
-
+		currentEvent = null;
+		previousEvent = null;
 		EventCursor events = mEventManager.fetchSortedEvents();
-		if (events.moveToNext()) {
+		while (events.moveToNext()) {
 			EventEntry event = events.getEvent();
-			if (event.mEndTime != 0) {
-				// We aren't tracking
-				currentEvent = null;
-				previousEvent = event;
-			} else {
-				// We are tracking
+			if (event.mEndTime == 0) {
 				currentEvent = event;
 				previousEvent = events.moveToNext() ? events.getEvent() : null;
+				break;
 			}
-		} else {
-			currentEvent = null;
-			previousEvent = null;
+			// Once an event has begun before the current time, at this point 
+			// we know there can't be a current event
+			if (event.mStartTime < System.currentTimeMillis()) {
+				previousEvent = event;
+				break;
+			}
 		}
 	}
 

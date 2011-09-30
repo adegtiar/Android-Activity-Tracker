@@ -220,12 +220,15 @@ public class ListEvents extends EventActivity implements OnGestureListener {
 				if (position < 1) {
 					return;
 				}
-				boolean sameAsCurrentDate = isToday(dateListed);
 
-				if (position == 1 && isTracking() && sameAsCurrentDate)
-					finish(); // trying to edit event in progress
-				else
+				EventEntry eventSelected = mEventManager.fetchEvent(id);
+				// Check to see if event selected is the current event in progress
+				if (eventSelected != null && eventSelected.mEndTime == 0) {
+					finish();
+				} else {
 					startEditEventActivity(id);
+				}
+				
 			}
 		});
 		eventList.setOnItemLongClickListener(new OnItemLongClickListener() {
