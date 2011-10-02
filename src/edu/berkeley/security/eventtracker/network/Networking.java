@@ -238,7 +238,7 @@ public class Networking {
 		switch (request) {
 		case VERIFYPASSWORD:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings.getPhoneNumber()));
-			String possiblePassword = HashingUtils.hashPassword(Settings.possiblePassword);
+			String possiblePassword = HashingUtils.hashPassword(HashingUtils.hashPassword(Settings.possiblePassword));
 			params.add(new BasicNameValuePair(PASSWORD_PARAM, possiblePassword));
 			break;
 		case CHECKACCOUNT:
@@ -246,8 +246,8 @@ public class Networking {
 			break;
 		case REGISTER:
 			params.add(new BasicNameValuePair(PHONE_NUMBER_PARAM, Settings.getPhoneNumber()));
-			params.add(new BasicNameValuePair(PASSWORD_PARAM, HashingUtils.hashPassword(Settings
-					.getPassword())));
+			params.add(new BasicNameValuePair(PASSWORD_PARAM, HashingUtils.hashPassword(HashingUtils.hashPassword(Settings
+					.getPassword()))));
 			break;
 		case SENDDATA:
 		case UPDATE:
