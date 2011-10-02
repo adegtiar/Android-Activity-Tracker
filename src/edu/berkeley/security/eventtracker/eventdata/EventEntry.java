@@ -188,10 +188,19 @@ public class EventEntry implements Serializable {
 	 */
 	public String getTimeString(EventKey colType) {
 		long dateLong = (Long) getValue(colType);
-		if (dateLong == 0)
+		if (dateLong == 0) {
 			return "In Progress";
-		SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat
-				.getTimeInstance(DateFormat.SHORT);
+		}
+		String beginDate = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date(this.mStartTime));
+		String endDate = DateFormat.getDateInstance(DateFormat.SHORT).format(new Date(this.mEndTime));
+		SimpleDateFormat dateFormat = null;
+		// If the times occur on different dates, the "End time" column needs to include a time and a date
+		if (!beginDate.equals(endDate) && colType == EventKey.END_TIME) {
+			dateFormat = new SimpleDateFormat();
+		} else {
+			dateFormat = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT);
+		}
+
 		return dateFormat.format(new Date(dateLong));
 	}
 
@@ -230,7 +239,7 @@ public class EventEntry implements Serializable {
 	/**
 	 * Formats a long date in a standard date format.
 	 */
-	private static String getDateString(long dateLong) {
+	public static String getDateString(long dateLong) {
 		if (dateLong == 0)
 			return "In Progress";
 		SimpleDateFormat dateFormat = new SimpleDateFormat();
