@@ -30,6 +30,9 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="Poll Server for Event Data"></Button>
 	</LinearLayout>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/LinearLayout04" android:layout_width="wrap_content">
+		<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/generateDataButton" android:text="@string/generateDataText"></Button>
+	</LinearLayout>
 
 
 	<TextView android:text="" android:id="@+id/debuggingStatusText"

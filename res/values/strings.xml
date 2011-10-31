@@ -59,5 +59,6 @@
 <string name="dialog_no">No</string>
 <string name="dialog_enter_password_description">In order to link account, enter the same password as before.  </string>
 <string name="enter_same_password">Enter Password</string>
+<string name="generateDataText">Generate random events</string>
 
 </resources>

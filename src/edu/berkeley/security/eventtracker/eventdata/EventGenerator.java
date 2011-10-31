@@ -15,6 +15,7 @@ public class EventGenerator {
 	private long mVariability;
 	private Random random = new Random();
 	private Multimap<String, String> mTagEvents;
+	private boolean mIsFirstTime = true;
 
 	/**
 	 * Constructs a new {@link EventGenerator} that creates event spaced apart
@@ -74,7 +75,11 @@ public class EventGenerator {
 		long time2 = getRandomTime();
 		event.mStartTime = Math.min(time1, time2);
 		event.mEndTime = Math.max(time1, time2);
-		mStartTime += mDelta;
+		if (mIsFirstTime) {
+			mIsFirstTime = false;
+			event.mEndTime = Math.min(mStartTime, event.mEndTime);
+		}
+		mStartTime -= mDelta;
 		return event;
 	}
 

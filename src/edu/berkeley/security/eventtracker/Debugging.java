@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import edu.berkeley.security.eventtracker.eventdata.EventEntry;
+import edu.berkeley.security.eventtracker.eventdata.EventGenerator;
 import edu.berkeley.security.eventtracker.eventdata.EventManager;
 import edu.berkeley.security.eventtracker.eventdata.GPSCoordinates;
 import edu.berkeley.security.eventtracker.network.Networking;
@@ -93,6 +94,27 @@ public class Debugging extends Activity {
 			public void onClick(View v) {
 				debugStatus.setText("Polling server for Events.");
 				Networking.pollServerIfAllowed(Debugging.this);
+			}
+		});
+		((Button) findViewById(R.id.generateDataButton)).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				debugStatus.setText("Generating random events...");
+				// Generate events.
+				int ONE_DAY = 1000 * 60 * 60 * 24;
+				EventGenerator eg = new EventGenerator(ONE_DAY);
+				EventManager manager = EventActivity.mEventManager;
+				Set<String> tags = manager.getTags();
+				EventEntry event;
+				for (int eventIndex = 365; eventIndex > 0; eventIndex--) {
+					event = eg.generateEvent();
+					if (!tags.contains(event.mTag)) {
+						manager.addTag(event.mTag);
+					}
+					manager.updateDatabase(event, false);
+				}
+				debugStatus.setText("Generating random events... Done");
 			}
 		});
 	}
