@@ -473,6 +473,9 @@ public class Settings extends PreferenceActivity {
 		TelephonyManager telephonyManager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String telephoneNumber = telephonyManager.getLine1Number();
+		if (telephoneNumber != null && telephoneNumber.charAt(0) == '+') {
+		    telephoneNumber = telephoneNumber.substring(1);
+		}
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putString(PhoneNumber, telephoneNumber);
 		prefEditor.commit();

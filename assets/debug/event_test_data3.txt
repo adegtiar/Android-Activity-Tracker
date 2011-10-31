@@ -137,4 +137,110 @@ Sleeping	zzz...					06/10/2011 12:00AM	06/10/2011 7:45AM	sleep
 Work		projects				06/10/2011 08:50AM	06/10/2011 05:30PM	work
 
 Research	machine learning		06/10/2011 05:50PM	06/10/2011 11:30PM	research
-	
+
+work		webroot					06/13/2011 09:00AM	06/13/2011 09:00PM	work
+
+work		webroot					06/14/2011 09:00AM	06/14/2011 09:00PM	work
+
+work		webroot					06/15/2011 09:00AM	06/15/2011 09:00PM	work
+
+work		webroot					06/16/2011 09:00AM	06/16/2011 09:00PM	work
+
+work		webroot					06/17/2011 09:00AM	06/17/2011 09:00PM	work
+
+work		webroot					06/20/2011 09:00AM	06/20/2011 09:00PM	work
+
+work		webroot					06/21/2011 09:00AM	06/21/2011 09:00PM	work
+
+work		webroot					06/22/2011 09:00AM	06/22/2011 09:00PM	work
+
+work		webroot					06/23/2011 09:00AM	06/23/2011 09:00PM	work
+
+work		webroot					06/24/2011 09:00AM	06/24/2011 09:00PM	work
+
+work		webroot					06/27/2011 09:00AM	06/27/2011 09:00PM	work
+
+work		webroot					06/28/2011 09:00AM	06/28/2011 09:00PM	work
+
+work		webroot					06/29/2011 09:00AM	06/29/2011 09:00PM	work
+
+work		webroot					06/30/2011 09:00AM	06/30/2011 09:00PM	work
+
+work		webroot					06/31/2011 09:00AM	06/31/2011 09:00PM	work
+
+work		webroot					07/01/2011 09:00AM	07/01/2011 09:00PM	work
+
+work		webroot					07/04/2011 09:00AM	07/04/2011 09:00PM	work
+
+work		webroot					07/05/2011 09:00AM	07/05/2011 09:00PM	work
+
+work		webroot					07/06/2011 09:00AM	07/06/2011 09:00PM	work
+
+work		webroot					07/07/2011 09:00AM	07/07/2011 09:00PM	work
+
+work		webroot					07/08/2011 09:00AM	07/08/2011 09:00PM	work
+
+work		webroot					07/11/2011 09:00AM	07/11/2011 09:00PM	work
+
+work		webroot					07/12/2011 09:00AM	07/12/2011 09:00PM	work
+
+work		webroot					07/13/2011 09:00AM	07/13/2011 09:00PM	work
+
+work		webroot					07/14/2011 09:00AM	07/14/2011 09:00PM	work
+
+work		webroot					07/15/2011 09:00AM	07/15/2011 09:00PM	work
+
+work		webroot					07/18/2011 09:00AM	07/18/2011 09:00PM	work
+
+work		webroot					07/19/2011 09:00AM	07/19/2011 09:00PM	work
+
+work		webroot					07/20/2011 09:00AM	07/20/2011 09:00PM	work
+
+work		webroot					07/21/2011 09:00AM	07/21/2011 09:00PM	work
+
+work		webroot					07/22/2011 09:00AM	07/22/2011 09:00PM	work
+
+work		webroot					07/25/2011 09:00AM	07/25/2011 09:00PM	work
+
+work		webroot					07/26/2011 09:00AM	07/26/2011 09:00PM	work
+
+work		webroot					07/27/2011 09:00AM	07/27/2011 09:00PM	work
+
+work		webroot					07/28/2011 09:00AM	07/28/2011 09:00PM	work
+
+work		webroot					07/29/2011 09:00AM	07/29/2011 09:00PM	work
+
+work		webroot					08/01/2011 09:00AM	08/01/2011 09:00PM	work
+
+work		webroot					08/02/2011 09:00AM	08/02/2011 09:00PM	work
+
+work		webroot					08/03/2011 09:00AM	08/03/2011 09:00PM	work
+
+work		webroot					08/04/2011 09:00AM	08/04/2011 09:00PM	work
+
+work		webroot					08/05/2011 09:00AM	08/05/2011 09:00PM	work
+
+work		webroot					08/08/2011 09:00AM	08/08/2011 09:00PM	work
+
+work		webroot					08/09/2011 09:00AM	08/09/2011 09:00PM	work
+
+work		webroot					08/10/2011 09:00AM	08/10/2011 09:00PM	work
+
+work		webroot					08/11/2011 09:00AM	08/11/2011 09:00PM	work
+
+work		webroot					08/12/2011 09:00AM	08/12/2011 09:00PM	work
+
+work		webroot					08/18/2011 09:00AM	07/18/2011 09:00PM	work
+
+Costa Rica	trip to south america!	08/13/2011 05:50PM	06/21/2011 11:30PM	vacation
+
+Meeting		With Ian/Dawn			09/05/2011 07:00PM	09/05/2011 8:30PM	research
+
+Meeting		With Ian/Dawn			09/12/2011 07:00PM	09/12/2011 8:30PM	research
+
+Meeting		With Ian/Dawn			09/19/2011 07:00PM	09/19/2011 8:30PM	research
+
+Meeting		With Ian/Dawn			09/26/2011 07:00PM	09/26/2011 8:30PM	research
+
+Halloween!  trick or treat!			10/31/2011 12:00AM	10/31/2011 12:00PM	halloween
+
