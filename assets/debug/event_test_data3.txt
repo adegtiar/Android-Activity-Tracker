@@ -232,7 +232,7 @@ work		webroot					08/12/2011 09:00AM	08/12/2011 09:00PM	work
 
 work		webroot					08/18/2011 09:00AM	07/18/2011 09:00PM	work
 
-Costa Rica	trip to south america!	08/13/2011 05:50PM	06/21/2011 11:30PM	vacation
+Costa Rica	trip to south america!	08/13/2011 05:50PM	08/21/2011 11:30PM	vacation
 
 Meeting		With Ian/Dawn			09/05/2011 07:00PM	09/05/2011 8:30PM	research
 
@@ -242,5 +242,5 @@ Meeting		With Ian/Dawn			09/19/2011 07:00PM	09/19/2011 8:30PM	research
 
 Meeting		With Ian/Dawn			09/26/2011 07:00PM	09/26/2011 8:30PM	research
 
-Halloween!  trick or treat!			10/31/2011 12:00AM	10/31/2011 12:00PM	halloween
+Watching movie	movie				10/28/2011 11:00PM	10/29/2011 01:30AM	social
 
