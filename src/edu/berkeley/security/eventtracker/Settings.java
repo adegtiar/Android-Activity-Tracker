@@ -476,6 +476,10 @@ public class Settings extends PreferenceActivity {
 		if (telephoneNumber != null && telephoneNumber.charAt(0) == '+') {
 		    telephoneNumber = telephoneNumber.substring(1);
 		}
+		if (telephoneNumber != null && telephoneNumber.length() > 10 && telephoneNumber.charAt(0) == '1') {
+                    telephoneNumber = telephoneNumber.substring(1);
+                }
+		
 		SharedPreferences.Editor prefEditor = EventActivity.settings.edit();
 		prefEditor.putString(PhoneNumber, telephoneNumber);
 		prefEditor.commit();
